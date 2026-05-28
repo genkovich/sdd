@@ -1,5 +1,6 @@
 ---
 status: current
+mode: current            # current (brownfield scan) | greenfield-bootstrap (target foundation)
 updated_at: "<YYYY-MM-DD>"
 reflects_commit: "<git short sha this map reflects>"
 ---

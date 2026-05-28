@@ -4,60 +4,70 @@ model: inherit
 effort: medium
 agents: [sdd-explorer]
 description: >
-  Use to study an existing codebase ONCE and persist a current-architecture map the rest of the
-  pipeline reads — so specify/design/data-model/implement know the existing system instead of
-  re-scanning it each time. Run it at the start (before specify) and refresh it when the repo has
-  moved. Triggers on "survey the codebase", "map the architecture", "understand the existing
-  system for {repo}", "architecture map", "/sdd-survey", "вивчи кодову базу", "карта архітектури",
-  "що вже є в системі". Dispatches sdd-explorer to scan, synthesizes docs/architecture-map.md
-  (module layout, layering, datastores, conventions, a C4 of what EXISTS), and records the git
-  HEAD/date it reflects so staleness is detectable. Reads (never overwrites) an existing
-  architecture doc if the repo has one.
+  Use to establish the repo's architecture map the rest of the pipeline reads. Two modes: on an
+  EXISTING codebase it scans once and persists what's there; on an EMPTY/greenfield repo it runs a
+  short, level-adaptive foundation session — picks the stack / folder structure / data approach /
+  conventions WITH you (defaults-heavy), fixes them as the foundation + foundational ADRs, and emits
+  a scaffold tasks.json that implement materializes into a real skeleton. Triggers on "survey the
+  codebase", "map the architecture", "set up a new project", "bootstrap the foundation",
+  "/sdd-survey", "вивчи кодову базу", "карта архітектури", "новий проєкт", "заклади фундамент".
+  Output: docs/architecture-map.md (+ adr/ + scaffold tasks.json on greenfield). Records
+  reflects_commit for staleness; reads, never overwrites, an authored architecture doc.
 ---
 
 # Skill: survey
 
-The pipeline's eyes on the **existing** system. It scans the repo once and writes a persisted
-**current-architecture map** at `docs/architecture-map.md` — the single source of "what's already
-here" that `specify` (for constraints), `design` (to match against), `data-model`, and `implement`
-all read instead of each re-scanning. Run it before you specify your first feature, and refresh it
-when the repo has drifted. On a greenfield repo it records "greenfield — no architecture yet".
+The pipeline's anchor on architecture. It produces `docs/architecture-map.md` — the single source of "what the system is" that `specify` (constraints), `design` (matches against it), `data-model`, and `implement` all read instead of re-discovering the code. It runs in one of **two modes**, auto-detected:
 
-This is a repo-level utility, not a per-feature stage: one map serves every feature. The scan is delegated to [`sdd-explorer`](../../agents/sdd-explorer.md) (cheap, read-only); this skill synthesizes its findings into the map. Size depth → [`../_shared/size-matrix.md`](../_shared/size-matrix.md); question phrasing → [`../_shared/ask-style.md`](../_shared/ask-style.md).
+- **Brownfield** (the repo has source) → scan it once and persist the **current** architecture.
+- **Greenfield** (empty / near-empty repo) → run a short, **level-adaptive foundation session**: pick the stack / structure / data approach / conventions *with* the user (defaults-heavy), fix them as the **foundation** + foundational ADRs, and emit a **scaffold `tasks.json`** that `implement` turns into a real skeleton. Greenfield detail → [`./references/foundation.md`](./references/foundation.md).
+
+Repo-level utility (one map serves every feature). The scan is delegated to [`sdd-explorer`](../../agents/sdd-explorer.md); question phrasing → [`../_shared/ask-style.md`](../_shared/ask-style.md); depth → [`../_shared/size-matrix.md`](../_shared/size-matrix.md).
 
 ## Owner
 
-Architect / Tech Lead — they own the architecture, so they confirm the map reflects reality.
+Architect / Tech Lead — they own the architecture (brownfield: confirm it reflects reality; greenfield: decide the foundation).
 
 ## Inputs
 
-- (Optional) a path/scope hint — which repo or subtree to map (default: the repo root).
-- (Read, never overwrite) an existing hand-maintained architecture doc if present (`docs/architecture.md`, `ARCHITECTURE.md`, C4 docs, root `CLAUDE.md`) — it is a strong input and authority; the generated map cites and aligns with it, it does not clobber it.
+- (Optional) a path/scope hint (default: repo root).
+- (Read, never overwrite) an authored architecture doc if present (`docs/architecture.md`, `ARCHITECTURE.md`, root `CLAUDE.md`, ADRs) — a strong input the map reconciles with, never clobbers.
 
 ## Protocol
 
-1. **Freshness check.** If `docs/architecture-map.md` exists, read its recorded `reflects_commit` / `updated_at`. If the repo HEAD hasn't moved much since (no new top-level modules, recent date) → ask «map is fresh (reflects `<commit>`). Reuse or refresh?» and STOP on reuse. Stale or absent → continue.
-2. **Read existing docs first.** Look for a hand-maintained architecture doc / root `CLAUDE.md` / ADRs. If found, treat it as authoritative input — the map will reconcile with it and flag any drift, never overwrite it.
-3. **Scan via sdd-explorer.** Dispatch [`sdd-explorer`](../../agents/sdd-explorer.md) (`model: haiku` + `effort: low`, clean-isolated per [`../_shared/agent-roster.md`](../_shared/agent-roster.md)): «Map this repo for a current-architecture document. Report: (a) primary language + frameworks + versions, (b) top-level module/package layout + per-module layer dirs, (c) layering / ports / wiring conventions (how a module registers), (d) datastores + how they're accessed, (e) inter-module communication (direct call / events / HTTP), (f) cross-cutting conventions (error handling, IDs, tests, migrations) with one cited example each, (g) the 2–3 most representative existing features as precedents.» For a large repo, fan out one explorer per subtree and merge. (Fallback to a `subagent_type: "Explore"` Agent if `sdd-explorer` is unavailable.)
-4. **Synthesize the map** from [`./templates/architecture-map.md`](./templates/architecture-map.md): a C4 Context + Container of **what exists today**, a module inventory, the conventions catalog (cited), the datastore list, a "where things live / closest precedent" guide, and known constraints / tech-debt. Real names + `file:line` anchors from the scan — no placeholders.
-5. **Stamp staleness markers.** Record `updated_at: <today>` and `reflects_commit: <git rev-parse --short HEAD>` in the frontmatter, so downstream skills can tell when the map is stale.
-6. **Write + commit.** Write `docs/architecture-map.md`; propose `survey: architecture map (reflects <commit>)`. Next: `specify <slug>` — now architecture-aware. (Greenfield → write the map with a single "greenfield — no modules yet; conventions TBD" note so specify/design still have a defined input.)
+1. **Detect mode + freshness.** If `docs/architecture-map.md` exists and is fresh (its `reflects_commit` ≈ current HEAD) → «map is fresh (reflects `<commit>`). Reuse or refresh?»; STOP on reuse. Else decide the mode: **brownfield** if the repo has source (modules/packages beyond config), else **greenfield** (empty or only scaffolding like a bare `go.mod` / `package.json`).
+
+### Brownfield path (existing code)
+
+2. **Read authored docs first.** Any hand-maintained architecture doc / root `CLAUDE.md` / ADRs → authoritative input; reconcile with it, never overwrite.
+3. **Scan via sdd-explorer.** Dispatch [`sdd-explorer`](../../agents/sdd-explorer.md) (`haiku`/`low`, clean-isolated per [`../_shared/agent-roster.md`](../_shared/agent-roster.md)): «Report (a) language + frameworks + versions, (b) top-level module layout + per-module layers, (c) layering / wiring conventions, (d) datastores + access, (e) inter-module comms, (f) cross-cutting conventions (errors, IDs, tests, migrations) with one cited example each, (g) 2–3 representative features as precedents.» Large repo → fan out per subtree. (Fallback `subagent_type: "Explore"`.)
+4. **Synthesize + stamp + write.** Fill [`./templates/architecture-map.md`](./templates/architecture-map.md) (C4 of what exists, module inventory, cited conventions, datastores, precedent guide, constraints) with real `file:line` anchors. Record `updated_at` + `reflects_commit: <short HEAD>`. Write + commit `survey: architecture map (reflects <commit>)`. Next: `specify <slug>`.
+
+### Greenfield path (empty repo) → [`./references/foundation.md`](./references/foundation.md)
+
+G2. **Calibrate to the person.** One opening `AskUserQuestion` to gauge how the user wants to engage — «pick good defaults, I'll confirm» / «walk me through each choice with explanations» / «let me choose each piece, keep it terse». This sets the dialogue's depth + phrasing (junior → defaults + glossed explanations per [`../_shared/ask-style.md`](../_shared/ask-style.md); senior → terser, more control). Not a product brief.
+G3. **Intent (short).** 1–3 questions: what the project is + the kind of capabilities it'll have (e.g. «HTTP API» / «CLI» / «web app»). Enough to choose an architecture — deliberately NOT the feature briefing (that's `specify`, per feature).
+G4. **Pick the foundation, defaults-heavy.** At the calibrated depth, choose: stack (language/framework/datastore), architectural style (e.g. hexagonal modules), folder/module structure, data/persistence approach (migration tool, ID strategy), core conventions (errors, tests, CI). Recommend a coherent default set; the user confirms or adjusts. Choice menus + defaults → [`./references/foundation.md`](./references/foundation.md).
+G5. **Fix the foundation.** Write `docs/architecture-map.md` as the **established foundation** (mark `mode: greenfield-bootstrap`; the C4 is the *target* baseline) + spawn **foundational ADRs** in `docs/adr/` for the irreversible picks (stack, module style, persistence). Record `reflects_commit`.
+G6. **Emit the scaffold + hand off.** Write a scaffold `tasks.json` (the skeleton: folder/module structure, a baseline module, the test harness, migration tooling, CI, a `CLAUDE.md`/rules doc) per the contract in [`./references/foundation.md`](./references/foundation.md). Each task's DoD anchors on the **skeleton smoke test** — «the project builds + boots + the empty test suite runs + the migration tool runs». Propose: «foundation fixed — run `implement` to materialize the skeleton» (the wave-of-the-hand hand-off). Commit `survey: greenfield foundation + scaffold plan`.
 
 ## Definition of Done
 
-- `docs/architecture-map.md` exists with: a C4 of the existing system, the module inventory, the cited conventions catalog, datastores, and the precedent guide — real names, no placeholders (or the explicit greenfield note).
-- It records `updated_at` + `reflects_commit` so staleness is detectable.
-- Any pre-existing hand-maintained architecture doc was read and reconciled, never overwritten.
+- `docs/architecture-map.md` exists with `updated_at` + `reflects_commit`; an authored doc (if any) was reconciled, never overwritten.
+- **Brownfield:** C4 of what exists + module inventory + cited conventions + precedent guide, real anchors (no placeholders).
+- **Greenfield:** foundation fixed (stack/structure/data/conventions) at the user's calibrated level + foundational ADRs + a scaffold `tasks.json` whose tasks carry the skeleton smoke-test DoD, ready for `implement`.
 
 ## Anti-patterns
 
-- **Re-scanning the repo in every downstream skill** instead of reading this map — the whole point is to scan once. design/data-model/implement read the map; they re-scan only the specific files they mutate (e.g. drift detection reads the actual domain layer).
-- **Overwriting a hand-maintained `docs/architecture.md`.** survey writes its own `architecture-map.md` and reconciles; it never clobbers an authored doc.
-- **A map with no staleness markers** — without `reflects_commit` nobody knows if it's current; the map silently rots.
-- **Placeholders / guessed layout** — every claim is cited from the scan, or marked `UNKNOWN`. A fictional map is worse than none.
-- **Treating it as per-feature** — it's repo-level; one map serves all features. Refresh it, don't fork it per slug.
+- **Re-scanning the repo in every downstream skill** — the point is to scan once; others read the map (drift detection is the only re-read, of real domain files).
+- **Overwriting a hand-maintained `docs/architecture.md`** — survey writes its own map and reconciles.
+- **A map with no `reflects_commit`** — it silently rots; nobody knows it's stale.
+- **Greenfield: a full product brief.** The foundation session picks the *architecture*, not the features — the idea/briefing is `specify`'s job, per feature. Keep it to intent + foundation choices.
+- **Greenfield: ignoring the person's level.** A junior gets defaults + plain-language explanations; a senior gets control + terseness. One calibration question sets this — don't fire a senior-level wall of choices at a first-timer.
+- **Placeholders / guessed layout** — cited or `UNKNOWN`; a fictional map is worse than none.
 
 ## References & template
 
-- [`./templates/architecture-map.md`](./templates/architecture-map.md) — output scaffold for the current-architecture map.
-- [`../_shared/agent-roster.md`](../_shared/agent-roster.md) — the sdd-explorer contract (clean-isolated, cited, cheap).
+- [`./references/foundation.md`](./references/foundation.md) — greenfield: the calibration question, level-adaptive depth, the stack/structure/convention choice menus + defaults, foundational-ADR list, and the scaffold `tasks.json` contract.
+- [`./templates/architecture-map.md`](./templates/architecture-map.md) — output scaffold (same file for current OR foundation; a `mode:` marker distinguishes).
+- [`../_shared/agent-roster.md`](../_shared/agent-roster.md) — the sdd-explorer contract.

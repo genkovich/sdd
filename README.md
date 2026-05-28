@@ -17,17 +17,26 @@ gated (a stage hard-refuses when its prerequisite artifact is missing), and stac
 
 ## Start here
 
-**On an existing codebase, run `survey` once first.** It scans the repo and writes
-`docs/architecture-map.md` — the current architecture (module layout, conventions, datastores,
-a C4 of what exists). Every later stage reads that map instead of re-discovering your codebase,
-and `specify` writes the spec already aware of what's there. Refresh it when the repo drifts.
+**Run `survey` once first** — it has two modes:
+
+- **Existing codebase** → it scans the repo and writes `docs/architecture-map.md`: the current
+  architecture (module layout, conventions, datastores, a C4 of what exists). Every later stage
+  reads that map instead of re-discovering your code, and `specify` writes the spec aware of what's
+  there. Refresh it when the repo drifts.
+- **Empty / new project** → it runs a short, **level-adaptive foundation session** (it first asks
+  how you want to engage, then meets you there): together you pick the stack, folder structure,
+  data approach, and conventions — defaults-heavy — fixes them as the foundation (the map +
+  foundational ADRs), and emits a **scaffold `tasks.json`**. Then `implement` materializes the
+  skeleton (the smoke test «builds + boots + tooling runs» is the red→green anchor). No product
+  brief here — that's `specify`, per feature.
 
 **Then run `specify`.** You don't bring a spec — `specify` *creates* it: a short interview asks
 about the idea (the problem, who it's for, what "done" looks like) and writes `spec.md`. That
 spec is the seed everything downstream reads.
 
 ```text
-/sdd-survey                         ← once per repo: maps the current architecture
+/sdd-survey                         ← once per repo: map the current arch, OR bootstrap an empty one
+/sdd-implement _scaffold            ← (empty project only) materialize the skeleton survey planned
 /sdd-specify checkout-discounts     ← interviews you, writes the spec
 ```
 
@@ -59,7 +68,7 @@ flowchart LR
 
 | # | Skill | What it does | Reads → Produces |
 |---|---|---|---|
-| 0 | **survey** | Scans the existing codebase once and persists the current architecture, so later stages don't re-discover it. Refresh when the repo drifts. | the repo → `docs/architecture-map.md` |
+| 0 | **survey** | Existing repo → scans once, persists the current architecture. Empty repo → level-adaptive foundation session → fixes the foundation + emits a scaffold `tasks.json` for `implement`. | the repo → `docs/architecture-map.md` (+ scaffold `tasks.json` on greenfield) |
 
 ### Backbone — the straight line (run in order)
 
@@ -123,6 +132,14 @@ So you don't re-open "what's the current architecture?" at every stage — `surv
 and the map carries it. Refresh the map (`survey` again) when the repo has drifted past the
 `reflects_commit` it records. In `design`, decisions expensive to reverse cross a blast-radius
 gate and become ADRs.
+
+**On an empty project there's no current architecture to study — so `survey` establishes one.**
+Its greenfield mode gauges how you want to engage, then picks the stack / structure / data approach
+/ conventions with you (defaults-heavy), fixes them as the foundation (the same map, marked
+`mode: greenfield-bootstrap`, + foundational ADRs for the irreversible choices), and emits a
+scaffold `tasks.json`. `implement` then materializes the skeleton — anchored on a smoke test
+(«builds + boots + the test and migration tooling run») rather than per-folder TDD. After that the
+repo is real and the per-feature flow builds into it normally.
 
 ## The implementation engine
 

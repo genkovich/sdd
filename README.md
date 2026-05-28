@@ -17,28 +17,19 @@ gated (a stage hard-refuses when its prerequisite artifact is missing), and stac
 
 ## Start here
 
-**Run `survey` once first** — it has two modes:
-
-- **Existing codebase** → it scans the repo and writes `docs/architecture-map.md`: the current
-  architecture (module layout, conventions, datastores, a C4 of what exists). Every later stage
-  reads that map instead of re-discovering your code, and `specify` writes the spec aware of what's
-  there. Refresh it when the repo drifts.
-- **Empty / new project** → it runs a short, **level-adaptive foundation session** (it first asks
-  how you want to engage, then meets you there): together you pick the stack, folder structure,
-  data approach, and conventions — defaults-heavy — fixes them as the foundation (the map +
-  foundational ADRs), and emits a **scaffold `tasks.json`**. Then `implement` materializes the
-  skeleton (the smoke test «builds + boots + tooling runs» is the red→green anchor). No product
-  brief here — that's `specify`, per feature.
-
-**Then run `specify`.** You don't bring a spec — `specify` *creates* it: a short interview asks
-about the idea (the problem, who it's for, what "done" looks like) and writes `spec.md`. That
-spec is the seed everything downstream reads.
+The flow is a straight line: **each stage writes a file the next one reads.** Run them in order
+(the diagram + table are just below).
 
 ```text
-/sdd-survey                         ← once per repo: map the current arch, OR bootstrap an empty one
-/sdd-implement _scaffold            ← (empty project only) materialize the skeleton survey planned
-/sdd-specify checkout-discounts     ← interviews you, writes the spec
+/sdd-survey                         ← once per repo: map an existing codebase, OR bootstrap an empty one
+/sdd-specify checkout-discounts     ← interviews you, writes the spec (you don't bring one)
+/sdd-design … → /sdd-implement … → /sdd-review … → /sdd-ship
 ```
+
+Two things to know up front: **`survey` runs once per repo** — on an existing codebase it maps the
+current architecture to `docs/architecture-map.md` (every later stage reads it); on an empty repo it
+runs a short foundation session and scaffolds the skeleton ([detail below](#where-we-study-the-codebase--hold-the-current-architecture)).
+And **`specify` *creates* the spec** from a short interview — you bring the idea, not the document.
 
 From there you walk the backbone in order. Each step reads the previous step's file and
 refuses if it's missing, so you can't skip ahead by accident.
@@ -176,19 +167,14 @@ Model is chosen by the **kind of work**, not by taste:
 | Execution (write tests, write code) | `sonnet` | `medium` → `high` on escalation | `sdd-test-author`, `sdd-implementer` |
 | Search / scan / derivation | `haiku` / `inherit` | `low` / `medium` | `sdd-explorer`; data-model, api, sequences, tasks |
 
-The six agents (`agents/`): **sdd-explorer** (brownfield scan, read-only), **sdd-test-author**
-(writes failing tests), **sdd-implementer** (makes them pass), **sdd-reviewer** (independent
-review, read-only), **sdd-critic** (coherence critique, read-only), **sdd-devils-advocate**
-(ambiguity hunt, read-only). The four read-only agents run in **clean isolated context** — fresh
-eyes are the point — and emit only cited findings. Full policy + the agent contract:
-[`skills/_shared/agent-roster.md`](./skills/_shared/agent-roster.md).
+The six agents (`agents/`): **sdd-explorer** (brownfield scan), **sdd-test-author** (failing tests),
+**sdd-implementer** (makes them pass), **sdd-reviewer** (independent review), **sdd-critic**
+(coherence critique), **sdd-devils-advocate** (ambiguity hunt) — the four read-only ones run in
+**clean isolated context** (fresh eyes) and emit only cited findings.
 
-Override precedence is `env var > settings > frontmatter > session`. Because the `effort:`
-frontmatter has been reported as a no-op on some Claude Code builds, the implement engine also
-exports `CLAUDE_CODE_EFFORT_LEVEL` / `CLAUDE_CODE_SUBAGENT_MODEL` for its dispatches — so effort
-takes effect even where the frontmatter doesn't. Effort also scales with the feature `.size`
-(L/XL bumps execution effort to `high`). Set `CLAUDE_CODE_EFFORT_LEVEL` yourself if a run feels
-under-reasoned.
+The full policy — override precedence, the `.size` scaling, and the env-var fallback for the
+`effort:` no-op some builds have — lives in one place: [`skills/_shared/agent-roster.md`](./skills/_shared/agent-roster.md).
+Short version: if a run feels under-reasoned, set `CLAUDE_CODE_EFFORT_LEVEL`.
 
 ### Configuration — `.claude/sdd.local.md`
 

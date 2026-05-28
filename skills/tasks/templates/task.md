@@ -2,8 +2,8 @@
 id: T1
 title: "<imperative, specific title>"
 layer: "migration|domain|infra|app|ports|tests|wiring|docs"
-blocked_by: []          # task ids that must finish first (≡ tasks.json "deps")
-ac_refs: ["AC-01"]      # spec §5 acceptance criteria this task satisfies (≡ tasks.json "acs")
+deps: []                # task ids that must finish first
+acs: ["AC-01"]          # spec §5 acceptance criteria this task satisfies
 files_hint: ["path/or/dir/the/task/touches"]
 owner: "<owner / TBD lead>"
 estimate: "S"           # S/M/L or hours

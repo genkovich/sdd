@@ -75,4 +75,4 @@ Architect / Tech Lead (drives everything). PM is consulted only on §10 Quality 
 - [`./references/critic.md`](./references/critic.md) — design's delta over the shared critic (F5 floor, F6 = NFR-leak + strawman-ADR + §2-vs-repo, F1 = strategic-vector drift).
 - [`./references/c4-mermaid-syntax.md`](./references/c4-mermaid-syntax.md) — C4Context + C4Container Mermaid cheatsheet for §3/§5.
 - [`./references/ask-examples.md`](./references/ask-examples.md) — design-specific question shapes (strategic-with-ADR-spawn, blast-radius gate, Save-as-OQ follow-up).
-- [`./templates/sad.md`](./templates/sad.md) · [`./templates/adr.md`](./templates/adr.md) · [`./templates/c4.md`](./templates/c4.md) · [`./templates/deployment.md`](./templates/deployment.md) — output scaffolds; inline comments are the per-section generation contract.
+- [`./templates/sad.md`](./templates/sad.md) · [`./templates/adr.md`](./templates/adr.md) · [`./templates/deployment.md`](./templates/deployment.md) — output scaffolds; inline comments are the per-section generation contract. (C4 syntax → [`./references/c4-mermaid-syntax.md`](./references/c4-mermaid-syntax.md).)

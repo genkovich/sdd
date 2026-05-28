@@ -9,7 +9,7 @@
     {
       "name": "sdd",
       "source": "./",
-      "version": "1.4.0",
+      "version": "1.5.0",
       "description": "Spec-Driven Development pipeline: 15 atomic Socratic skills (survey → spec → design → data-model → api → tasks → tests → implement → review → ship) + 6 subagents, each with a per-role model+effort profile, plus a TDD implementation engine with agent-team and dynamic-workflow modes. survey maps an existing codebase OR bootstraps an empty one (level-adaptive foundation session → scaffold the skeleton); every later stage reads the architecture map.",
       "category": "workflow",
       "tags": [

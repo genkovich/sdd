@@ -1,12 +1,12 @@
 # SDD — Spec-Driven Development for Claude Code
 
 A self-contained Claude Code plugin that carries a feature from a one-line idea to
-implemented, tested code through **12 atomic, stack-agnostic skills** and a **TDD
-implementation engine** with agent-team and dynamic-workflow modes.
+**reviewed, verified, shipped** code through **14 atomic, stack-agnostic skills** and a
+**TDD implementation engine**.
 
 Every skill is Socratic (it walks decisions with you, it doesn't dump a wall of output),
 gated (a stage hard-refuses when its prerequisite artifact is missing), and stack-agnostic
-(no language, tracker, or test-tool is hard-coded — the skills detect what your repo uses).
+(no language, tracker, or test tool is hard-coded — the skills detect what your repo uses).
 
 ## Install
 
@@ -15,39 +15,97 @@ gated (a stage hard-refuses when its prerequisite artifact is missing), and stac
 /plugin install sdd@sdd
 ```
 
-Then trigger any skill by name (`/sdd-classify-size <slug>`, `/sdd-specify <slug>`, …) or
-just describe the work in natural language — the descriptions trigger the right skill.
+## Start here
 
-## The pipeline
+**Run `specify` first.** You don't bring a spec — `specify` *creates* it: a short interview
+asks you about the idea (the problem, who it's for, what "done" looks like) and writes
+`spec.md` from your answers. That spec is the seed everything downstream reads.
 
-Artifacts land in `docs/features/<slug>/`. Run the skills in order; each reads the previous
-one's output and refuses if it's missing.
+```text
+/sdd-specify checkout-discounts     ← interviews you, writes the spec
+```
 
-| # | Skill | Produces | Reads |
+From there you walk the backbone in order. Each step reads the previous step's file and
+refuses if it's missing, so you can't skip ahead by accident.
+
+## The flow
+
+There are three kinds of skill. Most of your time is the **backbone** — a straight line you
+walk in order. A few are **utilities** you call whenever you need them. Two **close the loop**
+after the code is written.
+
+```mermaid
+flowchart LR
+    subgraph backbone["BACKBONE — run in order"]
+        S[specify] --> CL[clarify] --> D[design] --> SQ[sequences] --> DM[data-model] --> API[api] --> T[tasks] --> PT[plan-tests] --> IM[implement]
+    end
+    IM --> RV[review] --> SH[ship]
+    subgraph util["UTILITIES — call anytime"]
+        CS[classify-size]
+        GL[glossary]
+        ADR[decide-adr]
+    end
+    SH --> done([shipped: PR + changelog])
+```
+
+### Backbone — the straight line (run in order)
+
+| # | Skill | What it does | Reads → Produces |
 |---|---|---|---|
-| 0 | **classify-size** | `.size` (XS/S/M/L/XL) | the idea |
-| 1 | **specify** | `spec.md` (PRD + acceptance criteria) | the idea, `CONTEXT.md` |
-| 2 | **clarify** | resolved `spec.md` (ambiguities closed/deferred) | `spec.md` |
-| 3 | **glossary** | `CONTEXT.md` (lazy domain glossary) | the spec, the repo |
-| 4 | **design** | `sad.md` (Arc42 + C4 L1/L2) + `adr/*.md` | `spec.md`, `CONTEXT.md` |
-| 5 | **sequences** | `sad.md §6` Mermaid sequence diagrams | `sad.md`, `spec.md` |
-| 6 | **data-model** | `data-model.md` + paired `*.up.sql`/`*.down.sql` | `spec.md`, `sad.md`, sequences |
-| 7 | **api** | `contracts/openapi.yaml` + drift report | `data-model.md`, sequences, `spec.md` |
-| 8 | **tasks** | `tasks/{_epic,tracker,*}.md` + **`tasks.json`** | all of the above |
-| 8a | **decide-adr** | `adr/NNNN-*.md` (post-hoc) | `sad.md`, the decision |
-| 9 | **plan-tests** | `test-plan.md` (AC → tests) | `spec.md`, `data-model.md` |
-| 10 | **implement** | code + tests + wiring, committed per task | `tasks.json` + all artifacts |
+| 1 | **specify** | Interviews you to capture the idea, writes the product spec + acceptance criteria | *your idea* → `spec.md` |
+| 2 | **clarify** | Sweeps the spec for ambiguities (a devil's-advocate pass), closes or defers each | `spec.md` → tightened `spec.md` |
+| 3 | **design** | **Matches the feature to your existing architecture** (see below), writes the Arc42 SAD + C4 + ADRs | `spec.md`, `CONTEXT.md` → `sad.md`, `adr/*` |
+| 4 | **sequences** | Draws the runtime flows as Mermaid sequence diagrams | `sad.md` → `sad.md §6` |
+| 5 | **data-model** | Designs the schema and writes the actual forward+rollback migrations | `spec.md`, `sad.md`, sequences → `data-model.md`, `*.up/down.sql` |
+| 6 | **api** | Derives the OpenAPI contract from the data model + sequences + spec | `data-model.md`, sequences, `spec.md` → `contracts/openapi.yaml` |
+| 7 | **tasks** | Breaks the work into atomic ≤1-day tasks + a `tasks.json` dependency DAG | all of the above → `tasks/*`, **`tasks.json`** |
+| 8 | **plan-tests** | Maps every acceptance criterion to ≥1 test (inline in the spec for XS/S) | `spec.md`, `data-model.md` → `test-plan.md` |
+| 9 | **implement** | The TDD engine: writes a failing test, makes it pass, gates, commits — per task | `tasks.json` + all artifacts → code + tests, committed |
 
-`classify-size` and `glossary` are utilities you can run any time. `decide-adr` fills an ADR
-gap that `tasks` (or a review) flags.
+### Close the loop (after the code is written)
+
+| # | Skill | What it does | Reads → Produces |
+|---|---|---|---|
+| 10 | **review** | An **independent, clean-context** code review of the *whole* change against spec/AC + quality | the diff + `spec.md` → review record, `PASS` / `CHANGES REQUESTED` |
+| 11 | **ship** | **Verifies the feature actually runs** (not just green tests), writes the changelog, opens the PR | the reviewed change → changelog + PR (never auto-merges) |
+
+`review` can bounce back to `implement` if it finds an unmet acceptance criterion. `ship` is the
+end: a reviewed, verified change with a changelog and an open PR — merging to main stays your call.
+
+> **"We test and review, right?"** Yes — in two places. `implement` runs a **per-task gate**
+> (unit + integration + lint + vet) on every task as it goes, so each task is green before it's
+> committed. Then `review` does the **independent, whole-change** code review a human reviewer
+> would do on the PR, and `ship` **runs the feature for real** against its acceptance criteria.
+> Tests-pass happens continuously inside `implement`; the cross-cutting review + real-world
+> verification are the explicit `review` and `ship` steps.
+
+### Utilities — call whenever you need them (not part of the line)
+
+- **classify-size** — size the feature XS/S/M/L/XL (writes `.size`); later skills read it to decide MVP vs full depth. Run it at the start, or any time scope changes.
+- **glossary** — capture a domain term in `CONTEXT.md` with a definition. Run it whenever a new term shows up; `design` and the spec read the glossary.
+- **decide-adr** — write a standalone ADR after the fact, when `tasks` (or a review) flags a decision that needs recording but wasn't captured during `design`.
+
+## Where the spec comes from
+
+It's not an input you have to write — **`specify` produces it.** Its interview front asks 3–5
+questions about the problem, the users, and what success looks like, then drafts the spec,
+validates each acceptance criterion with you, and runs a clean-context critic before writing
+`spec.md`. The idea is the input; the spec is the output.
+
+## Where architecture matching happens
+
+In **`design`**. Before it writes a line of the architecture document, `design` runs a
+**brownfield Explore subagent** that scans your existing codebase — module boundaries, the
+patterns you already use, where similar features live — and matches the new feature to that
+reality. So the SAD describes *your* system extended, not a greenfield design in a vacuum.
+Decisions that are expensive to reverse cross a blast-radius gate and become ADRs.
 
 ## The implementation engine
 
-`implement` reads `tasks.json` (emitted by `tasks`), builds a dependency DAG, and runs a
-**TDD cycle per task**: `SELECT → RED → GREEN → REFACTOR → GATE → COMMIT`. It writes a failing
-test first, proves the failure is for the right reason, writes the minimal code to pass, keeps
-refactors green, runs unit + (when available) integration + lint + vet gates, and commits with
-`SDD-Task` / `SDD-AC` trailers.
+`implement` reads `tasks.json`, builds a dependency DAG, and runs a **TDD cycle per task** —
+`SELECT → RED → GREEN → REFACTOR → GATE → COMMIT`. It writes a failing test first, proves the
+failure is for the right reason, writes the minimal code to pass, keeps refactors green, runs
+the gate, and commits with `SDD-Task` / `SDD-AC` trailers.
 
 Three execution modes, chosen automatically from settings + DAG shape (with graceful fallback):
 
@@ -55,13 +113,12 @@ Three execution modes, chosen automatically from settings + DAG shape (with grac
 - **Agent team** (`team_mode: true`) — `sdd-test-author` → `sdd-implementer` → `sdd-reviewer`
   over the DAG, coordinated through a shared task list, one git worktree per agent.
 - **Dynamic workflow** (`workflow_mode: auto`) — a generated `Workflow` pipeline that fans out
-  independent tasks up to a parallelism cap, each task a `write-test → implement → verify →
-  review → commit` chain.
+  independent tasks up to a parallelism cap.
 
 ### Configuration — `.claude/sdd.local.md`
 
 `implement` lazy-creates this per-project settings file (YAML frontmatter) on first run with
-safe defaults. Edit it to change behaviour:
+safe defaults; edit it to change behaviour:
 
 ```yaml
 tdd: true                  # enforce red→green→refactor
@@ -80,33 +137,37 @@ cmd_test_unit: ""          # empty = autodetect (escape hatch)
 cmd_test_integration: ""
 cmd_lint: ""
 cmd_vet: ""
-model_test_author: inherit
-model_implementer: inherit
-model_reviewer: inherit
 ```
 
 Command detection is a stack-agnostic cascade: settings override → Makefile targets →
 `package.json` scripts → language manifests (`go.mod`, `Cargo.toml`, `pyproject.toml`, …) →
-Docker probe for the integration tier. Nothing is hard-coded to one language.
+Docker probe for the integration tier.
 
-## Quick start
+## Quick start (idea → shipped)
 
 ```text
-/sdd-classify-size checkout-discounts
-/sdd-specify checkout-discounts
-/sdd-clarify checkout-discounts
-/sdd-design checkout-discounts
-/sdd-data-model checkout-discounts
-/sdd-api checkout-discounts
-/sdd-tasks checkout-discounts
-/sdd-implement checkout-discounts
+/sdd-classify-size checkout-discounts   # optional: size it first
+/sdd-specify       checkout-discounts   # ← start here (interview → spec)
+/sdd-clarify       checkout-discounts
+/sdd-design        checkout-discounts
+/sdd-sequences     checkout-discounts
+/sdd-data-model    checkout-discounts
+/sdd-api           checkout-discounts
+/sdd-tasks         checkout-discounts
+/sdd-plan-tests    checkout-discounts
+/sdd-implement     checkout-discounts
+/sdd-review        checkout-discounts   # independent review of the whole change
+/sdd-ship          checkout-discounts   # verify it runs, changelog, PR
 ```
+
+Artifacts land in `docs/features/<slug>/`.
 
 ## Repository layout
 
 ```
 .claude-plugin/   plugin.json + marketplace.json (self-marketplace)
 agents/           sdd-test-author, sdd-implementer, sdd-reviewer
+scripts/          validate_plugin.py (CI: manifest name/version/description + frontmatter)
 skills/_shared/   canonical socratic-loop / critic / size-matrix / ask-style (referenced, not duplicated)
 skills/<name>/    SKILL.md spine + references/ (heavy detail) + templates/ (output scaffolds)
 ```

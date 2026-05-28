@@ -9,8 +9,8 @@
     {
       "name": "sdd",
       "source": "./",
-      "version": "1.0.0",
-      "description": "Spec-Driven Development pipeline: 12 atomic Socratic skills (size → spec → design → data-model → api → tasks → tests) plus a TDD implementation engine with agent-team and dynamic-workflow modes.",
+      "version": "1.1.0",
+      "description": "Spec-Driven Development pipeline: 14 atomic Socratic skills (idea → spec → design → data-model → api → tasks → tests → implement → review → ship) plus a TDD implementation engine with agent-team and dynamic-workflow modes.",
       "category": "workflow",
       "tags": [
         "sdd",

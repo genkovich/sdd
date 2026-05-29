@@ -31,7 +31,7 @@ Whoever owns product direction (PM / lead / the solo maintainer). They decide wh
 
 ## Protocol
 
-1. **Lazy-create.** If `docs/roadmap.md` is absent, copy [`./templates/roadmap.md`](./templates/roadmap.md) there (the non-commitment disclaimer + the Now / Next / Later / Shipped sections). One file, repo root `docs/`.
+1. **Lazy-create.** If `docs/roadmap.md` is absent, copy [`./templates/roadmap.md`](./templates/roadmap.md) there (the non-commitment disclaimer + the Now / Next / Later / Shipped sections, **each rendered as a table** — one row per item). One file, repo root `docs/`.
 2. **The three horizons — content type changes per horizon** (this is the load-bearing rule, not feature-everywhere):
    - **Now** — committed work whose `docs/features/<slug>/` spec exists and is being built. Item = outcome one-liner + link to the feature folder + a status (designing / implementing / review). Promoted here only after `specify` (it's spec'd + committed).
    - **Next** — problems/opportunities deliberately **NOT yet spec'd** — an outcome/problem one-liner + a RICE score, no feature folder yet. This is the prioritized candidate pool.

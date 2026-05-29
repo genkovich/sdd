@@ -12,11 +12,13 @@ updated_at: "<YYYY-MM-DD>"
 
 ## Now — committed · spec'd · in progress
 
-<!-- instruction: features whose docs/features/<slug>/ spec exists and is being built. One line each:
-the OUTCOME (the why), a link to the feature folder, and a status. No spec detail — link, don't duplicate.
-specify promotes an item here; ship moves it to Shipped. -->
+<!-- instruction: features whose docs/features/<slug>/ spec exists and is being built. One ROW each:
+the OUTCOME (the why), a link to the feature folder, and a status (designing / implementing / review).
+No spec detail — link, don't duplicate. specify promotes an item here; ship moves it to Shipped. -->
 
-- **<outcome — the problem this solves>** — [<slug>](./features/<slug>/) — _implementing_
+| Outcome (the why) | Feature | Status |
+|---|---|---|
+| <outcome — the problem this solves> | [<slug>](./features/<slug>/) | implementing |
 
 ## Next — problems / opportunities (deliberately not yet spec'd)
 
@@ -30,13 +32,17 @@ RICE = (Reach × Impact × Confidence) ÷ Effort — Impact 3/2/1/0.5/0.25, Conf
 
 ## Later — outcomes / themes (directional)
 
-<!-- instruction: coarse, directional one-liners only. No features, no scores, no dates. -->
+<!-- instruction: coarse, directional one-liners only — one ROW each. No features, no scores, no dates. -->
 
-- <outcome or theme we expect to pursue, eventually>
+| Outcome / theme (directional) |
+|---|
+| <outcome or theme we expect to pursue, eventually> |
 
 ## Shipped
 
-<!-- instruction: ship moves delivered items here — date + outcome + link to the feature + the PR/changelog.
-Keeps Now honest and records what landed. -->
+<!-- instruction: ship moves delivered items here — one ROW each: date + outcome + link to the feature
++ the PR/changelog. Keeps Now honest and records what landed. -->
 
-- <YYYY-MM-DD> — **<outcome>** — [<slug>](./features/<slug>/) ([PR](<url>))
+| Date | Outcome | Feature | PR |
+|---|---|---|---|
+| <YYYY-MM-DD> | <outcome> | [<slug>](./features/<slug>/) | [PR](<url>) |

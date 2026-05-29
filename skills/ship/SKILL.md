@@ -35,7 +35,7 @@ The implementer (drives) + the reviewer who signed off in `review`.
 3. **Prepare the PR.** Ensure the work is on a feature branch (not the default branch). Draft the PR body from [`./templates/pr-body.md`](./templates/pr-body.md): summary, the AC it satisfies, links to spec/sad/ADRs, the `SDD-Task` commit list, the test + verification evidence, and any migration/rollback note.
 4. **Detect the forge + propose the PR command.** Inspect the remote: `github.com` → `gh pr create`; `gitlab.com`/self-hosted GitLab → `glab mr create`; otherwise print the branch + body for manual creation. **Propose** the command — do not run a push/PR to a shared remote without the user's go-ahead, and never merge to main.
 5. **Update the roadmap.** Move this feature's item to **Shipped** in `docs/roadmap.md` (via `roadmap`) — date + outcome + link to the feature folder + the PR/changelog — and remove it from **Now**. This is the anti-drift hook: delivery itself keeps the roadmap current. (No roadmap yet → skip; it's optional.)
-6. **Summary.** Report: verification result (verified-working / what was deferred and why), the changelog path, the PR command (or URL if the user ran it), the roadmap update, and the final state of the feature.
+6. **Summary (terminal handoff).** **Emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) (terminal variant) — *What I did* (verification result: verified-working / what was deferred and why; the roadmap update) + *Review* (the changelog path + the PR) + *Run next* = **Done**: the PR command (or URL if the user ran it) — merging to main is your call; there is no `/sdd` successor.
 
 ## Definition of Done
 

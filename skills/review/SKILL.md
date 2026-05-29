@@ -35,7 +35,7 @@ Tech Lead / a reviewer who did **not** write the code (independence is the point
 3. **Collect cited findings.** Each finding cites `file:line` + the AC/contract it touches. Drop uncited findings (per the critic discipline). A clean review returns `REVIEW_CLEAN`.
 4. **Resolve each finding with the user** via `AskUserQuestion`: **Fix now** (hand the actionable finding back to `implement`/the author as a follow-up task — re-enter the TDD loop for it) / **Defer** (record in spec §8 Open questions with owner + due) / **Not an issue** (the reviewer misread; record why). Never ship an unresolved stage-1 (AC) finding.
 5. **Write the review record.** `docs/features/<slug>/_review/review-<date>.md`: scope (diff stat), findings with verdicts, and the gate result (`PASS` / `CHANGES REQUESTED`).
-6. **Verdict + next.** `PASS` → next is **`/clear`, then `ship <slug>`** (fresh context per stage — `ship` re-reads the reviewed change from disk). `CHANGES REQUESTED` → loop back to `implement` for the fixes (stay in context — you're iterating), then re-review the changed surface.
+6. **Verdict + next.** Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) — *What I did* + *Review* (`_review/review-<date>.md`) + *Run next*: `PASS` → (`/clear`, then `/sdd-ship <slug>`); `CHANGES REQUESTED` → `/sdd-implement <slug>` for the fixes (**no `/clear`** — stay in context to iterate), then re-review the changed surface.
 
 ## Definition of Done
 

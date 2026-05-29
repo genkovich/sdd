@@ -42,7 +42,7 @@ PM or Tech Lead (driver of the intake phase). An architect may escalate S → M 
 4. **Confirm with the user.** `AskUserQuestion`: «Classifying as `<size>` (<one-line rationale>). Lock it in?» — `Yes` / `No, I want <X>` / `Reclassify`.
 5. **Write `.size`.** One line, plain text, only `XS`/`S`/`M`/`L`/`XL` — no comments, no frontmatter. `docs/features/<slug>/.size`.
 6. **Sync with spec frontmatter (if present).** If `docs/features/<slug>/spec.md` exists, check its `feature_size:` field. Same value → OK. Conflict → WARN and resolve with the user (update one side). Missing → suggest adding `feature_size: <size>`.
-7. **Propose commit.** `size: <slug> classified as <size>` (or fold into the intake commit if a wrapper called this).
+7. **Propose commit + handoff.** `size: <slug> classified as <size>` (or fold into the intake commit if a wrapper called this). Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) (utility variant) — *What I did* + *Review* (`.size`) + *Run next*: resume your backbone stage (e.g. `/sdd-specify <slug>`); `/clear` optional.
 
 ## Definition of Done
 

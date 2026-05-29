@@ -39,7 +39,7 @@ Whoever owns product direction (PM / lead / the solo maintainer). They decide wh
 3. **Capture a candidate** → add to **Next** (or Later) as an outcome/problem, RICE-scored. **Never** write a solution/feature spec here — that's `specify`'s job when the item is pulled into Now.
 4. **Prioritize (RICE).** For Next candidates, score `RICE = (Reach × Impact × Confidence) ÷ Effort` (Impact 3/2/1/0.5/0.25; Confidence 100/80/50%; Effort in person-weeks) → one sortable number; order Next by it descending. RICE is a guide, not a gate — the owner can override. → [`./templates/roadmap.md`](./templates/roadmap.md) shows the columns.
 5. **Promote / demote.** Move items between horizons as certainty changes. Promote Next→Now only when the item is about to be `specify`'d (committed). Demote freely; far-out items stay coarse.
-6. **Render / write + commit.** Update `docs/roadmap.md`, set `updated_at`, propose commit `roadmap: <what changed>`.
+6. **Render / write + commit + handoff.** Update `docs/roadmap.md`, set `updated_at`, propose commit `roadmap: <what changed>`. Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) (utility variant) — *What I did* + *Review* (`docs/roadmap.md`) + *Run next*: resume your backbone stage; `/clear` optional.
 
 ## Sync hooks (delivery keeps it current — anti-drift)
 

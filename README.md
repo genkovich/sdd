@@ -36,11 +36,13 @@ And **`specify` *creates* the spec** from a short interview — you bring the id
 From there you walk the backbone in order. Each step reads the previous step's file and
 refuses if it's missing, so you can't skip ahead by accident.
 
-**`/clear` between stages.** Each stage runs gated and **re-reads its inputs from disk**, so it
-needs no carryover from the previous one — every skill ends by naming the next command *after a
-`/clear`*. Clearing between gates keeps the context small and stops one stage's chatter from
-drifting into the next. (Loop-backs are the exception — when `review` bounces back to `implement`,
-you stay in context to iterate.)
+**Every stage ends with a copy-ready handoff block** ([`skills/_shared/handoff.md`](./skills/_shared/handoff.md)):
+*What I did* + *Review before continuing* (links to the files it wrote, so you can eyeball them at the
+gate) + *Run next* — **`/clear`**, then the next `/sdd-…` command in a fenced block you copy in one
+click. The `/clear` matters because each stage is gated and **re-reads its inputs from disk**, so it
+needs no carryover — clearing keeps the context small and stops one stage's chatter from drifting into
+the next. (Loop-backs are the exception — when `review` bounces back to `implement`, you stay in
+context to iterate; utilities make `/clear` optional.)
 
 ## The flow
 
@@ -322,7 +324,7 @@ Artifacts land in `docs/features/<slug>/`.
 .claude-plugin/   plugin.json + marketplace.json (self-marketplace)
 agents/           explorer, test-author, implementer, reviewer, critic, devils-advocate, researcher, strategist, analyst
 scripts/          validate_plugin.py (CI: manifest name/version/description + frontmatter)
-skills/_shared/   canonical socratic-loop / critic / size-matrix / ask-style / interview-depth / diagram-presentation / surfaces (referenced, not duplicated)
+skills/_shared/   canonical socratic-loop / critic / size-matrix / ask-style / interview-depth / diagram-presentation / surfaces / handoff (referenced, not duplicated)
 skills/<name>/    SKILL.md spine + references/ (heavy detail) + templates/ (output scaffolds)
 ```
 

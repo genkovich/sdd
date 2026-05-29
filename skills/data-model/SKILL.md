@@ -56,7 +56,7 @@ Backend Lead.
 5. **PK strategy.** UUID v7 app-side by default; confirm only if an AC demands a different PK (e.g. a lookup slug).
 6. **Columns + constraints** per entity: bounded `VARCHAR(N)` from AC validation limits; unbounded text only for URLs/long text; the opaque-JSON type only for opaque payloads (one-line justification in the Notes column); `created_at` timestamp `NOT NULL DEFAULT now()`, **no `updated_at`**; `<!-- TBD -->` where honestly undecided.
 7. **Indexes per query.** Each sequence note becomes one index candidate; discard candidates with no concrete query; print a "Query it serves" justification column.
-8. **Write `docs/features/<slug>/data-model.md`** from [`./templates/data-model.md`](./templates/data-model.md): ER Mermaid (clean ordered block) + entity tables per aggregate + indexes table.
+8. **Write `docs/features/<slug>/data-model.md`** from [`./templates/data-model.md`](./templates/data-model.md): ER Mermaid (clean ordered block) + entity tables per aggregate + indexes table. **Validate the `erDiagram` per [`../_shared/mermaid-check.md`](../_shared/mermaid-check.md)** (render-parse with `mmdc` if available, else the structural lint — valid cardinality glyphs + `type name` attribute lines; fix before continuing).
 9. **Generate migration files** in the repo's migrations folder, following the detected convention:
    - **Greenfield:** one create-`<entity>` `.up.sql` + `.down.sql` per entity (or per small aggregate). `IF NOT EXISTS` everywhere; `ON CONFLICT DO NOTHING` on seeds.
    - **Existing-table index:** use the concurrent, non-blocking form, and warn that the file must contain only that one statement **if your migration tool wraps each file in a transaction** (e.g. golang-migrate).

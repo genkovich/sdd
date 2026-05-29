@@ -34,7 +34,7 @@ Tech Lead.
 
 1. **Prereq check (hard).** spec.md + sad.md + ≥1 Accepted ADR, else refuse with the missing one named.
 2. **Read upstream directly.** Each task will link back to the section it derives from — no paraphrase layer.
-3. **Scaffold output.** `docs/features/<slug>/tasks/`: `_epic.md` (summary + links), `tracker.md` (status table), one `<task-slug>.md` per task. Templates → [`./templates/_epic.md`](./templates/_epic.md), [`./templates/tracker.md`](./templates/tracker.md), [`./templates/task.md`](./templates/task.md).
+3. **Scaffold output.** `docs/features/<slug>/tasks/`: `_epic.md` (summary + links + the DAG `flowchart`), `tracker.md` (status table), one `<task-slug>.md` per task. Templates → [`./templates/_epic.md`](./templates/_epic.md), [`./templates/tracker.md`](./templates/tracker.md), [`./templates/task.md`](./templates/task.md). **Validate the `_epic.md` `flowchart` per [`../_shared/mermaid-check.md`](../_shared/mermaid-check.md)** (render-parse with `mmdc` if available, else the structural lint; fix before committing).
 4. **Identify work-items by layer.** Generic, stack-agnostic layers: `migration` (DB) · `domain` (entities/invariants) · `infra` (repo/persistence) · `app` (service/use-case) · `ports` (handler/API) · `tests` · `wiring` (composition/DI) · `docs`. List 8–20 items by size (see [`../_shared/size-matrix.md`](../_shared/size-matrix.md)).
 5. **Atomic check.** Each task ≤1 working day. More → split. A change >~500 LOC is a smell that the task is too wide.
 6. **Dependency graph.** For each task, `deps: [...]`. Identify parallel branches (e.g. the migration and a pure-domain task can start together). This graph IS the DAG `implement` will topologically sort into phases.

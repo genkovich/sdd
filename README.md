@@ -36,6 +36,12 @@ And **`specify` *creates* the spec** from a short interview — you bring the id
 From there you walk the backbone in order. Each step reads the previous step's file and
 refuses if it's missing, so you can't skip ahead by accident.
 
+**`/clear` between stages.** Each stage runs gated and **re-reads its inputs from disk**, so it
+needs no carryover from the previous one — every skill ends by naming the next command *after a
+`/clear`*. Clearing between gates keeps the context small and stops one stage's chatter from
+drifting into the next. (Loop-backs are the exception — when `review` bounces back to `implement`,
+you stay in context to iterate.)
+
 ## The flow
 
 There are three kinds of skill. Most of your time is the **backbone** — a straight line you

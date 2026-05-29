@@ -48,6 +48,10 @@ Rules for filling it:
   skill on a bare «Next: X».
 - **What I did** — concrete and self-contained: name the files written and the proposed commit
   message, so the user doesn't scroll up to reconstruct it.
+- **State the size used.** *What I did* names the `feature_size` the stage worked at — «size M (from
+  `.size`)»; if the stage had to **default** because `.size` was missing, say so loudly — «size M
+  (default — no `.size`; run `/sdd-classify-size <slug>`)» — so a missing size surfaces at this gate,
+  not three stages later. (`specify` establishes `.size` at the start, so this should be rare.)
 - **Review before continuing** — list **every artifact this stage wrote or changed**, each as a real
   `docs/features/<slug>/…` path (or repo-root path like `docs/architecture-map.md`) plus a one-liner
   on what to eyeball. This *is* the per-gate review checklist.

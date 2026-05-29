@@ -29,12 +29,12 @@ Tech Lead drives; the engine runs the cycle. The three subagents ship with the p
 - `<slug>` — feature slug.
 - **Gate (hard refuse):** `docs/features/<slug>/tasks.json`. Missing → «run `tasks <slug>` first».
 - Read for context (the agents read these directly, not via paraphrase): `spec.md` (AC), `data-model.md` + the **staged** migrations under `docs/features/<slug>/migrations/` (a `layer: migration` task **promotes** these into the live `migrations/` tree — see [`./references/inputs.md`](./references/inputs.md)), `contracts/openapi.yaml`, `test-plan.md`, `sad.md`, Accepted `adr/`.
-- Settings: `.claude/sdd.local.md` (lazy-created with defaults on first run) → [`./references/settings.md`](./references/settings.md).
+- Settings: `.claude/sdd.local.md` (auto-created with documented defaults if absent — normally by `specify` at the backbone start; `implement` creates it too if you jump straight here) → [`./references/settings.md`](./references/settings.md).
 
 ## Protocol (10 steps)
 
 1. **Preconditions.** Verify `tasks.json` exists and parses; load the upstream artifacts list. Detail → [`./references/inputs.md`](./references/inputs.md).
-2. **Settings.** Read `.claude/sdd.local.md`; if absent, lazy-create it with the documented defaults and patch `.gitignore` (`.claude/*.local.md`, `.worktrees/`). → [`./references/settings.md`](./references/settings.md).
+2. **Settings.** Read `.claude/sdd.local.md`; if absent, auto-create it with the documented defaults (frontmatter + the «What each key does» body, self-documenting) and patch `.gitignore` (`.claude/*.local.md`, `.worktrees/`) — the same template `specify` writes. → [`./references/settings.md`](./references/settings.md).
 3. **Detect commands.** Run the stack-agnostic cascade (settings override → Makefile → package scripts → language manifests → Docker probe for the integration tier) to resolve unit / integration / lint / vet commands. Print what was detected. → [`./references/command-detection.md`](./references/command-detection.md).
 4. **Build the DAG.** Parse `tasks.json`, validate `deps` is acyclic, topologically sort into phases (Kahn). Compute `task_count`, `longest_chain`, `parallel_width`. Mark serialization lanes (`layer: migration`; tasks with overlapping `files_hint`).
 5. **Pick the mode.** Run the decision tree (below; full form → [`./references/decision-tree.md`](./references/decision-tree.md)). Apply the guards.

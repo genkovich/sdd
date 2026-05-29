@@ -1,4 +1,5 @@
-# Plugin-local settings (per-project, lazy-created by the implement skill)
+# Plugin-local settings (per-project, auto-created with documented defaults by the pipeline —
+# normally `specify` at the backbone start, or `implement`). The glob covers sdd.local.md.
 .claude/*.local.md
 
 # Implementation engine worktrees

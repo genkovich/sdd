@@ -61,4 +61,4 @@ Same skill, same template, smaller content footprint.
 
 ## Wrappers / gates
 
-A skill that reads `.size` skips heavy sub-artifacts for XS/S (separate test-plan, deployment view, full ADR sweep). Absent `.size` → default to **M** (full set), the safe over-production default.
+A skill that reads `.size` skips heavy sub-artifacts for XS/S (separate test-plan, deployment view, full ADR sweep). `specify` **establishes `.size` at the start of the backbone** (it classifies + writes it if absent), so later stages normally read a real size. A stage that *still* finds none (e.g. `design` run standalone, before `specify`) defaults to **M** (the safe over-production default) **and says so in its handoff** — never a silent assumption.

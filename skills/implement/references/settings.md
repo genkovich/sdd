@@ -2,27 +2,32 @@
 
 The engine is configured per-project by a plugin-settings file with YAML frontmatter. On first run, **lazy-create** it with the defaults below and tell the user where it is; on later runs, read it.
 
-> **Plugin-wide, not implement-only.** Most keys below configure the `implement` engine, but a few are read by **other skills too**. `interview_depth` is read by the Q&A skills (`specify` / `clarify` / `design`) to pre-select the depth dial. Those skills read the file **if it exists**; if it's absent they fall back to their own default (medium) and do **not** create the file just to read the key — there is no ordering dependency on `implement` having run first.
+> **Plugin-wide, not implement-only.** Most keys below configure the `implement` engine, but a few are read by **other skills too**. `interview_depth` is read by the Q&A skills (`specify` / `clarify` / `design`) to pre-select the depth dial. The file is **auto-created with documented defaults the first time any skill needs it** — normally `specify` at the start of the backbone — so the rest of the pipeline finds a real file instead of silently falling back. If for any reason it's still missing, a reader falls back to its own default (medium): there is **no hard ordering dependency** on `implement` having run first.
 
-## Lazy-create on first run
+## Auto-create when absent
 
-1. If `.claude/sdd.local.md` is absent, write it with the default frontmatter (below) + a one-line markdown body explaining it.
-2. Patch `.gitignore` (create if absent) to include `.claude/*.local.md` and `.worktrees/` — these are per-developer and must not be committed.
-3. Tell the user: «Wrote `.claude/sdd.local.md` with defaults — edit it to change how `implement` behaves.»
+Created **automatically** the first time a skill needs it — normally `specify` at the start of the backbone (it ensures the file alongside establishing `.size`), or `implement` if you jump straight to it. **Idempotent:** if the file already exists it is read, never overwritten.
 
-## Default frontmatter
+1. If `.claude/sdd.local.md` is absent, write it with **the documented frontmatter below, followed by the «What each key does» section as the file's markdown body** — so the file is self-documenting: every key carries its default, its allowed values, and a plain explanation inline, with no need to open the plugin docs.
+2. **Patch `.gitignore`** (create it if absent) to include `.claude/*.local.md` and `.worktrees/` — these are per-developer and must not be committed. (The `.claude/*.local.md` glob already covers `sdd.local.md`; don't add a redundant explicit line.)
+3. Tell the user: «Wrote `.claude/sdd.local.md` with documented defaults — edit it to change how the pipeline behaves.»
+
+## The documented frontmatter
+
+<!-- This block is written verbatim to the top of `.claude/sdd.local.md`; the «What each key does»
+     section below becomes the file's body. Keep the inline comments — they list the allowed values. -->
 
 ```yaml
 interview_depth: medium    # easy | medium | hard — plugin-wide default for specify/clarify/design (see _shared/interview-depth.md)
 tdd: true                  # enforce red→green→refactor
 team_mode: false           # true → agent team via TeamCreate
 workflow_mode: auto        # auto → dynamic Workflow; off → never
-max_parallel_agents: 3
+max_parallel_agents: 3     # integer ≥1 — fan-out cap for team/workflow modes (1 = sequential)
 isolation: worktree        # worktree | inplace (parallel>1 ⇒ forces worktree)
 stop_on_red: true          # halt on a red that survives escalation, vs drop-and-continue
-max_red_retries: 3
-gate_lint: true
-gate_vet: true
+max_red_retries: 3         # integer ≥1 — RED→GREEN attempts before escalation
+gate_lint: true            # true | false — include lint in the per-task gate
+gate_vet: true             # true | false — include vet / static-analysis in the per-task gate
 require_integration: auto  # auto | always | never (Docker-probed)
 auto_commit: per_task      # per_task | per_phase | off
 branch_strategy: feature   # feature | current

@@ -263,9 +263,12 @@ Short version: if a run feels under-reasoned, set `CLAUDE_CODE_EFFORT_LEVEL`.
 
 ### Configuration — `.claude/sdd.local.md`
 
-`implement` lazy-creates this per-project settings file (YAML frontmatter) on first run with
-safe defaults; edit it to change behaviour. One key is **plugin-wide** — `interview_depth` is read
-by the Q&A skills (`specify` / `clarify` / `design`) to pre-select the depth dial; the rest configure
+The pipeline **auto-creates** this per-project settings file (YAML frontmatter) with **documented
+defaults** the first time a skill needs it — normally `specify` at the start — and adds it to
+`.gitignore` (it's per-developer). The file is **self-documenting**: every key carries its default,
+its allowed values, and a one-line explanation inline. Edit it to change behaviour. One key is
+**plugin-wide** — `interview_depth` is read by the Q&A skills (`specify` / `clarify` / `design`) to
+pre-select the depth dial; the rest configure
 the `implement` engine:
 
 ```yaml

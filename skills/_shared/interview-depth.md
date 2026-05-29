@@ -28,7 +28,7 @@ A consuming skill resolves the level once, at the top of its run, in this preced
    - **medium**.
    The user can always override per run — the saved default only pre-selects the recommendation; it never skips the question (unless `--depth=` was passed).
 
-`interview_depth` is a **plugin-wide** setting (documented with the rest in [`../implement/references/settings.md`](../implement/references/settings.md)), not implement-only. A skill reads it if the file is present; if the file is absent it simply defaults the question to medium — there is **no hard dependency** on `implement` having run first, and the skill never creates the settings file just to read this key.
+`interview_depth` is a **plugin-wide** setting (documented with the rest in [`../implement/references/settings.md`](../implement/references/settings.md)), not implement-only. The settings file is **auto-created with documented defaults the first time a skill needs it** — normally `specify` at the start of the backbone — so later Q&A skills read a real file; a reader that still finds it missing defaults the question to medium. There is **no hard dependency** on `implement` having run first (the auto-create is the same documented template wherever it fires).
 
 The opening question is also where the skill states what the level will *do* to this run («easy → I'll decide the reversible calls myself and list my assumptions; hard → I'll walk every decision and run the full analysis suite»), so the user picks with eyes open.
 

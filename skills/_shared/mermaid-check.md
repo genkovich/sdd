@@ -33,8 +33,8 @@
 ## Per-type gotchas (the usual render failures)
 
 - **C4** (`C4Context` / `C4Container`): it's `Container_Boundary` / `System_Boundary` (NOT `Container_Bondary`); declare every `Person(...)` / `System(...)` / `Container(...)` / `ContainerDb(...)` **before** any `Rel(from, to, "label")` that uses its id; ids have no spaces; `Rel` needs the quoted label arg.
-- **sequenceDiagram**: declare `participant X as Display Name`, then refer to `X`; keep `alt … else … end` / `loop … end` / `opt … end` balanced; `Note over X,Y: text`; actors with spaces need an alias.
-- **erDiagram**: `ENTITY ||--o{ OTHER : "label"`; attribute lines are `type name` inside `ENTITY { … }`; cardinality glyphs must be valid (`||--o{`, `}o--||`, …).
+- **sequenceDiagram**: declare `participant X as Display Name`, then refer to `X`; keep `alt … else … end` / `loop … end` / `opt … end` balanced; `Note over X,Y: text`; actors with spaces need an alias. **No `;` in message/Note text** — Mermaid treats `;` as a statement separator, so `Note over R,DB: commit; any error rolls back` parses the part after `;` as a broken new message (a real bug this check caught). Avoid **Unicode arrows (`→`)** in text (use words or `-->`), and put **no trailing `%%` inline comment** on a message line (`%%` must start its own line).
+- **erDiagram**: `ENTITY ||--o{ OTHER : "label"`; attribute lines are `type name` inside `ENTITY { … }`; cardinality glyphs must be valid (`||--o{`, `}o--||`, …). The key class is `PK` / `FK` / `UK` only — **`PK_FK` is invalid** (use `PK, FK`, or `PK "FK to users"` as a comment; another real bug this check caught).
 - **flowchart**: `flowchart LR` (or `TD`) + `A[label] --> B{decision}`; match bracket shapes (`[]` `()` `{}`); a node label with special chars needs quotes `A["a: b"]`.
 
 ## Where each skill calls this

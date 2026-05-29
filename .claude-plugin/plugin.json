@@ -1,6 +1,6 @@
 {
   "name": "sdd",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "Spec-Driven Development for Claude Code: 16 atomic, stack-agnostic skills + 9 subagents that carry a feature from idea → spec → design → data-model → API → tasks → tests → implement → review → ship, plus a TDD implementation engine and a living roadmap above the per-feature flow. Start with `survey` (maps an existing codebase or bootstraps an empty one), walk the gated backbone — each stage reads the previous artifact and hard-refuses if missing — and keep `docs/roadmap.md` (Now/Next/Later, outcome-altitude, never dates) in sync as `specify` promotes a feature to Now and `ship` moves it to Shipped. The Q&A skills are depth-tunable (easy/medium/hard — decide-for-me vs. interrogate-me-with-trade-offs); the ideation analyses run as named subagents (researcher/strategist/analyst/devil's-advocate) gated by that dial; diagrams are presented in prose and written to file (never raw Mermaid dumped to the terminal); and every acceptance criterion is covered end-to-end.",
   "author": {
     "name": "Kyrylo Genkov",

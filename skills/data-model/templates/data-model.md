@@ -26,7 +26,8 @@ erDiagram
 
 <!-- instruction: one subsection per entity, grouped by aggregate root. Types are written in
 your target database's vocabulary (the examples below use Postgres-style names; substitute your
-DB's equivalent). created_at only — no updated_at unless explicitly justified. -->
+DB's equivalent). The examples are ILLUSTRATIVE, not mandates — PK type, audit columns
+(created_at / updated_at / none), and constraint usage all follow the REPO's conventions. -->
 
 ### `<entity>`
 
@@ -41,7 +42,8 @@ DB's equivalent). created_at only — no updated_at unless explicitly justified.
 **Access patterns:** <pattern> → index `<idx_name>` on `<columns>`.
 **Constraints:** UNIQUE on `<...>`; FK → `<other>(id)`.
 
-<!-- Why: business logic lives in code. The DB carries only UNIQUE / NOT NULL / FK / DEFAULT now() / indexes. No CHECK, no triggers, no business-literal defaults. -->
+<!-- The constraint set (UNIQUE / NOT NULL / FK / DEFAULT / CHECK / triggers) follows the REPO's
+conventions — match what the codebase already does; data-model neither imposes nor forbids a style. -->
 
 ## Indexes
 

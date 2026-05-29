@@ -51,7 +51,7 @@ implement must conform to. -->
 - **Error handling:** <pattern> — `<file:line>`
 - **IDs:** <pattern> — `<file:line>`
 - **Persistence / DB access:** <pattern> — `<file:line>`
-- **Migrations:** <naming + tool> — `<file>` (also see `.claude/rules/migrations.md` if present)
+- **Migrations:** <naming + tool> — `<file>` (the convention `data-model` detects and follows)
 - **Tests:** <unit/integration style + harness> — `<file:line>`
 - **Inter-module communication:** <direct call / events / HTTP> — `<file:line>`
 

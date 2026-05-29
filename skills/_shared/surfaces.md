@@ -113,6 +113,16 @@ component-tree, no design-token doc, no screen/wireframe artifact (that would be
 UI-design pipeline — out of scope). The `ui` task layer + the UI-architecture ADR + the frontend
 test tiers + the UI sequence flows are the whole of the frontend footprint.
 
+## Reuse the existing UI foundation (don't reinvent)
+
+A `ui`-surface feature **composes and extends the design system the repo already has** — it does not hand-roll new styles, tokens, or primitives that duplicate existing ones. `survey` inventories that foundation in `architecture-map.md` **§Frontend / UI foundation** (component library / design system, design tokens, styling approach, shared primitives, the closest UI precedent); `design` / `tasks` / `implement` / `review` **read it and reuse**:
+
+- a new screen is built from the **existing components + tokens + styling approach**, modelled on the closest existing screen (the UI precedent);
+- a **new** component is justified only when no existing primitive fits — and it's built in the repo's styling approach, not a second one;
+- design tokens (colors / spacing / typography) come from the repo's token source, never re-declared inline.
+
+This is the frontend echo of the backend's «match the repo's conventions + copy the closest precedent» — the same reuse discipline, applied to UI. A `ui` task that recreates an existing Button/Card/modal, or introduces a second styling system, is the anti-pattern this exists to stop.
+
 ## The frontend test tiers (testing-trophy provenance)
 
 The component / visual-regression / e2e-through-UI tiers `plan-tests` adds for a UI surface come from
@@ -136,6 +146,7 @@ visual-regression tool / etc.) from the repo, exactly as it already does for the
   parallel UI-design pipeline. No component-tree / token / screen artifact — if a run starts producing
   one, it's left the scope this file fixes.
 - **Data stores are not surfaces.** A `ContainerDb` is `data-model`'s job; a surface runs behaviour.
+- **Reuse the UI foundation.** `ui`-layer work composes the repo's existing design system / components / tokens / styling (from `architecture-map.md` §Frontend) — never reinvents them; a new primitive needs a justification that no existing one fits.
 
 ## Where each skill reads this
 

@@ -13,6 +13,7 @@ A stage-1 finding means the feature does not yet meet its spec — it blocks shi
 ## Stage 2 — is it good code (quality, usually non-blocking)
 
 - **Conventions.** Matches the repo's patterns for each layer (error handling, wiring, naming, module boundaries).
+- **UI reuse (for a UI surface).** Composes the existing design system / components / tokens / styling (`architecture-map.md` §Frontend) rather than reinventing — flag from-scratch UI that duplicates an existing primitive or introduces a second styling system.
 - **Error + edge handling.** Are the spec's error / authorization / invariant criteria handled, not just the happy path? Concurrency, empty/oversized input, idempotency where the contract requires it.
 - **Security.** Identity from the session not from input; no new injection/leak surface; secrets not logged.
 - **Boundary violations.** Stayed inside the module(s) the tasks named; no weakened test; no forbidden DB construct vs the repo's migration rules.

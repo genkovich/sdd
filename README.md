@@ -156,6 +156,10 @@ output by it — they never re-derive it:
   "testing trophy") for a UI surface; `implement` detects the actual tools (Playwright / Storybook / …).
 - **`review`** traces every acceptance criterion through *its* surface — a UI AC to a component /
   e2e-through-UI test, not only a backend one.
+- **Reuse, don't reinvent.** `survey` inventories the existing **design system / components / tokens /
+  styling** into `architecture-map.md` §Frontend; `design` / `tasks` / `implement` **compose and
+  extend** it (modelled on the closest existing screen) instead of hand-rolling new UI — the frontend
+  echo of the backend's match-the-repo + copy-the-closest-precedent.
 
 It's **Option B** — frontend-awareness threaded through the existing stages (a `ui` layer,
 UI-architecture ADRs, UI flows, frontend test tiers); there is deliberately **no** separate

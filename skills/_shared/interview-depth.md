@@ -57,15 +57,15 @@ The user gets ONE `AskUserQuestion` to veto/adjust the ledger as a batch (or acc
 
 Depth tunes **how many questions** and **how much autonomy** — never **what gets covered**. The completeness guarantees hold at **every** level:
 
-- Every spec §4 user story has ≥1 acceptance criterion; §5 keeps ≥1 AC of each of the 5 coverage types (`specify`).
-- Every §5 AC maps to a flow, a branch, or an explicit N/A (`sequences` AC→flow coverage check).
-- Every AC traces end-to-end spec → sequences → data-model → api → tasks → implement (`review`).
+- Every spec §4 user story has ≥1 acceptance criterion (the **use-case floor**); §5 keeps ≥1 AC of each of the 5 coverage types (`specify`).
+- Every §4 user story maps to ≥1 flow, and every §5 AC maps to a flow, a branch, or an explicit N/A (`sequences` use-case + AC→flow coverage check).
+- Every user story + AC traces end-to-end spec → sequences → data-model → api → tasks → implement (`review`).
 
 `easy` reaches these by **deciding** the «how» with defaults and listing them in the ledger; `hard` reaches them by **asking**. The destination is identical. A skill must never drop an AC, a coverage type, or a flow because the level is `easy` — that's a correctness bug, not a depth choice. If easy can't infer the «how» for a coverage-relevant decision, that decision is one of the «irreversible / un-inferable» ones it **must** ask about regardless of level.
 
 ## Per-skill adaptation (the delta each consuming skill applies)
 
-- **`specify`** — the level gates step 3's ideation suite (table above) and the volume of the step-2 deep-dive + step-7 Socratic validation. The §5 coverage gate (≥1 of each of the 5 AC types) is **floor, not dial** — enforced at every level.
+- **`specify`** — the level gates step 3's ideation suite (table above) and the volume of the step-2 deep-dive + step-7 Socratic validation. The §5 coverage gates (≥1 of each of the 5 AC types **and ≥1 AC per §4 user story** — the use-case floor) are **floor, not dial** — enforced at every level.
 - **`clarify`** — the level gates how aggressively the self-sweep + `devils-advocate` hunt (easy: only build-divergence that changes behavior, with assumptions stated; hard: adversarial, every fork surfaced) and the per-finding question volume. Every surfaced ambiguity is still Resolved or Deferred at every level — none dangling.
 - **`design`** — the level gates the per-section Socratic question volume (easy: decide convention-defaults itself + ledger, ask only blast-radius decisions; hard: walk every decision, foreground each trade-off) and the C4 diagram confirmation (per [`diagram-presentation.md`](./diagram-presentation.md)). The blast-radius → ADR gate and the §11 owner+due rule are floors, enforced at every level.
 

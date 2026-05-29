@@ -123,10 +123,12 @@ Two things the dial **never** weakens — they hold at every level:
   walk of the flow + branches) and write the source to the file (where Obsidian renders it) — they
   **never dump raw Mermaid into the terminal** as the thing to approve. If `mmdc` is installed, an
   image is rendered too. ([`skills/_shared/diagram-presentation.md`](./skills/_shared/diagram-presentation.md))
-- **Full acceptance-criteria coverage.** Every spec §5 AC is covered end-to-end — `sequences` maps
-  each AC to a flow, a branch, or an explicit non-runtime N/A (no flow cap), and `review` traces the
-  whole AC set through spec → sequences → data-model → api → tasks → implement, flagging any that
-  dropped out. Even `easy`/XS covers every AC — it just asks fewer questions about *how*.
+- **Full use-case + acceptance-criteria coverage.** Every spec §4 user story and §5 AC is covered
+  end-to-end: `specify` enforces a **use-case floor** (every user story carries ≥1 AC) and `clarify`
+  re-catches a story that lost it; `sequences` maps each user story to a flow and each AC to a flow,
+  a branch, or an explicit non-runtime N/A (no flow cap); and `review` traces the whole set through
+  spec → sequences → data-model → api → tasks → implement, flagging anything that dropped out. Even
+  `easy`/XS covers every use-case + AC — it just asks fewer questions about *how*.
 
 ## Where the spec comes from
 

@@ -11,7 +11,7 @@ The authoritative format for each section is the `<!-- instruction -->` comment 
 
 ## §5 acceptance-criteria contract
 
-AC describes a **business-observable outcome from the actor's perspective**, in Given/When/Then. **No upper cap** — propose as many as needed so every US has ≥1 AC and all five coverage types appear. If a `Drop` / `Save as Open Question` during Socratic leaves a coverage type empty, regenerate a replacement AC of that type and run a mini-batch on it (coverage gate, see [`socratic.md`](./socratic.md)).
+AC describes a **business-observable outcome from the actor's perspective**, in Given/When/Then. **No upper cap** — propose as many as needed so **every §4 user story has ≥1 AC** and all five coverage types appear. If a `Drop` / `Save as Open Question` during Socratic leaves a coverage type empty **or a retained §4 user story with no AC**, regenerate a replacement AC and run a mini-batch on it (the two coverage floors, see [`socratic.md`](./socratic.md)). The «every US has ≥1 AC» rule is a **re-checked floor**, not only a draft-time target — it's verified after every §5 resolution, so `sequences` and `review` downstream can rely on each use-case having a testable criterion.
 
 Five coverage types, ≥1 each:
 

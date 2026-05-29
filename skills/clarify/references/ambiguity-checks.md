@@ -15,8 +15,8 @@ Priority for the step-4 merge (highest-impact first): **conflicting-requirement 
 - **Resolve it:** replace with a numeric target + a concrete production metric («Availability 99.9% / monthly SLO window»). Reuse `specify`'s rule: a bare adjective is never acceptable — force a number now or an OQ with owner + due.
 
 ### 3. under-specified-AC
-- **Spot it:** a §5 acceptance criterion that covers only the happy path — silent on the error branch, the unauthorized actor, a named domain-invariant violation, or a concurrent/edge case. The «Then» names one outcome where two are possible.
-- **Resolve it:** ask which branch is missing and add a sibling AC in business-observable Given/When/Then (tag its US, e.g. `AC-NNb`). Keep it stack-agnostic — no status codes, endpoints, error-code strings, or SQL; that mapping lives in `api`.
+- **Spot it:** a §5 acceptance criterion that covers only the happy path — silent on the error branch, the unauthorized actor, a named domain-invariant violation, or a concurrent/edge case. The «Then» names one outcome where two are possible. **Also — the extreme case: a §4 user story with NO acceptance criterion at all** (the use-case floor `specify` should have enforced; clarify is the second catch). A US with zero ACs is maximally under-specified — two engineers would build entirely different things, or nothing.
+- **Resolve it:** ask which branch is missing and add a sibling AC in business-observable Given/When/Then (tag its US, e.g. `AC-NNb`). **For a US with no AC at all, add ≥1 AC for it** (business-observable Given/When/Then), or confirm the US is out of scope (→ a §3 non-goal). Keep it stack-agnostic — no status codes, endpoints, error-code strings, or SQL; that mapping lives in `api`.
 
 ### 4. unstated-assumption
 - **Spot it:** the spec only works *if* something unsaid is true — a data volume, a pre-existing integration, a tenancy model, an SLA of a dependency, "users already have accounts". The assumption is load-bearing but written nowhere.
@@ -65,7 +65,7 @@ Read both files first. Then, for each section, ask: *if I handed only this to a 
 
 1. **vague-term** — an unquantified qualitative word (fast / scalable / soon / most / handles load).
 2. **unmeasured-NFR** — a §6 row with an adjective target or a blank measurement — unverifiable.
-3. **under-specified-AC** — a §5 AC covering only the happy path; silent on error / authorization / a named domain-invariant violation / a concurrent or edge case.
+3. **under-specified-AC** — a §5 AC covering only the happy path; silent on error / authorization / a named domain-invariant violation / a concurrent or edge case. Also flag any **§4 user story that has no §5 AC at all** (the extreme case — add ≥1 AC for it or de-scope it).
 4. **unstated-assumption** — the spec only works if some unsaid thing is true (data volume, an existing integration, a tenancy model, a dependency SLA).
 5. **conflicting-requirement** — two statements that can't both hold (goal vs non-goal, two AC, an NFR vs a goal).
 6. **undefined-term** — a domain noun treated as settled but never defined and absent from the glossary.

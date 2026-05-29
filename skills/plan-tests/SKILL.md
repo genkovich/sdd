@@ -9,7 +9,7 @@ description: >
   levels (unit / integration / e2e / contract / load) without binding to a language or
   framework, and fixes the integration and data strategy. Triggers on "plan tests for {slug}",
   "test plan for {slug}", "how do we test {slug}", "test strategy for {slug}",
-  "/sdd-plan-tests {slug}", "план тестів для {slug}", "як тестувати {slug}", "тест-план".
+  "/sdd:plan-tests {slug}", "план тестів для {slug}", "як тестувати {slug}", "тест-план".
   Output: docs/features/{slug}/test-plan.md (separate file for M+), or inline in spec.md for
   XS/S per the size matrix. Hard-refuse if spec.md is missing → run `specify {slug}` first.
 ---
@@ -42,7 +42,7 @@ QA + the engineer who will implement the feature (co-authors). QA drives the lev
 6. **Integration strategy — real, ephemeral dependency.** For integration tests, the default is **an ephemeral real dependency, e.g. a throwaway DB container** spun up for the suite and torn down after (testcontainers-style). Mocking the datastore is an anti-pattern — a passing mock is not a passing production. State the seed strategy (factories/fixtures for the data shape) and the cleanup boundary (per-test vs per-suite); without cleanup the suite goes flaky and blocks CI.
 7. **NFR → load.** For each §6 NFR that carries a number, write one concrete load scenario (target rate, duration, the metric and its threshold) and name the tool generically: **the load tool already in your repo, or e.g. k6 or Locust**. If no NFR carries a number, mark the load section `<!-- N/A: no numeric NFR -->` — do not invent a load test.
 8. **CI placement.** Note which suites run where: fast suites (unit, contract) on every PR; the heavier ones (e2e, load) on a schedule or pre-release. The split is advice, not a pipeline config — `implement` and the repo's CI own the actual wiring.
-9. **Socratic walk + write + commit.** Walk the coverage table and the strategy choices with the 4-state actions from [`../_shared/ask-style.md`](../_shared/ask-style.md) (Accept / Fix / Save-as-OQ / Drop); on Fix, regenerate that one row (one round, second answer final). Maintain a short edits-log. On pass, write the plan to its target (separate file for M+, inline `## Test plan` for XS/S) and propose commit `test-plan: <slug>`. Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) — *What I did* + *Review* (`test-plan.md`, or `spec.md` `## Test plan` for XS/S) + *Run next* (`/clear`, then `/sdd-implement <slug>`, which consumes this map to write the red tests).
+9. **Socratic walk + write + commit.** Walk the coverage table and the strategy choices with the 4-state actions from [`../_shared/ask-style.md`](../_shared/ask-style.md) (Accept / Fix / Save-as-OQ / Drop); on Fix, regenerate that one row (one round, second answer final). Maintain a short edits-log. On pass, write the plan to its target (separate file for M+, inline `## Test plan` for XS/S) and propose commit `test-plan: <slug>`. Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) — *What I did* + *Review* (`test-plan.md`, or `spec.md` `## Test plan` for XS/S) + *Run next* (`/clear`, then `/sdd:implement <slug>`, which consumes this map to write the red tests).
 
 ## Definition of Done
 

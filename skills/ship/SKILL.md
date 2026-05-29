@@ -6,7 +6,7 @@ agents: []
 description: >
   Use to close the loop after review — verify the feature actually works, write the changelog /
   knowledge-base note, and open the pull request. Triggers on "ship {slug}", "open a PR for {slug}",
-  "changelog for {slug}", "prepare {slug} for merge", "/sdd-ship {slug}", "відправ фічу {slug}",
+  "changelog for {slug}", "prepare {slug} for merge", "/sdd:ship {slug}", "відправ фічу {slug}",
   "створи PR для {slug}", "changelog для {slug}". Re-runs the gate, runs the app/feature to confirm
   the spec's outcomes for real (not just green tests), drafts a changelog + PR body that link spec/
   AC/ADRs, and proposes the PR command for whatever forge the repo uses. Never auto-merges to main.

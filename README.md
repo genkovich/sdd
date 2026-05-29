@@ -23,9 +23,9 @@ The flow is a straight line: **each stage writes a file the next one reads.** Ru
 (the diagram + table are just below).
 
 ```text
-/sdd-survey                         ← once per repo: map an existing codebase, OR bootstrap an empty one
-/sdd-specify checkout-discounts     ← interviews you, writes the spec (you don't bring one)
-/sdd-design … → /sdd-implement … → /sdd-review … → /sdd-ship
+/sdd:survey                         ← once per repo: map an existing codebase, OR bootstrap an empty one
+/sdd:specify checkout-discounts     ← interviews you, writes the spec (you don't bring one)
+/sdd:design … → /sdd:implement … → /sdd:review … → /sdd:ship
 ```
 
 Two things to know up front: **`survey` runs once per repo** — on an existing codebase it maps the
@@ -38,7 +38,7 @@ refuses if it's missing, so you can't skip ahead by accident.
 
 **Every stage ends with a copy-ready handoff block** ([`skills/_shared/handoff.md`](./skills/_shared/handoff.md)):
 *What I did* + *Review before continuing* (links to the files it wrote, so you can eyeball them at the
-gate) + *Run next* — **`/clear`**, then the next `/sdd-…` command in a fenced block you copy in one
+gate) + *Run next* — **`/clear`**, then the next `/sdd:…` command in a fenced block you copy in one
 click. The `/clear` matters because each stage is gated and **re-reads its inputs from disk**, so it
 needs no carryover — clearing keeps the context small and stops one stage's chatter from drifting into
 the next. (Loop-backs are the exception — when `review` bounces back to `implement`, you stay in
@@ -308,20 +308,24 @@ Docker probe for the integration tier.
 ## Quick start (idea → shipped)
 
 ```text
-/sdd-survey                             # once per repo: map the current architecture
-/sdd-classify-size checkout-discounts   # optional: size it first
-/sdd-specify       checkout-discounts   # interview → spec (reads the architecture map)
-/sdd-clarify       checkout-discounts
-/sdd-design        checkout-discounts
-/sdd-sequences     checkout-discounts
-/sdd-data-model    checkout-discounts
-/sdd-api           checkout-discounts
-/sdd-tasks         checkout-discounts
-/sdd-plan-tests    checkout-discounts
-/sdd-implement     checkout-discounts
-/sdd-review        checkout-discounts   # independent review of the whole change
-/sdd-ship          checkout-discounts   # verify it runs, changelog, PR
+/sdd:survey                             # once per repo: map the current architecture
+/sdd:classify-size checkout-discounts   # optional: size it first
+/sdd:specify       checkout-discounts   # interview → spec (reads the architecture map)
+/sdd:clarify       checkout-discounts
+/sdd:design        checkout-discounts
+/sdd:sequences     checkout-discounts
+/sdd:data-model    checkout-discounts
+/sdd:api           checkout-discounts
+/sdd:tasks         checkout-discounts
+/sdd:plan-tests    checkout-discounts
+/sdd:implement     checkout-discounts
+/sdd:review        checkout-discounts   # independent review of the whole change
+/sdd:ship          checkout-discounts   # verify it runs, changelog, PR
 ```
+
+> **`/clear` between stages** — each stage is gated, re-reads its inputs from disk, and ends by
+> printing the next `/sdd:…` command to copy (the handoff block). Loop-backs (`review` → `implement`)
+> stay in context; utilities make `/clear` optional.
 
 Artifacts land in `docs/features/<slug>/`.
 

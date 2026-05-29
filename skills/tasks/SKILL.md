@@ -7,7 +7,7 @@ description: >
   Use to break a designed feature into atomic, ≤1-day tasks with a dependency graph, a
   per-task Definition of Done, and a machine-readable tasks.json that the implement engine
   consumes. Triggers on "task breakdown for {slug}", "break down tasks for {slug}",
-  "tasks for {slug}", "plan the work for {slug}", "/sdd-tasks {slug}", "розбий на задачі {slug}",
+  "tasks for {slug}", "plan the work for {slug}", "/sdd:tasks {slug}", "розбий на задачі {slug}",
   "декомпозиція {slug}", "список задач". Reads spec.md + sad.md + Accepted ADRs (+ data-model +
   openapi if present), writes docs/features/{slug}/tasks/{_epic,tracker,<task>}.md AND
   docs/features/{slug}/tasks.json. Tracker export to any issue tracker is optional and
@@ -44,7 +44,7 @@ Tech Lead.
 10. **Emit `tasks.json`** (step contract below) — the same model the markdown reflects, in machine form, at `docs/features/<slug>/tasks.json`.
 11. **Optional tracker export.** If an issue-tracker MCP is connected (Jira / Linear / GitHub Issues / Redmine — whichever the repo uses), offer to create tickets from `_epic.md` + the task files. Otherwise provide copy-paste-ready bodies. Never hard-bind to one tracker.
 12. **Self-check.** Every task ≤1 day; DAG acyclic with ≥1 parallel branch where the work allows; DoD per task; `acs` cover every spec §5 AC; `tasks.json` validates against the contract.
-13. **Propose commit + handoff.** `tasks: <slug> (breakdown + tasks.json)`. Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) — *What I did* + *Review* (`tasks/`, `tasks.json`) + *Run next* (`/clear`, then `/sdd-plan-tests <slug>`, then `/sdd-implement <slug>`).
+13. **Propose commit + handoff.** `tasks: <slug> (breakdown + tasks.json)`. Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) — *What I did* + *Review* (`tasks/`, `tasks.json`) + *Run next* (`/clear`, then `/sdd:plan-tests <slug>`, then `/sdd:implement <slug>`).
 
 ## `tasks.json` contract (read by `implement`)
 

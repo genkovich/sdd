@@ -8,7 +8,7 @@ description: >
   was NOT captured during the synchronous design pass — a choice made in code, in a chat,
   on a whiteboard, or one a tasks/review gate flagged as missing. Triggers on "ADR for
   {decision}", "adr for {slug}", "document the decision on {topic}", "lock in the decision
-  about {X}", "MADR for {topic}", "/sdd-decide-adr {slug} {title}", "створи ADR для рішення",
+  about {X}", "MADR for {topic}", "/sdd:decide-adr {slug} {title}", "створи ADR для рішення",
   "задокументуй рішення", "ADR на {тему}". Confirms the decision is ADR-worthy via the
   blast-radius gate, picks the next 4-digit number, copies design's MADR template, and
   fills context / drivers / considered options / outcome / honest consequences. Supports a
@@ -48,7 +48,7 @@ Decision author (usually the Architect or Tech Lead). A reviewer (Tech Lead, plu
 10. **Consequences.** Positive **and** Negative **and** Neutral — cons included, or it's rationalisation, not a record. Name what changes in the codebase, ops, monitoring, onboarding. `<!-- TBD -->` only where a number honestly needs a spike.
 11. **Status.** `Proposed` while a reviewer still has to sign off; `Accepted` once final. Run the review flow when needed: write `Proposed`, fill `reviewers`, and on sign-off flip to `Accepted` and bump `updated_at`. A reader six months on must be able to tell a live plan from a settled fact.
 12. **Close the loop.** Add a row to `sad.md` §9 ADR index (and link from `tasks/_epic.md` if the ADR scopes a specific task). The ADR's own `## Links` must point up to the spec + the relevant `sad.md` §N — no orphans.
-13. **Propose commit + handoff.** `adr: <slug> NNNN <title>`. Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) (utility variant) — *What I did* + *Review* (`adr/NNNN-<title>.md`) + *Run next*: resume the gate that needed it (`/sdd-tasks <slug>` or `/sdd-plan-tests <slug>`); `/clear` optional.
+13. **Propose commit + handoff.** `adr: <slug> NNNN <title>`. Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) (utility variant) — *What I did* + *Review* (`adr/NNNN-<title>.md`) + *Run next*: resume the gate that needed it (`/sdd:tasks <slug>` or `/sdd:plan-tests <slug>`); `/clear` optional.
 
 ## Definition of Done
 

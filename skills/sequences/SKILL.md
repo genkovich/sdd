@@ -7,7 +7,7 @@ description: >
   Use to add Mermaid sequenceDiagram blocks to the SAD's runtime view (sad.md §6) — one per
   critical flow, showing how a request moves between participants with happy + error paths.
   Triggers on "sequences for {slug}", "sequence diagram for {slug}", "draw the runtime flow",
-  "add a sequence to the SAD", "/sdd-sequences {slug}", "діаграми послідовності {slug}",
+  "add a sequence to the SAD", "/sdd:sequences {slug}", "діаграми послідовності {slug}",
   "sequence для {slug}", "намалюй потік {slug}". Reads sad.md §5 for participants, drafts each
   flow from templates/sequence.md with generic participants, walks them Socratically one flow at
   a time, and writes confirmed blocks into sad.md §6 — they inform data-model indexes downstream.
@@ -44,7 +44,7 @@ Tech Lead (drives the runtime decomposition). The PM confirms that each drawn fl
    - **Use-case pass (§4).** List **every §4 user story** and the flow(s) that realize it. Every retained user story maps to **≥1 flow** (a US with no flow is a gap — draft + confirm one, or de-scope it back through `specify`/`clarify`, never silently skip). `specify` already guarantees every §4 US carries ≥1 AC and `clarify` re-catches a US with none, so this pass is the runtime-view echo of that floor — both ends now checked, not just transitively assumed.
    - **AC pass (§5).** List **every §5 AC** and where it is now shown — a **dedicated flow**, an **`alt`/`else` branch**, or an **explicit non-runtime N/A** (with its one-line reason, e.g. «AC-7: middleware-enforced 401, not a runtime flow»).
    If a `Drop`/`Save-as-OQ` during step 6 left a user story or an AC uncovered, draft + confirm the missing flow or branch (the step 5–6 mini-loop) before proceeding, or record the explicit N/A with the user. **No §4 user story and no §5 AC may be silently uncovered.** (Completeness is independent of depth + size; this gate holds even at easy/XS.)
-8. **Finalize: order, validate, propose commit.** Order the §6 blocks to match §4. **Re-validate every `sequenceDiagram` block per [`../_shared/mermaid-check.md`](../_shared/mermaid-check.md)** as the backstop (balanced `alt`/`else`/`end`, declared participants; fix any that don't parse before committing). Append any flagged items (new participants, decisions worth an ADR) as a short note at the end of §6 — flag only, never auto-write an ADR. Propose commit `sequences: <slug> runtime flows`. Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) — *What I did* + *Review* (`sad.md` §6) + *Run next* (`/clear`, then `/sdd-data-model <slug>`, which uses the persist notes to choose indexes).
+8. **Finalize: order, validate, propose commit.** Order the §6 blocks to match §4. **Re-validate every `sequenceDiagram` block per [`../_shared/mermaid-check.md`](../_shared/mermaid-check.md)** as the backstop (balanced `alt`/`else`/`end`, declared participants; fix any that don't parse before committing). Append any flagged items (new participants, decisions worth an ADR) as a short note at the end of §6 — flag only, never auto-write an ADR. Propose commit `sequences: <slug> runtime flows`. Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) — *What I did* + *Review* (`sad.md` §6) + *Run next* (`/clear`, then `/sdd:data-model <slug>`, which uses the persist notes to choose indexes).
 
 ## Definition of Done
 

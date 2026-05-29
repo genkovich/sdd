@@ -8,7 +8,7 @@ description: >
   whenever a fuzzy word shows up in an interview, spec, or review and you want one
   canonical definition plus a NOT-reference so a homonym can't bite you in six months.
   Triggers on "add term {X}", "what is {X} in our domain", "add to CONTEXT", "fix the
-  glossary", "define {X}", "/sdd-glossary {term}", "додай термін", "онови глосарій",
+  glossary", "define {X}", "/sdd:glossary {term}", "додай термін", "онови глосарій",
   "що означає {X}". Lazy-bootstraps docs/features/{slug}/CONTEXT.md (or repo-root
   CONTEXT.md) from a template, checks for a conflicting existing entry, asks for a
   one-sentence definition + the concept it's confused with, and appends one line to
@@ -49,7 +49,7 @@ Whoever drives the conversation — anyone who spots ambiguity. Tech Lead approv
 7. **Compose one line.** `- <term> — <one-sentence definition>. NOT <confused concept + how it differs>.` — or, when step 6 = None, `- <term> — <definition>.`
 8. **Append under `## Glossary`.** Read the file, insert the line in `## Glossary` (alphabetical if the section is already sorted, else at the end). Never rewrite existing entries.
 9. **Prune empty H2s.** On a fresh bootstrap, delete `## Invariants` / `## Out of scope` if they hold no real content — only `## Glossary` is mandatory. (A genuine invariant or out-of-scope note goes in its section, never as implementation detail.)
-10. **Stamp + commit + handoff.** Set `updated_at: <today>` in the frontmatter. Propose `context: + <term>` (or `context: + <term>, <term2>` for a batch). May fold into the caller's intake/spec commit. Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) (utility variant) — *What I did* + *Review* (`CONTEXT.md`) + *Run next*: resume your backbone stage (e.g. `/sdd-design <slug>`); `/clear` optional.
+10. **Stamp + commit + handoff.** Set `updated_at: <today>` in the frontmatter. Propose `context: + <term>` (or `context: + <term>, <term2>` for a batch). May fold into the caller's intake/spec commit. Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) (utility variant) — *What I did* + *Review* (`CONTEXT.md`) + *Run next*: resume your backbone stage (e.g. `/sdd:design <slug>`); `/clear` optional.
 
 ## Definition of Done
 

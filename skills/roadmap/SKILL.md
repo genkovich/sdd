@@ -7,7 +7,7 @@ description: >
   Use to keep the portfolio layer above individual features — one living docs/roadmap.md of
   outcomes, structured Now / Next / Later, that links to per-feature specs without duplicating
   them. Triggers on "roadmap", "what's next", "prioritize the roadmap", "add to the roadmap",
-  "show the roadmap", "/sdd-roadmap", "роадмеп", "що далі", "пріоритети", "додай у roadmap".
+  "show the roadmap", "/sdd:roadmap", "роадмеп", "що далі", "пріоритети", "додай у roadmap".
   Captures a candidate as an outcome/problem (lands in Next/Later, RICE-scored), promotes/demotes
   between horizons, and renders the board. It is outcome-altitude — NOT a feature list or a
   dated Gantt; the solution lives in the feature's spec, not here. specify promotes an item to

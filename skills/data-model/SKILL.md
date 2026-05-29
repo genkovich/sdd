@@ -6,7 +6,7 @@ agents: [explorer]
 description: >
   Use to design the data model AND generate the actual forward + rollback migrations in one
   pass — shippable SQL, not a plan. Triggers on "data model for {slug}", "schema for {slug}",
-  "generate migrations for {slug}", "DB design + migration", "/sdd-data-model {slug}",
+  "generate migrations for {slug}", "DB design + migration", "/sdd:data-model {slug}",
   "модель даних для {slug}", "схема для {slug}", "згенеруй міграції". Reads spec.md §5 +
   sad.md §6.4 ER + the sequence diagrams, then writes docs/features/{slug}/data-model.md plus
   paired *.up.sql / *.down.sql migrations STAGED under docs/features/{slug}/migrations/ (NOT the
@@ -75,7 +75,7 @@ What it **does apply regardless of stack** — migration **safety**, not DB phil
 11. **Drift detection (always; `--drift-only` short-circuits here).** If the Explore subagent found a domain layer, map each field to a column and report `field-without-column` / `column-without-field` / `type-mismatch` / `nullability-mismatch`; auto-propose fix migrations under `_drift/` for the user to review.
 12. **Self-check (4 mandatory, stack-agnostic).** Naming matches the **repo's** convention; **down reversibility** (every CREATE has a DROP, every ADD COLUMN a DROP COLUMN, every CREATE INDEX a DROP INDEX); **FK indexes** (every `REFERENCES other(id)` has an index on the FK column); **convention adherence** (the schema follows the repo's detected conventions — flag any deliberate divergence in the report, never silently impose a house style). Any failure → fix or surface, never silent-commit.
 13. **Audit report** `docs/features/<slug>/_audit/data-model-<date>.md`: the **staged** migration files (their `docs/features/<slug>/migrations/<NN>_*` paths), the **promote-time convention hint** (e.g. «repo is sequential, next ≈ `000024` — `implement` assigns the real number at promotion»), convention deviations, drift findings, breaking-change decompositions, every `<!-- TBD -->`. State plainly: «migrations are staged — not yet in the live `migrations/` tree; `implement` promotes them». Next stage `api <slug>`.
-14. **Propose commit + handoff.** `data-model: <slug> (data-model.md + staged migrations)`. Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) — *What I did* + *Review* (`data-model.md`, staged `migrations/`) + *Run next* (`/clear`, then `/sdd-api <slug>`).
+14. **Propose commit + handoff.** `data-model: <slug> (data-model.md + staged migrations)`. Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) — *What I did* + *Review* (`data-model.md`, staged `migrations/`) + *Run next* (`/clear`, then `/sdd:api <slug>`).
 
 ## Definition of Done
 

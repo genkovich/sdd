@@ -8,7 +8,7 @@ description: >
   docs/features/{slug}/contracts/openapi.yaml plus a drift/sync report (and an events doc when
   the feature has async flows). Triggers on "api for {slug}", "openapi for {slug}",
   "API contract for {slug}", "lock the interface for {slug}", "events for {slug}",
-  "/sdd-api {slug}", "контракт API для {slug}", "OpenAPI для {slug}", "опиши ендпоінти".
+  "/sdd:api {slug}", "контракт API для {slug}", "OpenAPI для {slug}", "опиши ендпоінти".
   The contract is never hand-written: it is a derived function of data-model.md (typed fields +
   constraints), the sad.md §6 sequence diagrams (error branches, async actors), and spec.md
   acceptance criteria. Runs an inline drift check (does the contract match the model and the
@@ -54,11 +54,11 @@ Backend Lead (drives the interface). The PM confirms each endpoint maps to a rea
    - **forward** (contract derived correctly): endpoint↔model, error-code↔repo, validation↔constraint, OpenAPI↔sequence.
    - **back-feed (coverage cross-check)**: every `spec.md` §5 AC maps to ≥1 operation/response; every operation maps to a §4 user story + ≥1 AC; every `sad.md` §6 `alt`-branch has a response, and any error/authorization response the contract needs but no §6 flow shows is a **sequence gap**. A gap here is not an api bug — it's a hole upstream: surface it and offer **Fix-the-source-first**, which re-opens `specify` (add the missing AC) or `sequences` (draw the missing branch) before the contract is finalized.
    A **core** finding failing (or ≥3 flags total) pauses the run — resolve each via the shared 4-state actions ([`../_shared/ask-style.md`](../_shared/ask-style.md)): Accept-as-is / Fix-the-contract / Save-as-OQ / Fix-the-source-first. Never silently edit the sources — surface the mismatch and let the human pick the right artifact (the contract, the spec's AC, or the sequence).
-8. **Lint + write + commit.** Suggest `spectral lint contracts/openapi.yaml` (add it to the project's check target if not yet wired). On a clean check, the files are written; propose commit `api: <slug> contract`. Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) — *What I did* + *Review* (`contracts/openapi.yaml`, `api-sync-report.md`, + `events.md` if async) + *Run next* (`/clear`, then `/sdd-tasks <slug>`).
+8. **Lint + write + commit.** Suggest `spectral lint contracts/openapi.yaml` (add it to the project's check target if not yet wired). On a clean check, the files are written; propose commit `api: <slug> contract`. Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) — *What I did* + *Review* (`contracts/openapi.yaml`, `api-sync-report.md`, + `events.md` if async) + *Run next* (`/clear`, then `/sdd:tasks <slug>`).
 
 ### Reconcile mode
 
-`/sdd-api <slug> --reconcile`. Re-derives after an upstream artifact changed (typically `data-model.md` arrived or was tightened after a thinner first pass). It re-reads inputs, tightens loose types where the model now has a constraint, refreshes the field-origins confidence column, and — the load-bearing part — surfaces any field that **had** an inferred origin but **now disagrees** with the model. That disagreement is real drift, not stale incompleteness. `info.version` is never bumped silently; the user does that with a CHANGELOG line.
+`/sdd:api <slug> --reconcile`. Re-derives after an upstream artifact changed (typically `data-model.md` arrived or was tightened after a thinner first pass). It re-reads inputs, tightens loose types where the model now has a constraint, refreshes the field-origins confidence column, and — the load-bearing part — surfaces any field that **had** an inferred origin but **now disagrees** with the model. That disagreement is real drift, not stale incompleteness. `info.version` is never bumped silently; the user does that with a CHANGELOG line.
 
 ## Definition of Done
 

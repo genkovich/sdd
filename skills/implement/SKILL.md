@@ -2,7 +2,7 @@
 name: implement
 model: inherit
 effort: medium
-agents: [sdd-test-author, sdd-implementer, sdd-reviewer]
+agents: [test-author, implementer, reviewer]
 description: >
   Use to implement a feature from its tasks.json with test-driven development — writes a failing
   test first, makes it pass, refactors, gates, and commits per task. Triggers on "implement {slug}",
@@ -22,7 +22,7 @@ This file is the spine. Each step delegates to a file in `references/`.
 
 ## Owner
 
-Tech Lead drives; the engine runs the cycle. The three subagents ship with the plugin: [`sdd-test-author`](../../agents/sdd-test-author.md) (RED), [`sdd-implementer`](../../agents/sdd-implementer.md) (GREEN/REFACTOR/GATE), [`sdd-reviewer`](../../agents/sdd-reviewer.md) (read-only review).
+Tech Lead drives; the engine runs the cycle. The three subagents ship with the plugin: [`test-author`](../../agents/test-author.md) (RED), [`implementer`](../../agents/implementer.md) (GREEN/REFACTOR/GATE), [`reviewer`](../../agents/reviewer.md) (read-only review).
 
 ## Inputs
 
@@ -42,7 +42,7 @@ Tech Lead drives; the engine runs the cycle. The three subagents ship with the p
 7. **Banner.** Print the active mode and the settings that drove it: `mode=<…> tdd=<…> isolation=<…> parallel=<n> integration=<…>`. The user sees exactly how the engine will behave before it acts.
 8. **Execute** in the chosen mode. Every task runs the TDD cycle → [`./references/tdd-loop.md`](./references/tdd-loop.md).
 9. **Per-task gate + commit.** After GREEN+REFACTOR: unit + (integration if available) + lint + vet must be clean, then commit task-scoped with trailers `SDD-Task: <id>` and `SDD-AC: <id>` (one per satisfied AC). Update `tracker.md` → `done`.
-10. **Summary + hand off.** Report covered AC, commits made (with `SDD-Task` trailers), any task dropped/blocked, and the per-task gate results. Then hand off to the independent review gate: **next is `review <slug>`** (a clean-context pass over the whole diff), then `ship <slug>`. In team mode the [`sdd-reviewer`](../../agents/sdd-reviewer.md) may also run per-task, but the authoritative independent review of the whole change lives in the `review` skill — `implement` does not self-certify.
+10. **Summary + hand off.** Report covered AC, commits made (with `SDD-Task` trailers), any task dropped/blocked, and the per-task gate results. Then hand off to the independent review gate: **next is `review <slug>`** (a clean-context pass over the whole diff), then `ship <slug>`. In team mode the [`reviewer`](../../agents/reviewer.md) may also run per-task, but the authoritative independent review of the whole change lives in the `review` skill — `implement` does not self-certify.
 
 ## Decision tree (compact)
 

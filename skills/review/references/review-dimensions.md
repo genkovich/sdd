@@ -1,6 +1,6 @@
 # Review dimensions + dispatch
 
-The independent review (step 2) probes the feature diff along these dimensions. For a small change, one [`sdd-reviewer`](../../../agents/sdd-reviewer.md) pass covers them all; for a large diff, fan out one reviewer per dimension and merge findings.
+The independent review (step 2) probes the feature diff along these dimensions. For a small change, one [`reviewer`](../../../agents/reviewer.md) pass covers them all; for a large diff, fan out one reviewer per dimension and merge findings.
 
 ## Stage 1 — does it do what the spec says (the gate that can block ship)
 

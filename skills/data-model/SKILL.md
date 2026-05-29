@@ -2,7 +2,7 @@
 name: data-model
 model: inherit
 effort: medium
-agents: [sdd-explorer]
+agents: [explorer]
 description: >
   Use to design the data model AND generate the actual forward + rollback migrations in one
   pass — shippable SQL, not a plan. Triggers on "data model for {slug}", "schema for {slug}",
@@ -29,7 +29,7 @@ Backend Lead.
 - `<slug>` — feature slug.
 - **Gate (hard refuse if missing):** `docs/features/<slug>/spec.md` (entities live in §5 acceptance criteria) and `docs/features/<slug>/sad.md` (§6.4 ER stub). Missing → «run `specify` / `design` first».
 - Optional: the sequence diagrams in `sad.md §6` — each `writes/reads <entity>` note is an index candidate (one index per query, justified).
-- Optional: `docs/architecture-map.md` (from `survey`) — read it for the module layout + persistence conventions instead of re-scanning. For **drift detection** specifically, `sdd-explorer` still reads the **actual domain layer** (the map gives layout; drift needs the real struct/field source). Stack-agnostic — no hard-coded path or language.
+- Optional: `docs/architecture-map.md` (from `survey`) — read it for the module layout + persistence conventions instead of re-scanning. For **drift detection** specifically, `explorer` still reads the **actual domain layer** (the map gives layout; drift needs the real struct/field source). Stack-agnostic — no hard-coded path or language.
 
 ## Defaults (the opinionated set — written to the baseline rules file)
 

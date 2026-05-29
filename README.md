@@ -114,7 +114,7 @@ conventions, and a C4 of what exists. That map is the single source of "what's a
 - **`specify`** reads it so the spec's constraints / non-goals reflect the real system (without
   leaking tech into the acceptance criteria).
 - **`design`** reads it and **matches** the feature to that reality — the SAD describes *your*
-  system extended, not a greenfield design in a vacuum. It re-scans (via `sdd-explorer`) only if
+  system extended, not a greenfield design in a vacuum. It re-scans (via `explorer`) only if
   the map is missing or stale.
 - **`data-model`** and **`implement`** read it for the persistence + wiring conventions the new
   code must follow, instead of each re-discovering them.
@@ -142,7 +142,7 @@ the gate, and commits with `SDD-Task` / `SDD-AC` trailers.
 Three execution modes, chosen automatically from settings + DAG shape (with graceful fallback):
 
 - **Sequential single-agent TDD** — the default and the floor everything degrades to.
-- **Agent team** (`team_mode: true`) — `sdd-test-author` → `sdd-implementer` → `sdd-reviewer`
+- **Agent team** (`team_mode: true`) — `test-author` → `implementer` → `reviewer`
   over the DAG, coordinated through a shared task list, one git worktree per agent.
 - **Dynamic workflow** (`workflow_mode: auto`) — a generated `Workflow` pipeline that fans out
   independent tasks up to a parallelism cap.
@@ -156,20 +156,20 @@ how much reasoning effort, and which agents it spawns:
 # a skill's frontmatter
 model: opus        # haiku | sonnet | opus | inherit
 effort: high       # low | medium | high | xhigh | max
-agents: [sdd-critic]   # the agents this skill spawns
+agents: [critic]   # the agents this skill spawns
 ```
 
 Model is chosen by the **kind of work**, not by taste:
 
 | Kind of work | Model | Effort | Who |
 |---|---|---|---|
-| Judgment (spec, design, review, critique, ambiguity) | `opus` | `high` | specify, clarify, design, review · `sdd-reviewer` / `sdd-critic` / `sdd-devils-advocate` |
-| Execution (write tests, write code) | `sonnet` | `medium` → `high` on escalation | `sdd-test-author`, `sdd-implementer` |
-| Search / scan / derivation | `haiku` / `inherit` | `low` / `medium` | `sdd-explorer`; data-model, api, sequences, tasks |
+| Judgment (spec, design, review, critique, ambiguity) | `opus` | `high` | specify, clarify, design, review · `reviewer` / `critic` / `devils-advocate` |
+| Execution (write tests, write code) | `sonnet` | `medium` → `high` on escalation | `test-author`, `implementer` |
+| Search / scan / derivation | `haiku` / `inherit` | `low` / `medium` | `explorer`; data-model, api, sequences, tasks |
 
-The six agents (`agents/`): **sdd-explorer** (brownfield scan), **sdd-test-author** (failing tests),
-**sdd-implementer** (makes them pass), **sdd-reviewer** (independent review), **sdd-critic**
-(coherence critique), **sdd-devils-advocate** (ambiguity hunt) — the four read-only ones run in
+The six agents (`agents/`): **explorer** (brownfield scan), **test-author** (failing tests),
+**implementer** (makes them pass), **reviewer** (independent review), **critic**
+(coherence critique), **devils-advocate** (ambiguity hunt) — the four read-only ones run in
 **clean isolated context** (fresh eyes) and emit only cited findings.
 
 The full policy — override precedence, the `.size` scaling, and the env-var fallback for the
@@ -234,7 +234,7 @@ Artifacts land in `docs/features/<slug>/`.
 
 ```
 .claude-plugin/   plugin.json + marketplace.json (self-marketplace)
-agents/           sdd-explorer, sdd-test-author, sdd-implementer, sdd-reviewer, sdd-critic, sdd-devils-advocate
+agents/           explorer, test-author, implementer, reviewer, critic, devils-advocate
 scripts/          validate_plugin.py (CI: manifest name/version/description + frontmatter)
 skills/_shared/   canonical socratic-loop / critic / size-matrix / ask-style (referenced, not duplicated)
 skills/<name>/    SKILL.md spine + references/ (heavy detail) + templates/ (output scaffolds)

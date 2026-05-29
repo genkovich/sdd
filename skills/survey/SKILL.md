@@ -2,7 +2,7 @@
 name: survey
 model: inherit
 effort: medium
-agents: [sdd-explorer]
+agents: [explorer]
 description: >
   Use to establish the repo's architecture map the rest of the pipeline reads. Two modes: on an
   EXISTING codebase it scans once and persists what's there; on an EMPTY/greenfield repo it runs a
@@ -22,7 +22,7 @@ The pipeline's anchor on architecture. It produces `docs/architecture-map.md` �
 - **Brownfield** (the repo has source) → scan it once and persist the **current** architecture.
 - **Greenfield** (empty / near-empty repo) → run a short, **level-adaptive foundation session**: pick the stack / structure / data approach / conventions *with* the user (defaults-heavy), fix them as the **foundation** + foundational ADRs, and emit a **scaffold `tasks.json`** that `implement` turns into a real skeleton. Greenfield detail → [`./references/foundation.md`](./references/foundation.md).
 
-Repo-level utility (one map serves every feature). The scan is delegated to [`sdd-explorer`](../../agents/sdd-explorer.md); question phrasing → [`../_shared/ask-style.md`](../_shared/ask-style.md); depth → [`../_shared/size-matrix.md`](../_shared/size-matrix.md).
+Repo-level utility (one map serves every feature). The scan is delegated to [`explorer`](../../agents/explorer.md); question phrasing → [`../_shared/ask-style.md`](../_shared/ask-style.md); depth → [`../_shared/size-matrix.md`](../_shared/size-matrix.md).
 
 ## Owner
 
@@ -40,7 +40,7 @@ Architect / Tech Lead — they own the architecture (brownfield: confirm it refl
 ### Brownfield path (existing code)
 
 2. **Read authored docs first.** Any hand-maintained architecture doc / root `CLAUDE.md` / ADRs → authoritative input; reconcile with it, never overwrite.
-3. **Scan via sdd-explorer.** Dispatch [`sdd-explorer`](../../agents/sdd-explorer.md) (`haiku`/`low`, clean-isolated per [`../_shared/agent-roster.md`](../_shared/agent-roster.md)): «Report (a) language + frameworks + versions, (b) top-level module layout + per-module layers, (c) layering / wiring conventions, (d) datastores + access, (e) inter-module comms, (f) cross-cutting conventions (errors, IDs, tests, migrations) with one cited example each, (g) 2–3 representative features as precedents.» Large repo → fan out per subtree. (Fallback `subagent_type: "Explore"`.)
+3. **Scan via explorer.** Dispatch the [`explorer`](../../agents/explorer.md) agent — `subagent_type: "sdd:explorer"` (`haiku`/`low`, clean-isolated per [`../_shared/agent-roster.md`](../_shared/agent-roster.md)): «Report (a) language + frameworks + versions, (b) top-level module layout + per-module layers, (c) layering / wiring conventions, (d) datastores + access, (e) inter-module comms, (f) cross-cutting conventions (errors, IDs, tests, migrations) with one cited example each, (g) 2–3 representative features as precedents.» Large repo → fan out per subtree. (Fallback `subagent_type: "Explore"`.)
 4. **Synthesize + stamp + write.** Fill [`./templates/architecture-map.md`](./templates/architecture-map.md) (C4 of what exists, module inventory, cited conventions, datastores, precedent guide, constraints) with real `file:line` anchors. Record `updated_at` + `reflects_commit: <short HEAD>`. Write + commit `survey: architecture map (reflects <commit>)`. Next: `specify <slug>`.
 
 ### Greenfield path (empty repo) → [`./references/foundation.md`](./references/foundation.md)
@@ -70,4 +70,4 @@ G6. **Emit the scaffold + hand off.** Write a scaffold `tasks.json` (the skeleto
 
 - [`./references/foundation.md`](./references/foundation.md) — greenfield: the calibration question, level-adaptive depth, the stack/structure/convention choice menus + defaults, foundational-ADR list, and the scaffold `tasks.json` contract.
 - [`./templates/architecture-map.md`](./templates/architecture-map.md) — output scaffold (same file for current OR foundation; a `mode:` marker distinguishes).
-- [`../_shared/agent-roster.md`](../_shared/agent-roster.md) — the sdd-explorer contract.
+- [`../_shared/agent-roster.md`](../_shared/agent-roster.md) — the explorer contract.

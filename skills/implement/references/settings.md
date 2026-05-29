@@ -2,6 +2,8 @@
 
 The engine is configured per-project by a plugin-settings file with YAML frontmatter. On first run, **lazy-create** it with the defaults below and tell the user where it is; on later runs, read it.
 
+> **Plugin-wide, not implement-only.** Most keys below configure the `implement` engine, but a few are read by **other skills too**. `interview_depth` is read by the Q&A skills (`specify` / `clarify` / `design`) to pre-select the depth dial. Those skills read the file **if it exists**; if it's absent they fall back to their own default (medium) and do **not** create the file just to read the key — there is no ordering dependency on `implement` having run first.
+
 ## Lazy-create on first run
 
 1. If `.claude/sdd.local.md` is absent, write it with the default frontmatter (below) + a one-line markdown body explaining it.
@@ -11,6 +13,7 @@ The engine is configured per-project by a plugin-settings file with YAML frontma
 ## Default frontmatter
 
 ```yaml
+interview_depth: medium    # easy | medium | hard — plugin-wide default for specify/clarify/design (see _shared/interview-depth.md)
 tdd: true                  # enforce red→green→refactor
 team_mode: false           # true → agent team via TeamCreate
 workflow_mode: auto        # auto → dynamic Workflow; off → never
@@ -37,6 +40,7 @@ effort_reviewer: high
 
 ## What each key does
 
+- **`interview_depth`** — `easy | medium | hard`. The plugin-wide default for the **Q&A skills'** depth dial (`specify` / `clarify` / `design`), which governs how much each skill decides on its own vs. interrogates you (question volume, autonomy, which ideation analyses run, per-diagram confirm vs. proceed). It only **pre-selects** the recommended option in each skill's opening depth question — the user can still override per run, or pass `--depth=` to skip the question. It does **not** affect AC-completeness (that's a floor at every level). Full semantics → [`../../_shared/interview-depth.md`](../../_shared/interview-depth.md). (Not read by the `implement` engine itself.)
 - **`tdd`** — when false, RED is skipped and the engine writes code directly (warns; you lose the safety net).
 - **`team_mode` / `workflow_mode`** — feed the decision tree (see [`decision-tree.md`](./decision-tree.md)). `team_mode` wins when both could apply.
 - **`max_parallel_agents`** — fan-out cap for team/workflow modes. `1` forces sequential.

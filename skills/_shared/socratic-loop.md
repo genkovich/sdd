@@ -68,6 +68,7 @@ After each `Edit` / `Drop` / `Save as Open Question` (NOT `Approve`), append one
 
 - A 1-line mini-recap of decisions so far every ~5 questions, so the user sees the dependency chain without scrolling.
 - Keep a soft question budget per section sized to the feature class (see [size-matrix.md](./size-matrix.md)): XS/S lean on `<!-- N/A -->`, M+ walk every decision.
+- **Question volume also scales with the interview-depth dial** ([interview-depth.md](./interview-depth.md)): `easy` decides the reversible calls itself and walks only the irreversible/high-stakes ones (stating its assumptions in a ledger), `medium` walks every real decision, `hard` walks every decision and foregrounds each trade-off. Depth and size compound — an XS feature at `easy` asks the least; an L feature at `hard` asks the most. Volume only: the disk-write discipline, the edits-log, and any coverage floor are unaffected by depth.
 
 ## Exit condition
 

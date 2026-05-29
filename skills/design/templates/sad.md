@@ -166,8 +166,8 @@ C4Container
      📋 Write: a Mermaid sequenceDiagram. Participants are names from §5 (don't invent new ones).
      Messages are semantic («saves a draft»), NO HTTP verbs / paths / status codes — endpoint-level
      sequences arrive at the `api` stage.
-     📌 e.g. «author → web: composes draft → web → content API: save». 1 flow for XS/S; 3–5 for M+.
-     Never N/A for M+; XS/S keeps ≥1 happy-path flow. -->
+     📌 e.g. «author → web: composes draft → web → content API: save». Seed the primary flow(s) here;
+     the `sequences` stage then covers every §5 AC (no cap). Never N/A for M+; XS/S keeps ≥1 happy-path flow. -->
 
 **Critical flow 1: <flow name>**
 

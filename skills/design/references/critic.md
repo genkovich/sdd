@@ -18,7 +18,7 @@ After applying all drops + OQ-migrations, the draft must still satisfy every lin
 
 - All **12 Arc42 sections** filled with real content OR marked `<!-- N/A: <reason> -->`. An empty section with no N/A note is a gap.
 - §3 has a real **`C4Context`** Mermaid block and §5 has a real **`C4Container`** Mermaid block — real names from CONTEXT + the brownfield scan, **not** template stubs (no `<placeholder>` substrings, no `Container_Bondary`/`ContainerBoundary` typos that render empty).
-- §6 has **≥1 `sequenceDiagram`** Mermaid block (3–5 for M+).
+- §6 has **≥1 `sequenceDiagram`** Mermaid block (design seeds the primary flow(s); the `sequences` stage completes full §5-AC coverage — no cap).
 - §9 ADR table is **closed against the `adr/` dir**: every file in `adr/` has a §9 row, every §9 row points to an existing file (no orphans either way).
 - §11 carries a row for **every `save_as_oq`** entry in the edits-log, each with owner + due filled (literal `Open question` in the severity column).
 

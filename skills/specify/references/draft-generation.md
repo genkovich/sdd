@@ -6,7 +6,7 @@ The authoritative format for each section is the `<!-- instruction -->` comment 
 
 1. **`CONTEXT.md` `## Glossary`** — canonical for role names + domain terms. If anything contradicts it, the glossary wins.
 2. **The interview** (step 2 capture + deep-dive) — the problem, the trigger, success criteria, constraints.
-3. **Ideation output** (step 3, M+/L only) — the chosen approach + its rationale → §1 ¶3.
+3. **Ideation output** (step 3, when the depth dial runs it — medium/hard) — the chosen approach + its rationale → §1 ¶3.
 4. **Channel outputs** (step 5) — reference-module patterns, doc/MCP/KB quotes → §1 ¶4 traceability only.
 
 ## §5 acceptance-criteria contract

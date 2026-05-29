@@ -5,6 +5,11 @@
 > step the skill takes**, not just a name; the **description explains, in plain words, what will
 > happen** — written so a first-year junior can pick correctly without a senior beside them.
 
+> **Volume vs. style.** How **many** questions a Q&A skill asks scales with the interview-depth dial
+> (easy asks few, hard asks all — see [`interview-depth.md`](./interview-depth.md)). The **per-question
+> explanatory rule below is unchanged at every depth** — even a single easy-level question is glossed
+> and explained in full. Depth tunes the count; it never licenses a dry question.
+
 ## The one rule that matters most
 
 **Never ask dryly.** The most common failure is a terse, jargon-dense question — a few words plus acronyms, no context — that forces the user to already know the project to answer. Fix it two ways, every time:

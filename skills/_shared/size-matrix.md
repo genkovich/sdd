@@ -36,7 +36,7 @@ Artifact depth ∝ feature size. XS/S → minimal set; M+ → full.
 | CONTEXT.md glossary — `glossary` | yes | yes |
 | SAD (Arc42 12 §) + C4 L1/L2 — `design` | 12 sections walked, more `<!-- N/A -->` allowed | all 12 filled |
 | ADRs (in `adr/`) — `design` / `decide-adr` | 2–4 typical | 5–12 typical |
-| sequence diagrams — `sequences` | 1 critical flow | all critical (3–5) |
+| sequence diagrams — `sequences` | every AC covered, detail collapsed | as many flows as the user-stories/ACs need — never a cap; XS/S may collapse detail but still cover every AC |
 | deployment view — `design` §7 | `<!-- N/A -->` if no infra change | yes |
 | data-model + migrations — `data-model` | if DB touched | yes |
 | API contract (OpenAPI) — `api` | yes | yes |
@@ -50,7 +50,7 @@ Artifact depth ∝ feature size. XS/S → minimal set; M+ → full.
 Even for XS/S, `design` walks all 12 Arc42 sections — consistency beats completeness theatre. Sections that genuinely don't apply get `<!-- N/A: <one-line reason> -->`. Common XS/S N/A patterns:
 
 - §7 Deployment — `<!-- N/A: reuses existing deployment unit, no infra change -->`
-- §6 Runtime — collapses to one happy-path flow, no failure-mode flows.
+- §6 Runtime — collapses to the **fewest flows that still cover every §5 AC** (often one flow with the error branches inline as `alt`, rather than separate failure-mode flows). Detail collapses; AC-coverage does not — `sequences` still maps every AC to a flow, a branch, or an explicit N/A even at XS/S.
 - §11 Risks — one accepted-debt row, no medium/high risks.
 
 Same skill, same template, smaller content footprint.

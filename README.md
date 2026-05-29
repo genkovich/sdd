@@ -7,6 +7,8 @@ A self-contained Claude Code plugin that carries a feature from a one-line idea 
 Every skill is Socratic (it walks decisions with you, it doesn't dump a wall of output),
 gated (a stage hard-refuses when its prerequisite artifact is missing), and stack-agnostic
 (no language, tracker, or test tool is hard-coded — the skills detect what your repo uses).
+The Q&A skills (`specify` / `clarify` / `design`) are also **depth-tunable** — an easy / medium / hard
+dial decides how much the skill decides for you vs. interrogates you with trade-offs.
 
 ## Install
 
@@ -98,6 +100,34 @@ end: a reviewed, verified change with a changelog and an open PR — merging to 
 - **glossary** — capture a domain term in `CONTEXT.md` with a definition. Run it whenever a new term shows up; `design` and the spec read the glossary.
 - **decide-adr** — write a standalone ADR after the fact, when `tasks` (or a review) flags a decision that needs recording but wasn't captured during `design`.
 
+## Interview depth (easy / medium / hard)
+
+The Q&A skills open by setting a **depth dial** — one `AskUserQuestion` per run that tunes how much
+the skill decides on its own vs. interrogates you. It changes *how many* questions you get, never
+*what gets covered*:
+
+- **easy** — the skill makes the reversible, low-stakes calls itself with sensible defaults, asks
+  only the irreversible / high-blast-radius ones, and **lists every assumption it made** so you can
+  veto. Minimal analyses; diagrams written + summarized (no per-item question).
+- **medium** (default) — the balanced Socratic walk: one question per real decision.
+- **hard** — walk every decision with the trade-off foregrounded, run the **full ideation analysis
+  suite** (competitive research, three strategic approaches, multi-perspective review,
+  devil's-advocate), and probe edge cases harder.
+
+The default is `interview_depth` in `.claude/sdd.local.md` (else medium); override it per run, or
+pass `--depth=easy|medium|hard`. Full semantics: [`skills/_shared/interview-depth.md`](./skills/_shared/interview-depth.md).
+
+Two things the dial **never** weakens — they hold at every level:
+
+- **Readable diagrams.** `design` and `sequences` confirm each diagram **in prose** (a plain-language
+  walk of the flow + branches) and write the source to the file (where Obsidian renders it) — they
+  **never dump raw Mermaid into the terminal** as the thing to approve. If `mmdc` is installed, an
+  image is rendered too. ([`skills/_shared/diagram-presentation.md`](./skills/_shared/diagram-presentation.md))
+- **Full acceptance-criteria coverage.** Every spec §5 AC is covered end-to-end — `sequences` maps
+  each AC to a flow, a branch, or an explicit non-runtime N/A (no flow cap), and `review` traces the
+  whole AC set through spec → sequences → data-model → api → tasks → implement, flagging any that
+  dropped out. Even `easy`/XS covers every AC — it just asks fewer questions about *how*.
+
 ## Where the spec comes from
 
 It's not an input you have to write — **`specify` produces it.** Its interview front asks 3–5
@@ -180,14 +210,18 @@ Model is chosen by the **kind of work**, not by taste:
 
 | Kind of work | Model | Effort | Who |
 |---|---|---|---|
-| Judgment (spec, design, review, critique, ambiguity) | `opus` | `high` | specify, clarify, design, review · `reviewer` / `critic` / `devils-advocate` |
+| Judgment (spec, design, review, critique, ambiguity, strategy) | `opus` | `high` | specify, clarify, design, review · `reviewer` / `critic` / `devils-advocate` / `strategist` / `analyst` |
 | Execution (write tests, write code) | `sonnet` | `medium` → `high` on escalation | `test-author`, `implementer` |
+| Research / gathering (+ web) | `sonnet` | `medium` | `researcher` (competitive / adjacent-solution research) |
 | Search / scan / derivation | `haiku` / `inherit` | `low` / `medium` | `explorer`; data-model, api, sequences, tasks |
 
-The six agents (`agents/`): **explorer** (brownfield scan), **test-author** (failing tests),
+The nine agents (`agents/`): **explorer** (brownfield scan), **test-author** (failing tests),
 **implementer** (makes them pass), **reviewer** (independent review), **critic**
-(coherence critique), **devils-advocate** (ambiguity hunt) — the four read-only ones run in
-**clean isolated context** (fresh eyes) and emit only cited findings.
+(coherence critique), **devils-advocate** (ambiguity + failure-mode hunt), **researcher**
+(competitive / web research), **strategist** (three strategic approaches), **analyst**
+(multi-perspective review) — the read-only ones run in **clean isolated context** (fresh eyes) and
+emit only cited findings. The last three are the **ideation analyses**, dispatched by `specify` and
+gated by the depth dial (easy skips them; hard runs the full suite).
 
 The full policy — override precedence, the `.size` scaling, and the env-var fallback for the
 `effort:` no-op some builds have — lives in one place: [`skills/_shared/agent-roster.md`](./skills/_shared/agent-roster.md).
@@ -196,9 +230,12 @@ Short version: if a run feels under-reasoned, set `CLAUDE_CODE_EFFORT_LEVEL`.
 ### Configuration — `.claude/sdd.local.md`
 
 `implement` lazy-creates this per-project settings file (YAML frontmatter) on first run with
-safe defaults; edit it to change behaviour:
+safe defaults; edit it to change behaviour. One key is **plugin-wide** — `interview_depth` is read
+by the Q&A skills (`specify` / `clarify` / `design`) to pre-select the depth dial; the rest configure
+the `implement` engine:
 
 ```yaml
+interview_depth: medium    # easy | medium | hard — default depth for specify/clarify/design
 tdd: true                  # enforce red→green→refactor
 team_mode: false           # true → agent team via TeamCreate
 workflow_mode: auto        # auto → dynamic Workflow; off → never
@@ -251,9 +288,9 @@ Artifacts land in `docs/features/<slug>/`.
 
 ```
 .claude-plugin/   plugin.json + marketplace.json (self-marketplace)
-agents/           explorer, test-author, implementer, reviewer, critic, devils-advocate
+agents/           explorer, test-author, implementer, reviewer, critic, devils-advocate, researcher, strategist, analyst
 scripts/          validate_plugin.py (CI: manifest name/version/description + frontmatter)
-skills/_shared/   canonical socratic-loop / critic / size-matrix / ask-style (referenced, not duplicated)
+skills/_shared/   canonical socratic-loop / critic / size-matrix / ask-style / interview-depth / diagram-presentation (referenced, not duplicated)
 skills/<name>/    SKILL.md spine + references/ (heavy detail) + templates/ (output scaffolds)
 ```
 

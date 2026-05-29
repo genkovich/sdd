@@ -5,10 +5,10 @@ The independent review (step 2) probes the feature diff along these dimensions. 
 ## Stage 1 — does it do what the spec says (the gate that can block ship)
 
 - **AC compliance.** For every AC the change claims (the `SDD-AC` trailers / `tasks.json` `acs`): does the code actually produce the business-observable outcome the AC names, and is there a test that asserts *that outcome* (not a tautology)?
-- **Coverage.** Is any in-scope AC silently uncovered? Cross-check spec §5 against the diff.
+- **End-to-end AC trace (the backstop).** Take the **whole** spec §5 AC set — **not only the ACs the diff claims** — and trace each AC through the chain: **spec §5 → `sad.md` §6 sequence (a flow or branch shows it) → `data-model.md` (the schema supports it) → `contracts/openapi.yaml` (an endpoint/event exposes it) → `tasks.json` (a task claims it) → implement (code + a test asserts it)**. Flag any AC that **drops out anywhere** — present in the spec but missing a flow, a task, a test, or code. The per-stage gates each guard one link (specify's §5 5-type floor, sequences' AC→flow coverage, plan-tests' AC→test, tasks' AC→task); `review` is the **end-to-end backstop** that catches an AC that slipped *between* links and never reached the diff at all.
 - **Contract fidelity.** Does the change honour `data-model.md`, `contracts/openapi.yaml`, and the Accepted ADRs (e.g. the audit-in-transaction decision), or does it quietly diverge?
 
-A stage-1 finding means the feature does not yet meet its spec — it blocks ship until fixed or explicitly de-scoped (a spec change with the owner in the loop).
+A stage-1 finding means the feature does not yet meet its spec — it blocks ship until fixed or explicitly de-scoped (a spec change with the owner in the loop). An AC that dropped out of the chain is a stage-1 finding even if no line of the diff mentions it.
 
 ## Stage 2 — is it good code (quality, usually non-blocking)
 

@@ -63,7 +63,7 @@ PM + Tech Lead (the spec's co-authors resolve their own ambiguities). PM owns va
 - **Inventing answers to fill findings.** A genuinely open point is *deferred* with an owner, not guessed — better an honest §8 row than a fabricated AC.
 - **Authoring new scope.** clarify sharpens what the spec already says; a brand-new requirement goes back through `specify`, not in under cover of a "clarification".
 
-## References
+## References & template
 
 - [`./references/ambiguity-checks.md`](./references/ambiguity-checks.md) — the eight ambiguity classes (how to spot / how to resolve each) + the clean-context devil's-advocate subagent prompt body.
 - [`../_shared/ask-style.md`](../_shared/ask-style.md) — phrasing for the resolve/defer/false-positive question.

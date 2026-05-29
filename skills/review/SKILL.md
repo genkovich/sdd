@@ -53,7 +53,7 @@ Tech Lead / a reviewer who did **not** write the code (independence is the point
 - **Re-litigating style the repo already settled.** Judge against the conventions + contracts, not personal taste.
 - **Treating the per-task gate as the review.** Green tests prove each task; they don't prove the change coheres or that the AC are truly met end-to-end.
 
-## References
+## References & template
 
 - [`./references/review-dimensions.md`](./references/review-dimensions.md) — the review dimensions + the reviewer dispatch shape.
 - [`../_shared/critic.md`](../_shared/critic.md) — the clean-context dispatch discipline this reuses.

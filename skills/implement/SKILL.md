@@ -31,7 +31,7 @@ Tech Lead drives; the engine runs the cycle. The three subagents ship with the p
 - Read for context (the agents read these directly, not via paraphrase): `spec.md` (AC), `data-model.md` + the **staged** migrations under `docs/features/<slug>/migrations/` (a `layer: migration` task **promotes** these into the live `migrations/` tree — see [`./references/inputs.md`](./references/inputs.md)), `contracts/openapi.yaml`, `test-plan.md`, `sad.md`, Accepted `adr/`.
 - Settings: `.claude/sdd.local.md` (auto-created with documented defaults if absent — normally by `specify` at the backbone start; `implement` creates it too if you jump straight here) → [`./references/settings.md`](./references/settings.md).
 
-## Protocol (10 steps)
+## Protocol
 
 1. **Preconditions.** Verify `tasks.json` exists and parses; load the upstream artifacts list. Detail → [`./references/inputs.md`](./references/inputs.md).
 2. **Settings.** Read `.claude/sdd.local.md`; if absent, auto-create it with the documented defaults (frontmatter + the «What each key does» body, self-documenting) and patch `.gitignore` (`.claude/*.local.md`, `.worktrees/`) — the same template `specify` writes. → [`./references/settings.md`](./references/settings.md).
@@ -78,6 +78,6 @@ else:                                                        → SEQUENTIAL sing
 - **Spawning a team for <4 tasks** — coordination overhead exceeds the gain; the eligibility check forbids it.
 - **Claiming integration passed when Docker was absent.** Report NON-red honestly.
 
-## References
+## References & template
 
 `inputs.md` · `settings.md` · `command-detection.md` · `decision-tree.md` · `tdd-loop.md` · `team-exec.md` · `workflow-exec.md` · `escalation.md` — all in [`./references/`](./references/).

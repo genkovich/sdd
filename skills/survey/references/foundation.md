@@ -53,8 +53,8 @@ Emit `docs/features/_scaffold/tasks.json` (a repo-level, not per-feature, task s
       "acs": [], "dod": "the migration tool applies + reverts cleanly", "files_hint": ["migrations/"] },
     { "id": "S4", "title": "Add the CI workflow (build + test + lint)", "layer": "scaffold", "deps": ["S2"],
       "acs": [], "dod": "CI config is valid; the commands match the detected toolchain", "files_hint": [".github/" ] },
-    { "id": "S5", "title": "Write CLAUDE.md / .claude/rules from the chosen conventions", "layer": "scaffold", "deps": ["S1"],
-      "acs": [], "dod": "conventions doc reflects the foundation map", "files_hint": ["CLAUDE.md", ".claude/rules/"] }
+    { "id": "S5", "title": "Write CLAUDE.md from the chosen conventions", "layer": "scaffold", "deps": ["S1"],
+      "acs": [], "dod": "conventions doc reflects the foundation map", "files_hint": ["CLAUDE.md"] }
   ]
 }
 ```

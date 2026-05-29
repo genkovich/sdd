@@ -334,7 +334,7 @@ Artifacts land in `docs/features/<slug>/`.
 ```
 .claude-plugin/   plugin.json + marketplace.json (self-marketplace)
 agents/           explorer, test-author, implementer, reviewer, critic, devils-advocate, researcher, strategist, analyst
-scripts/          validate_plugin.py (CI: manifest name/version/description + frontmatter)
+scripts/          validate_plugin.py (CI gate: manifests + skill/agent frontmatter + the consistency invariants — links resolve, /sdd: form, handoff block, single-source taxonomy, no _shared orphans)
 skills/_shared/   canonical socratic-loop / critic / size-matrix / ask-style / interview-depth / diagram-presentation / surfaces / handoff (referenced, not duplicated)
 skills/<name>/    SKILL.md spine + references/ (heavy detail) + templates/ (output scaffolds)
 ```

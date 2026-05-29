@@ -51,7 +51,7 @@ The implementer (drives) + the reviewer who signed off in `review`.
 - **A changelog that restates the diff.** Say what changed and why (link the spec + ADR), plus the operational note (migrations, flags) — not a file list.
 - **Forgetting the migration/rollback note** when the change includes one — the deployer needs it.
 
-## References & templates
+## References & template
 
 - [`./templates/changelog.md`](./templates/changelog.md) — changelog / KB-note scaffold.
 - [`./templates/pr-body.md`](./templates/pr-body.md) — PR description scaffold.

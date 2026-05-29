@@ -24,12 +24,32 @@ frontmatter and a system prompt that instructs them to read upstream artifacts d
 
 ## Before you open a PR
 
-The `validate` GitHub workflow runs `scripts/validate_plugin.py`, which checks that the plugin
-and marketplace manifests agree on name / version / description, that the version is semver, and
-that every triggering skill and agent carries the required frontmatter (and that `_shared/` stays
-reference-only). It also greps for references to the excluded legacy dirs. Run it locally before
-opening a PR:
+Run the validator locally — it's the same gate the `validate` GitHub workflow runs, and it now
+enforces the plugin's **conventions**, not just its structure:
 
 ```bash
 python3 scripts/validate_plugin.py
 ```
+
+It checks that the plugin + marketplace manifests agree on name / version / description, that the
+version is semver, that every skill and agent carries its required frontmatter (and that `_shared/`
+stays reference-only), **and** the consistency invariants in the checklist below. It also greps for
+references to the excluded legacy dirs. (The check count is a moving target — CI asserts exit 0, not
+a fixed number.)
+
+### Pre-PR checklist
+
+- [ ] **`python3 scripts/validate_plugin.py` passes** (exit 0).
+- [ ] **One canonical source / DRY.** Shared logic — the Socratic machine, the critic, the size
+      matrix, the ask-style, the surface taxonomy, the handoff block — lives once in
+      `skills/_shared/`. Link to it with a relative path and keep only your per-skill *delta*; never
+      copy a `_shared/` table (e.g. the surface taxonomy) into a `SKILL.md`.
+- [ ] **Stack-agnostic.** No hard-coded language, tracker, test framework, or build/load tool —
+      detect what the repo uses, or name it «whatever your repo already uses».
+- [ ] **Every skill ends with the handoff block** ([`skills/_shared/handoff.md`](./skills/_shared/handoff.md))
+      as its final step.
+- [ ] **Invocation form is `/sdd:<name>`** — the namespaced form, never the hyphenated `/sdd-<name>`.
+- [ ] **Relative links resolve.** A `[text](./path.md)` target is a real file. The one exception is a
+      template-runtime path (`../spec.md`, `../sad.md`, `../contracts/…`, …) that resolves only inside
+      a generated `docs/features/<slug>/` folder — those are allowlisted in the validator.
+- [ ] **References in `references/`, templates in `templates/`** — one level deep, no nested folders.

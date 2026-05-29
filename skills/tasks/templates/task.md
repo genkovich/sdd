@@ -1,7 +1,7 @@
 ---
 id: T1
 title: "<imperative, specific title>"
-layer: "migration|domain|infra|app|ports|tests|wiring|docs"
+layer: "migration|domain|infra|app|ports|ui|tests|wiring|docs"
 deps: []                # task ids that must finish first
 acs: ["AC-01"]          # spec §5 acceptance criteria this task satisfies
 files_hint: ["path/or/dir/the/task/touches"]

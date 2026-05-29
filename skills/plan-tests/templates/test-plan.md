@@ -23,6 +23,9 @@ feature_size: "<XS|S|M|L|XL>"
 <!-- The only allowed levels — generic, no tool names. Drop a row that doesn't apply to this -->
 <!-- feature; mark it <!-- N/A: reason -->  rather than padding it. `implement` picks the actual -->
 <!-- runner/tool for each level from what the repo already uses. -->
+<!-- The Component / Visual-regression / E2E-through-UI rows apply ONLY when sad.md frontmatter -->
+<!-- target_surfaces declares a UI surface (web-frontend / mobile-app / desktop-app) — the -->
+<!-- "testing trophy" vocabulary (_shared/surfaces.md). Drop them for a backend-only feature. -->
 
 | Level | Scope | Strategy (generic — no tool names) |
 |---|---|---|
@@ -31,6 +34,9 @@ feature_size: "<XS|S|M|L|XL>"
 | Contract | A boundary between two participants — an API shape or event schema both sides agree on. | Validate the real shape against the agreed contract; no hand-rolled stubs. |
 | E2E | One full flow end to end (one per critical user story). | The flow exercised through its real entry point against ephemeral dependencies. |
 | Load | NFR validation — only when an NFR carries a number. | The load tool already in your repo, or e.g. k6 or Locust. |
+| Component *(UI surface only)* | A UI component exercised in isolation — props/state → rendered output + interactions. | Render in a component harness; assert output + behaviour, no full app boot. |
+| Visual-regression *(web UI only)* | The rendered UI diffed against an approved baseline image. | Snapshot the render; fail on an unintended visual diff; update the baseline deliberately. |
+| E2E-through-UI *(UI surface only)* | A user-story flow driven through the real UI, not just the API. | The flow exercised through the rendered UI against ephemeral dependencies. |
 
 ## AC coverage
 

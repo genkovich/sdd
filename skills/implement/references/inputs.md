@@ -41,6 +41,10 @@ The engine does **not** paste these into prompts — each agent (or the sequenti
 
 A `layer: migration` task with **no** staged file under the feature's `migrations/` is a `tasks`/`data-model` mismatch — surface it, do not invent SQL.
 
+## `ui`-layer tasks
+
+A `layer: ui` task (present only when `sad.md` frontmatter `target_surfaces` declares a UI surface — `web-frontend` / `mobile-app` / `desktop-app`) runs through the **same TDD cycle** as any other task; it just follows the **repo's frontend test convention** — component / e2e-through-UI runners detected from `package.json` scripts (Playwright / Storybook / a visual-diff tool / etc.) — **not** a backend assumption. No engine change: command-detection already picks up frontend scripts in its cascade. → [`../../_shared/surfaces.md`](../../_shared/surfaces.md).
+
 ## Repo state
 
 - Note the current branch. If `branch_strategy: feature` and the repo is on its default branch, create/switch to a feature branch before any commit (see [`settings.md`](./settings.md)).

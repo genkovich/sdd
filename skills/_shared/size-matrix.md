@@ -45,6 +45,10 @@ Artifact depth ∝ feature size. XS/S → minimal set; M+ → full.
 | test-plan — `plan-tests` | inline in spec | separate file |
 | implementation — `implement` | yes | yes |
 
+## Surface count is a second scaling axis
+
+Size (XS–XL) is the *depth* dial; the number of **target surfaces** a feature declares (in `design`, written to `sad.md` frontmatter `target_surfaces` → [`./surfaces.md`](./surfaces.md)) is a second, *breadth* axis on the artifact set. Each surface adds its own work: a UI surface (`web-frontend` / `mobile-app` / `desktop-app`) adds the `ui` task layer, UI-driven §6 flows, and the component / visual-regression / e2e-through-UI test tiers; a `cli` / `worker` / `library-sdk` surface adds its own contract form + flows. So a multi-surface feature (`[backend-service, web-frontend]`) is genuinely **larger** than a single-surface one of the same XS/S/M class — no new column here, but expect more tasks, more flows, and more test rows per extra surface.
+
 ## SAD size behaviour
 
 Even for XS/S, `design` walks all 12 Arc42 sections — consistency beats completeness theatre. Sections that genuinely don't apply get `<!-- N/A: <one-line reason> -->`. Common XS/S N/A patterns:

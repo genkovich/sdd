@@ -20,14 +20,15 @@ derives from [spec §AC-01](../spec.md), [sad §6](../sad.md), [ADR-0001](../adr
 ## What
 
 <!-- instruction: the concrete change, scoped to ≤1 day / one reviewable PR. Name the files/dirs
-(same as files_hint). For a migration task: the up + down files. For a ports task: the handler +
-its dto + errors. Keep it within one layer where possible. -->
+(same as files_hint). For a migration task: the **staged** up + down files under
+`docs/features/<slug>/migrations/<NN>_*` (which `implement` promotes into the live `migrations/`).
+For a ports task: the handler + its dto + errors. Keep it within one layer where possible. -->
 
 ## Definition of Done
 
 <!-- instruction: testable bullets. e.g.: -->
 - [ ] <unit/integration test for this task passes>
-- [ ] <migration applies and reverts cleanly> (migration tasks)
+- [ ] <staged migration is promoted to live `migrations/`, then applies and reverts cleanly> (migration tasks)
 - [ ] <handler returns the spec'd outcome for AC-01> (ports tasks)
 - [ ] lint + vet clean
 

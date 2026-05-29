@@ -2,10 +2,11 @@
 
 <!-- Bootstrapped by the sdd `data-model` skill. Edit freely — these are an opinionated default. -->
 
-## Filenames
+## Filenames & staging
 
-- **Follow the repo's existing convention.** If `migrations/` already uses sequential numbers (`000022_*.sql`), the next file is `000023_*`. If it uses timestamps, keep timestamps.
-- Greenfield default (empty `migrations/`): `<YYYYMMDDhhmmss>_<verb>_<entity>.up.sql` + matching `.down.sql` — parallel branches don't collide on the next sequential number.
+- **Design-stage migrations are STAGED, not live.** `data-model` writes the pair under `docs/features/<slug>/migrations/` with a feature-local ordinal (`01_<verb>_<entity>.up.sql` + `.down.sql`, `02_…` preserving order) — **never** into the live `migrations/` tree. `implement` **promotes** them into `migrations/` when it builds the feature, assigning the real name. Rationale: a design-stage schema in the live tree can be applied by a stray `migrate up` before the feature exists.
+- **Follow the repo's existing convention at promote-time.** If `migrations/` uses sequential numbers (`000022_*.sql`), the promoted file is the next free number (`000023_*`). If it uses timestamps, use a timestamp. The number is assigned **at promotion, not at design**, so two features in flight don't grab the same number.
+- Greenfield default (empty `migrations/`): timestamp `<YYYYMMDDhhmmss>_<verb>_<entity>` assigned at promote-time.
 
 ## Hard rules (DB as dumb storage)
 

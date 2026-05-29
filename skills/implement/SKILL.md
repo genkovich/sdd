@@ -28,7 +28,7 @@ Tech Lead drives; the engine runs the cycle. The three subagents ship with the p
 
 - `<slug>` — feature slug.
 - **Gate (hard refuse):** `docs/features/<slug>/tasks.json`. Missing → «run `tasks <slug>` first».
-- Read for context (the agents read these directly, not via paraphrase): `spec.md` (AC), `data-model.md` + migrations, `contracts/openapi.yaml`, `test-plan.md`, `sad.md`, Accepted `adr/`.
+- Read for context (the agents read these directly, not via paraphrase): `spec.md` (AC), `data-model.md` + the **staged** migrations under `docs/features/<slug>/migrations/` (a `layer: migration` task **promotes** these into the live `migrations/` tree — see [`./references/inputs.md`](./references/inputs.md)), `contracts/openapi.yaml`, `test-plan.md`, `sad.md`, Accepted `adr/`.
 - Settings: `.claude/sdd.local.md` (lazy-created with defaults on first run) → [`./references/settings.md`](./references/settings.md).
 
 ## Protocol (10 steps)
@@ -40,7 +40,7 @@ Tech Lead drives; the engine runs the cycle. The three subagents ship with the p
 5. **Pick the mode.** Run the decision tree (below; full form → [`./references/decision-tree.md`](./references/decision-tree.md)). Apply the guards.
 6. **Generate the run-plan.** Sequential → an ordered task list. Team → a shared TaskList with the full task text in each body. Workflow → a generated `Workflow` script (DAG → Kahn phases → fan-out pipeline). → [`./references/team-exec.md`](./references/team-exec.md) / [`./references/workflow-exec.md`](./references/workflow-exec.md).
 7. **Banner.** Print the active mode and the settings that drove it: `mode=<…> tdd=<…> isolation=<…> parallel=<n> integration=<…>`. The user sees exactly how the engine will behave before it acts.
-8. **Execute** in the chosen mode. Every task runs the TDD cycle → [`./references/tdd-loop.md`](./references/tdd-loop.md).
+8. **Execute** in the chosen mode. Every task runs the TDD cycle → [`./references/tdd-loop.md`](./references/tdd-loop.md). A `layer: migration` task first **promotes** its staged migration(s) (`docs/features/<slug>/migrations/<NN>_*`) into the live `migrations/` tree — assigning the real sequence number / timestamp per the repo's convention, in ordinal order — *then* applies + reverts them; detail → [`./references/inputs.md`](./references/inputs.md).
 9. **Per-task gate + commit.** After GREEN+REFACTOR: unit + (integration if available) + lint + vet must be clean, then commit task-scoped with trailers `SDD-Task: <id>` and `SDD-AC: <id>` (one per satisfied AC). Update `tracker.md` → `done`.
 10. **Summary + hand off.** Report covered AC, commits made (with `SDD-Task` trailers), any task dropped/blocked, and the per-task gate results. Then hand off to the independent review gate: **next is `review <slug>`** (a clean-context pass over the whole diff), then `ship <slug>`. In team mode the [`reviewer`](../../agents/reviewer.md) may also run per-task, but the authoritative independent review of the whole change lives in the `review` skill — `implement` does not self-certify.
 

@@ -24,7 +24,7 @@ Spawn each by its plugin-namespaced `subagent_type` — `sdd:test-author`, `sdd:
 
 Even with worktrees, some tasks must not run concurrently:
 
-- **`layer: migration`** — migrations are an ordered sequence (e.g. golang-migrate's numbered files); run them one at a time, in order.
+- **`layer: migration`** — migrations are an ordered sequence (e.g. golang-migrate's numbered files); run them one at a time, in order. Each migration task first **promotes** its staged `docs/features/<slug>/migrations/<NN>_*` file into the live tree (next free number, in ordinal order) before applying it — see [`./inputs.md`](./inputs.md).
 - **Overlapping `files_hint`** — two tasks that touch the same file run in the same lane (serialized), or the second rebases on the first. Compute lanes from `files_hint` intersections up front.
 
 Tasks in different lanes with satisfied deps run in parallel; tasks in the same lane queue.

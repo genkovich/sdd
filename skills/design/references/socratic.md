@@ -8,12 +8,14 @@ The 12 Arc42 sections of `sad.md`, in order:
 
 §1 Introduction & goals → §2 Constraints → §3 Context & scope (C4 Context inline) → §4 Solution strategy → §5 Building blocks (C4 Container inline) → §6 Runtime → §7 Deployment → §8 Crosscutting → §9 Architecture decisions → §10 Quality requirements → §11 Risks → §12 Glossary.
 
-One bundled commit per section (`sad.md` edits + any ADR files the gate spawned). The skill never returns to a written section — cross-section drift is the critic's job. Section depth follows the size matrix; even XS/S walks all 12 (more `<!-- N/A: reason -->`, see [`../../_shared/size-matrix.md`](../../_shared/size-matrix.md)).
+§4 opens with the **Target-surface** decision (it gates §5's containers + every downstream stage, so it's resolved before any other §4 choice — see the decision-types catalog below). One bundled commit per section (`sad.md` edits + any ADR files the gate spawned). The skill never returns to a written section — cross-section drift is the critic's job. Section depth follows the size matrix; even XS/S walks all 12 (more `<!-- N/A: reason -->`, see [`../../_shared/size-matrix.md`](../../_shared/size-matrix.md)).
 
 ## Decision-types catalog
 
 Each section holds a mix of these; the same 4-state machine applies to all. The `description` of each option names the next mechanical step (phrasing → [`../../_shared/ask-style.md`](../../_shared/ask-style.md)).
 
+- **Surface** (§4, walked **first**) — *what's being built*: a multiSelect over the C4-grounded taxonomy (`backend-service` / `web-frontend` / `mobile-app` / `desktop-app` / `cli` / `worker` / `library-sdk`), Recommended-set derived from spec §1 «for whom» + §4 roles. It gates §5 (one container per surface) and every downstream stage, so it's resolved before any other §4 decision. The blast-radius gate fires whenever **>1 surface** is picked (multi-module + irreversible). On resolution, write `target_surfaces: [...]` to the `sad.md` frontmatter → [`../../_shared/surfaces.md`](../../_shared/surfaces.md).
+- **UI-architecture** (§4, one per declared UI surface) — the follow-on to a `web-frontend` / `mobile-app` / `desktop-app` pick: web → SSR/SPA/hybrid; mobile → native/cross-platform; + state-management + routing only if complexity warrants. Option-set of 2–3, Recommended-first; gate fires often (irreversible delivery choice). This **evolves** the old §4 "read-side delivery (SSR/SPA/API-only)" item up into a per-surface decision. Kept light (no component-tree / token / screen artifact — Option B).
 - **Strategic** (mostly §4, sometimes §7) — option-set of 2–4, Recommended-first. The blast-radius gate fires **almost always** (irreversible + multi-module). Plan ≥2 ADRs from §4 alone.
 - **Building-block** (mostly §5) — module boundary (extend vs new), layering style (only ask if the spec signals divergence from the repo's convention), internal sub-package layout. Gate fires often (multi-module).
 - **Crosscutting bundle** (§8) — one bundled question: «keep the repo's defaults» / «override for §X». Gate rarely fires (convention-level, not blast-radius).

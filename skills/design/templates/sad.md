@@ -4,6 +4,7 @@ owner: "<Architect / Tech Lead>"
 reviewers: ["<Tech Lead>", "<Security Lead>"]
 updated_at: "<today YYYY-MM-DD>"
 feature_size: "<from .size: XS/S/M/L/XL>"
+target_surfaces: []  # filled in §4 — subset of: backend-service | web-frontend | mobile-app | desktop-app | cli | worker | library-sdk. Read (never re-derived) by api/sequences/tasks/plan-tests/review → _shared/surfaces.md
 ---
 
 # Software Architecture Document — <slug>
@@ -122,6 +123,10 @@ Each tactical decision in later sections should trace to one of these seeds. Tac
      may talk to whom. Without §5, §6 (the flows) has no vocabulary of participants.
      📋 Write: 1 ¶ on the style (layered / hexagonal / clean / event-driven) + a folder tree + a
      C4Container block.
+     📌 Draw ONE Container per declared `target_surface` (frontmatter): a fullstack
+     [backend-service, web-frontend] = a backend-API container + a web/SPA container; a
+     [backend-service, mobile-app] = the API + the mobile app. The Container(web, …) line below is
+     just one surface's container — swap/add per what was declared in §4. → _shared/surfaces.md
      📌 e.g. «web app, content API, media worker, datastore, object store, CDN». -->
 
 <One paragraph: layered / hexagonal / clean / event-driven, and why.>
@@ -137,7 +142,7 @@ Each tactical decision in later sections should trace to one of these seeds. Tac
 └── wiring        <self-wiring entry point>
 ```
 
-**C4 Container (L2):** <!-- syntax → references/c4-mermaid-syntax.md. Real names, no <placeholder> stubs. -->
+**C4 Container (L2):** <!-- syntax → references/c4-mermaid-syntax.md. Real names, no <placeholder> stubs. ONE Container per declared target_surface (frontmatter); the web container below is one example surface. -->
 
 ```mermaid
 C4Container

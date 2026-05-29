@@ -69,7 +69,7 @@ flowchart LR
 |---|---|---|---|
 | 1 | **specify** | Interviews you to capture the idea, writes the product spec + acceptance criteria (reads the architecture map for constraints) | *your idea*, `architecture-map.md` → `spec.md` |
 | 2 | **clarify** | Sweeps the spec for ambiguities (a devil's-advocate pass), closes or defers each | `spec.md` → tightened `spec.md` |
-| 3 | **design** | **Matches the feature to your existing architecture** (see below), writes the Arc42 SAD + C4 + ADRs | `spec.md`, `CONTEXT.md` → `sad.md`, `adr/*` |
+| 3 | **design** | **Matches the feature to your existing architecture** (see below) + **declares the target surfaces**, writes the Arc42 SAD + C4 + ADRs | `spec.md`, `CONTEXT.md` → `sad.md`, `adr/*` |
 | 4 | **sequences** | Draws the runtime flows as Mermaid sequence diagrams | `sad.md` → `sad.md §6` |
 | 5 | **data-model** | Designs the schema and writes the actual forward+rollback migrations — **staged** under the feature folder, not the live tree (`implement` promotes them) | `spec.md`, `sad.md`, sequences → `data-model.md`, staged `migrations/*.up/down.sql` |
 | 6 | **api** | Derives the OpenAPI contract from the data model + sequences + spec | `data-model.md`, sequences, `spec.md` → `contracts/openapi.yaml` |
@@ -129,6 +129,30 @@ Two things the dial **never** weakens — they hold at every level:
   a branch, or an explicit non-runtime N/A (no flow cap); and `review` traces the whole set through
   spec → sequences → data-model → api → tasks → implement, flagging anything that dropped out. Even
   `easy`/XS covers every use-case + AC — it just asks fewer questions about *how*.
+
+## Target surfaces (what's being built)
+
+`design` opens §4 by declaring the feature's **target surface(s)** — *what's being built* — grounded
+in C4 container types: `backend-service`, `web-frontend` (SSR or SPA), `mobile-app`, `desktop-app`,
+`cli`, `worker`, `library-sdk`. The choice is derived from the spec's "for whom" (the spec stays
+product-level — it never names a surface), gated by the blast-radius gate (multi-surface usually
+spawns an ADR), drawn as **one C4 container per surface** in SAD §5, and written to the SAD
+frontmatter `target_surfaces: [...]`. Downstream stages **read** that declaration and gate their
+output by it — they never re-derive it:
+
+- **`api`** picks the contract form from the surface (HTTP/OpenAPI · gRPC · events · `cli.md` ·
+  `public-api.md`); a UI surface *consumes* the backend contract rather than authoring one.
+- **`sequences`** draws **UI-driven flows** (`<user>` → `<ui>` → `<service>`) for a UI surface.
+- **`tasks`** adds a **`ui`** task layer for a UI surface (backend-only stays domain/infra/app/ports).
+- **`plan-tests`** adds the **component / visual-regression / e2e-through-UI** tiers (the frontend
+  "testing trophy") for a UI surface; `implement` detects the actual tools (Playwright / Storybook / …).
+- **`review`** traces every acceptance criterion through *its* surface — a UI AC to a component /
+  e2e-through-UI test, not only a backend one.
+
+It's **Option B** — frontend-awareness threaded through the existing stages (a `ui` layer,
+UI-architecture ADRs, UI flows, frontend test tiers); there is deliberately **no** separate
+component-tree / design-token / screen artifact. Full semantics:
+[`skills/_shared/surfaces.md`](./skills/_shared/surfaces.md).
 
 ## Where the spec comes from
 
@@ -292,7 +316,7 @@ Artifacts land in `docs/features/<slug>/`.
 .claude-plugin/   plugin.json + marketplace.json (self-marketplace)
 agents/           explorer, test-author, implementer, reviewer, critic, devils-advocate, researcher, strategist, analyst
 scripts/          validate_plugin.py (CI: manifest name/version/description + frontmatter)
-skills/_shared/   canonical socratic-loop / critic / size-matrix / ask-style / interview-depth / diagram-presentation (referenced, not duplicated)
+skills/_shared/   canonical socratic-loop / critic / size-matrix / ask-style / interview-depth / diagram-presentation / surfaces (referenced, not duplicated)
 skills/<name>/    SKILL.md spine + references/ (heavy detail) + templates/ (output scaffolds)
 ```
 

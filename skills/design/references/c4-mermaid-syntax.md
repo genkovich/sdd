@@ -81,6 +81,29 @@ C4Container
 - Datastores live *outside* the boundary if they're separate processes (almost always).
 - Show a background worker / scheduled job as its own container — its lifecycle matters even when it runs in-process.
 
+**Multi-surface features — one `Container` per declared `target_surface`.** When §4 declares more than one surface (frontmatter `target_surfaces` → [`../../_shared/surfaces.md`](../../_shared/surfaces.md)), §5 draws one container for each. A `[backend-service, web-frontend, mobile-app]` feature shows the SPA **and** the mobile app **and** the backend API — both UI surfaces *consume* the API's contract, neither authors one:
+
+```mermaid
+C4Container
+    title <feature> — Containers (multi-surface)
+
+    Person(user, "<User role>")
+
+    Container_Boundary(app, "<Our system>") {
+        Container(spa, "<Web SPA>", "<SPA tech>", "browser UI — consumes the API")
+        Container(mobile, "<Mobile app>", "<mobile tech>", "native UI — consumes the API")
+        Container(api, "<Backend API>", "<backend tech>", "owns the REST/JSON contract")
+    }
+
+    ContainerDb(db, "<Datastore>", "<technology>", "<tables>")
+
+    Rel(user, spa, "uses", "HTTPS")
+    Rel(user, mobile, "uses", "HTTPS")
+    Rel(spa, api, "calls", "JSON/HTTPS")
+    Rel(mobile, api, "calls", "JSON/HTTPS")
+    Rel(api, db, "reads/writes", "<driver>")
+```
+
 ## Common mistakes
 
 - **Mixing levels.** Don't put a component (a single class/struct) inside a Container diagram — either zoom out (it's part of the Container) or move to L3.

@@ -107,7 +107,7 @@ Tag each AC with its US-NN. Concurrent edge → add as AC-NNb, still in business
 <!-- instruction:
 - Data classification: public / internal / confidential / regulated (one word + 1-sentence rationale).
 - Personal data touched: none, OR list new fields with type + sensitivity.
-- AuthZ/AuthN impact: which endpoint groups are added, which checks run (e.g. «repo always filters by the caller's org»).
+- AuthZ/AuthN impact: which capabilities / permission checks are added, which checks run (e.g. «repo always filters by the caller's org»). Stay surface-neutral — no endpoint/route language here; `design` derives the surfaces and `api` the endpoints.
 - Abuse cases (3–5): cross-tenant access, draft/data leak, injection through URL/text fields, spam-create with a rate limit, optional token misuse — each with the business response (deny vs hide-existence; rationale, not status codes).
 - Security review verdict: Required (M+ / new authz boundary / new PII) or N/A with a concrete reason. -->
 

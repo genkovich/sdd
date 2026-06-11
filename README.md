@@ -19,27 +19,47 @@ dial decides how much the skill decides for you vs. interrogates you with trade-
 /plugin install sdd@sdd
 ```
 
-**Codex CLI** — one command (project-local; add `--global` after `codex` to install under `~`):
+After updating to a new release: re-run `/plugin install sdd@sdd`, then `/reload-plugins`.
+
+**Codex CLI** — `cd` into your project first: the script installs into the **current directory**
+(`.agents/skills/` + `.codex/agents/`). Add `--global` after `codex` to install under `~` instead:
 
 ```sh
+cd your-project
 curl -fsSL https://raw.githubusercontent.com/genkovich/sdd/main/install.sh | bash -s -- codex
 ```
 
-Or natively: `codex plugin marketplace add genkovich/sdd`. One naming nuance: the native plugin
-install registers the **original** skill names (`$specify`), while the installer script prefixes
-them — `$sdd-specify` — because bare names like `review` / `design` / `api` collide with generic
-skills.
+Then restart codex (skills are discovered at session start) and type `$sdd-specify`.
 
-**Cursor** (2.4+) — the same script:
+Alternative — the plugin marketplace. Note that `add` only **registers** the marketplace, it
+installs nothing by itself:
+
+```text
+codex plugin marketplace add genkovich/sdd
+```
+
+then **inside codex** run `/plugins`, switch to the `sdd` marketplace tab and pick
+**Install plugin**. One naming nuance: the marketplace install registers the **original** skill
+names (`$specify`), while the installer script prefixes them — `$sdd-specify` — because bare
+names like `review` / `design` / `api` collide with generic skills. Pick one of the two paths,
+not both, or the skill list shows each skill twice.
+
+**Cursor** (2.4+) — the same script; `cd` into your project first (installs into
+`.cursor/skills/` + `.cursor/agents/` of the current directory; `--global` for `~`):
 
 ```sh
+cd your-project
 curl -fsSL https://raw.githubusercontent.com/genkovich/sdd/main/install.sh | bash -s -- cursor
 ```
 
-Invoke a stage by typing `/` in the chat and picking `sdd-specify`. (Cursor also reads
-`.agents/skills/`, so a Codex install is already visible to Cursor.) How every Claude-specific
-mechanism — `AskUserQuestion`, subagents, `/clear`, the implement engine modes — maps to Codex /
-Cursor is one table: [`skills/_shared/tool-adapters.md`](./skills/_shared/tool-adapters.md).
+Then restart Cursor (or run **Developer: Reload Window**) and invoke a stage by typing `/` in
+the chat and picking `sdd-specify`. (Cursor also reads `.agents/skills/`, so a Codex install is
+already visible to Cursor.) Once the plugin is listed on the Cursor marketplace, installing from
+the in-app marketplace panel works too — project- or user-scoped.
+
+How every Claude-specific mechanism — `AskUserQuestion`, subagents, `/clear`, the implement
+engine modes — maps to Codex / Cursor is one table:
+[`skills/_shared/tool-adapters.md`](./skills/_shared/tool-adapters.md).
 
 ## Start here
 

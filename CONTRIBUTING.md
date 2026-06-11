@@ -53,3 +53,31 @@ a fixed number.)
       template-runtime path (`../spec.md`, `../sad.md`, `../contracts/…`, …) that resolves only inside
       a generated `docs/features/<slug>/` folder — those are allowlisted in the validator.
 - [ ] **References in `references/`, templates in `templates/`** — one level deep, no nested folders.
+
+## Releasing
+
+1. Bump the version in **all four** manifests — `.claude-plugin/plugin.json`,
+   `.claude-plugin/marketplace.json`, `.codex-plugin/plugin.json`, `.cursor-plugin/plugin.json` —
+   the validator fails on any mismatch.
+2. `python3 scripts/validate_plugin.py` → exit 0; push to `main`; tag `vX.Y.Z`.
+3. Claude Code and Codex pick the release up straight from git (`/plugin install sdd@sdd` +
+   `/reload-plugins`; `codex plugin marketplace upgrade sdd`). The `install.sh` path always
+   downloads `main` (or `--ref vX.Y.Z`). Only the Cursor **marketplace** listing goes through a
+   review — see below.
+
+### Publishing to the Cursor marketplace
+
+Cursor plugins are distributed as public git repositories and **manually reviewed** — both the
+first listing and every subsequent update:
+
+1. **Pre-check locally.** Copy the repo to `~/.cursor/plugins/local/sdd`, restart Cursor (or run
+   **Developer: Reload Window**), type `/` in the chat and confirm the skills appear.
+2. **The repo already satisfies the format.** `.cursor-plugin/plugin.json` is the manifest (only
+   `name` is strictly required; we also ship displayName / version / description / author /
+   license), and `skills/` + `agents/` are auto-discovered from the repo root. A
+   `.cursor-plugin/marketplace.json` is only needed for multi-plugin repos — not here.
+3. **Submit** the repo URL at [cursor.com/marketplace/publish](https://cursor.com/marketplace/publish)
+   and wait for the review. After approval the plugin appears on cursor.com/marketplace and in
+   the in-app marketplace panel; users install it from there, project- or user-scoped.
+4. **Updates are re-reviewed** before the marketplace refreshes; the `install.sh` git path keeps
+   tracking `main` immediately, review or not.

@@ -32,7 +32,7 @@ Artifact depth ∝ feature size. XS/S → minimal set; M+ → full.
 | Artifact (skill) | MVP (XS/S) | Full (M+) |
 |---|---|---|
 | spec — `specify` | yes | yes |
-| clarify pass — `clarify` | light (skip if no ambiguity) | yes |
+| clarify pass — `clarify` | light (always run; the skip is offered by `specify`'s handoff per the fast lane below) | yes |
 | CONTEXT.md glossary — `glossary` | yes | yes |
 | SAD (Arc42 12 §) + C4 L1/L2 — `design` | 12 sections walked, more `<!-- N/A -->` allowed | all 12 filled |
 | ADRs (in `adr/`) — `design` / `decide-adr` | 2–4 typical | 5–12 typical |

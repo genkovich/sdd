@@ -54,6 +54,11 @@ treat the AC exactly like any other (it must be covered by flows and tests on th
 It only records that the AC entered the spec through a bug, not through `specify` — useful when
 auditing why the original spec missed it.
 
+One nuance: «like any other» is a floor, not a discount. An added-by-fix AC is **higher-risk by
+construction** — it's evidence the spec already missed this case once — so the next `review` /
+`implement` pass verifies it at least as strictly as the rest, with the pinning test that caught
+the bug as the minimum baseline, never the whole proof.
+
 ## No-spec mode (brownfield soft gate)
 
 Two ways in: `docs/features/` doesn't exist at all, or it exists but no spec plausibly owns the

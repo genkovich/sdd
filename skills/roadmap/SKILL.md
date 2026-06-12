@@ -45,6 +45,9 @@ Whoever owns product direction (PM / lead / the solo maintainer). They decide wh
 
 - **`specify`** registers its feature on the roadmap and promotes the item to **Now** (outcome one-liner + link to the new `docs/features/<slug>/` + status). A brand-new feature with no prior candidate is added directly to Now.
 - **`ship`** moves the item to **Shipped** (date + link to the PR/changelog) and removes it from Now.
+- **`fix`** (optional — the user's call): a **wide** fix on a shipped feature (>5 files / cross-module)
+  may append a note to that feature's **Shipped** row — the date + a link to the
+  `docs/features/<slug>/_fixes/` record. Small fixes don't touch the roadmap.
 
 Because the pipeline stages themselves update the roadmap, it stays current without separate upkeep — the same mechanism GitHub's public roadmap uses (ship → mark shipped → close).
 

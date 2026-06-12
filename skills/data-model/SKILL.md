@@ -8,7 +8,7 @@ description: >
   pass — shippable SQL, not a plan. Triggers on "data model for {slug}", "schema for {slug}",
   "generate migrations for {slug}", "DB design + migration", "/sdd:data-model {slug}",
   "модель даних для {slug}", "схема для {slug}", "згенеруй міграції". Reads spec.md §5 +
-  sad.md §6.4 ER + the sequence diagrams, then writes docs/features/{slug}/data-model.md plus
+  sad.md §5 building blocks + the §6 sequence diagrams, then writes docs/features/{slug}/data-model.md plus
   paired *.up.sql / *.down.sql migrations STAGED under docs/features/{slug}/migrations/ (NOT the
   live migrations/ tree — implement promotes them when the feature is actually built) and an audit
   report. Greenfield-first; brownfield delta via --mode brownfield; drift-only via --drift-only.
@@ -29,7 +29,7 @@ Backend Lead.
 ## Inputs
 
 - `<slug>` — feature slug.
-- **Gate (hard refuse if missing):** `docs/features/<slug>/spec.md` (entities live in §5 acceptance criteria) and `docs/features/<slug>/sad.md` (§6.4 ER stub). Missing → «run `specify` / `design` first».
+- **Gate (hard refuse if missing):** `docs/features/<slug>/spec.md` (entities live in §5 acceptance criteria) and `docs/features/<slug>/sad.md` (entity candidates: §5 building blocks — the persistence containers — + the §6 persist notes). Missing → «run `specify` / `design` first».
 - Optional: the sequence diagrams in `sad.md §6` — each `writes/reads <entity>` note is an index candidate (one index per query, justified).
 - (Expected) `sad.md` frontmatter `target_surfaces` — context for which containers persist what. **Absent or empty → warn** («surfaces undeclared — re-run `design`, or proceeding as `backend-service`») **and treat as `[backend-service]`** (→ [`../_shared/surfaces.md`](../_shared/surfaces.md)).
 - **Convention source:** `docs/architecture-map.md` §Migrations (from `survey`) + the `sad.md` persistence decisions (§4/§5/§8) + Accepted ADRs — the migration tool/naming + the DB approach are **derived from here**, not invented (the map also gives module layout, saving a re-scan). For **drift detection** specifically, `explorer` still reads the **actual domain layer** (the map gives layout; drift needs the real struct/field source). Stack-agnostic — no hard-coded path or language.
@@ -62,7 +62,7 @@ What it **does apply regardless of stack** — migration **safety**, not DB phil
 
 1. **Prereq check (hard).** Both `spec.md` and `sad.md` present, else refuse with a pointer to the missing one.
 2. **Derive conventions from the architecture (read-only — never write a rules file).** Read **`architecture-map.md` §Migrations** (the tool/naming `survey` recorded) + the **`sad.md` persistence decisions** (§4 strategy / §5 building blocks / §8 crosscutting) + the **Accepted ADRs** **first** — they choose the migration tool/naming + the DB approach (PK / audit / delete / constraints). **Corroborate** with the live `migrations/` folder + schema (Explore or `ls`) for anything the architecture left implicit — e.g. statement-per-file rules (golang-migrate's transaction-per-file), the next sequence value. Record the migration naming as a **promote-time hint** in the audit report (e.g. «sequential, next ≈ `000023` — `implement` assigns the real number at promotion, since another feature may promote first»). On a **greenfield** repo with no architecture signal, the schema choices are confirmed with the user (steps 4–6), not defaulted to a house style. **Do not pick a final number, do not write into the live `migrations/`, and do not impose a convention the architecture/repo doesn't use** — staging happens in step 9, promotion in `implement`; flag any divergence (architecture vs repo) in the report.
-3. **Read prereqs in order:** spec §5 (entity candidates from AC) → sad §6.4 (ER stub) → `sad.md §6` sequences (each write/read note → an index candidate) → (optional) the Explore-discovered domain layer for a struct-vs-DDL map.
+3. **Read prereqs in order:** spec §5 (entity candidates from AC) → sad §5 building blocks (the persistence containers — which container owns which data) → `sad.md §6` sequences (each `writes/reads <entity>` note → an entity + index candidate) → (optional) the Explore-discovered domain layer for a struct-vs-DDL map.
 4. **Aggregate roots.** Ask (or infer from AC) which aggregate roots own what — without explicit aggregates the FK graph turns into a hairball. Phrase per [`../_shared/ask-style.md`](../_shared/ask-style.md).
 5. **PK strategy.** Follow the repo's detected PK convention; on greenfield (or if an AC demands a specific PK like a lookup slug), confirm with the user — UUID, bigint-identity, sequence, composite, whatever fits. No default imposed.
 6. **Columns + constraints** per entity, **matching the repo's conventions**: string/JSON types per the repo's norms (`VARCHAR(N)` sized from AC validation limits / `TEXT` / JSON, as the repo does); audit columns (`created_at` / `updated_at` / none) per the repo's pattern; `CHECK` / DB `DEFAULT` / triggers **iff the repo uses them**; `<!-- TBD -->` where honestly undecided. On greenfield, confirm these with the user.

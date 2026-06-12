@@ -12,7 +12,10 @@ Resolve four commands — **unit test**, **integration test**, **lint**, **vet/t
    - `Cargo.toml` → `cargo test` / `cargo test -- --ignored` / `cargo clippy` / `cargo check`.
    - `pyproject.toml` / `setup.cfg` → `pytest` / `pytest -m integration` / `ruff check` (or `flake8`) / `mypy`.
    - `pom.xml` / `build.gradle` → `mvn test` / `mvn verify` / (checkstyle/spotless) / `mvn -q compile`.
-   - other manifests → the analogous conventional commands.
+   - `composer.json` → `vendor/bin/phpunit` (or the `scripts.test` entry) / the repo's tagged integration suite / `vendor/bin/phpcs` or `php-cs-fixer` / `vendor/bin/phpstan` or `psalm` (whichever is configured).
+   - `Gemfile` → `bundle exec rspec` / `bundle exec rspec --tag integration` / `rubocop` / (no conventional typecheck — skip).
+   - `*.csproj` / `*.sln` → `dotnet test` / `dotnet test --filter <integration category>` / `dotnet format --verify-no-changes` / `dotnet build`.
+   - any other manifest → there is no convention to trust: **ask the user for the commands** (and offer to save them to `.claude/sdd.local.md`) — never guess.
 5. **Integration tier — Docker probe.** Whatever produced the integration command, confirm a Docker daemon is reachable (`docker info` succeeds) before trusting it — most integration suites spin up an ephemeral dependency (testcontainers-style). Feed the probe result to `require_integration` (see [`settings.md`](./settings.md)): `auto` → run if reachable else NON-red; `always` → BLOCK if unreachable; `never` → skip.
 
 ## Reporting

@@ -49,6 +49,7 @@ Tech Lead / a reviewer who did **not** write the code (independence is the point
 - **Reviewing your own code in the same context that wrote it.** The reviewer must be clean-context and, ideally, not the author — that's what catches the blind spots.
 - **Uncited findings.** «This feels off» is not actionable — cite `file:line` + the AC/contract or drop it.
 - **Shipping with an open AC finding.** A stage-1 gap means the feature doesn't do what the spec says — fix or explicitly de-scope (spec change), never wave through.
+- **Under-checking `added-by-fix` ACs.** An AC that entered §5 through a bug is proof the spec already missed that case once — trace it at least as strictly as the rest; the fix's pinning test is its floor, not proof of full coverage.
 - **Trusting the diff's `SDD-AC` trailers as the complete AC set.** The trailers only list what the diff *claims*. Review traces the **whole** §5 set end-to-end — an AC that never reached the diff (no task wrote it, no test asserts it) is the most dangerous gap precisely because the trailers can't reveal it.
 - **Re-litigating style the repo already settled.** Judge against the conventions + contracts, not personal taste.
 - **Treating the per-task gate as the review.** Green tests prove each task; they don't prove the change coheres or that the AC are truly met end-to-end.

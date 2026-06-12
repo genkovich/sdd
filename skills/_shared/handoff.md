@@ -76,7 +76,9 @@ Rules for filling it:
 - **Utility** (`classify-size`, `glossary`, `decide-adr`, `roadmap`, `fix`): called ad-hoc, not a
   gate. `/clear` is **optional** (recommend it only if the context is large); *Run next* = «resume
   your backbone stage», naming the likely one (e.g. `/sdd:design <slug>`). Print *What I did* +
-  *Review* (the one file it wrote).
+  *Review* (the one file it wrote). One exception: `fix` alone adds a **conditional** recommendation —
+  when the fix touched >5 files or crossed a module boundary, *Run next* also offers
+  `/sdd:review <slug>` (a recommendation, never a gate).
 
 ## Canonical sequence (stage → review-files → next)
 

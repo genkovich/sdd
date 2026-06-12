@@ -53,4 +53,7 @@ For **each** of A / B / C, exactly these six fields:
 - **Outcome metrics are real KPIs**, with a baseline and a target the approach plausibly moves —
   never a vanity number. If you can't ground a metric from the inlined material, say `metric: TBD —
   needs <what>` rather than inventing one.
+- **Don't fabricate to fill a field.** Any field you can't ground confidently in the inlined idea +
+  deep-dive answers gets `? — <reason>`, never an invented value. Before finalizing, re-read the
+  inlined material and verify each field traces back to it.
 - No preamble, no recommendation, no closing summary — the three blocks only.

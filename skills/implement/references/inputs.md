@@ -25,7 +25,7 @@ A `tasks.json` with `slug: "_scaffold"` and `layer: scaffold` tasks comes from `
 The engine does **not** paste these into prompts — each agent (or the sequential runner) reads them itself, so there's no paraphrase drift:
 
 - `docs/features/<slug>/spec.md` — §5 acceptance criteria (the source of truth for what each test asserts).
-- `docs/features/<slug>/test-plan.md` — the AC→test map, if `plan-tests` ran.
+- `docs/features/<slug>/test-plan.md` — the AC→test map, if `plan-tests` ran. **For XS/S the plan is usually inline instead** — a `## Test plan` section in `spec.md` (per the size matrix); check both locations and read whichever exists.
 - `docs/features/<slug>/data-model.md` + the **staged** migration files under `docs/features/<slug>/migrations/` — the schema the code targets (a `layer: migration` task promotes them into the live `migrations/` tree; see «Staged migrations → promote» below).
 - `docs/features/<slug>/contracts/openapi.yaml` — the API contract handlers must match.
 - `docs/features/<slug>/sad.md` + Accepted `adr/` — the architecture and the locked decisions.

@@ -19,7 +19,7 @@ description: >
 
 # Skill: glossary
 
-Lazy utility that fixes the meaning of a domain term in `CONTEXT.md` the moment it first surfaces, so its sense doesn't drift across the pipeline. For each term it captures a one-sentence canonical definition and — when the word is ambiguous — a **NOT-reference** naming the concept it's confused with. Runs anytime, with no upstream gate: a single term mid-interview, or a batch handed over by `specify`. The output feeds `specify` (role + domain-term names) and `design` (invariants), which treat `## Glossary` as canonical and override anything that contradicts it.
+Lazy utility that fixes the meaning of a domain term in `CONTEXT.md` the moment it first surfaces, so its sense doesn't drift across the pipeline. For each term it captures a one-sentence canonical definition and — when the word is ambiguous — a **NOT-reference** naming the concept it's confused with. Runs anytime, with no upstream gate: a single term mid-interview, an `undefined-term` finding `clarify` resolves mid-sweep, or a batch handed over by `specify`. The output feeds `specify` (role + domain-term names) and `design` (invariants), which treat `## Glossary` as canonical and override anything that contradicts it.
 
 This is a capture utility, not a Socratic stage — it does **not** run the shared Socratic loop or critic. The one shared dependency is question phrasing:
 → [`../_shared/ask-style.md`](../_shared/ask-style.md)
@@ -33,6 +33,7 @@ Whoever drives the conversation — anyone who spots ambiguity. Tech Lead approv
 - `<term>` — the domain word/phrase to fix. If not given, ask for it.
 - (Optional) `<slug>` — feature slug; targets `docs/features/<slug>/CONTEXT.md`. Absent → repo-root `CONTEXT.md`.
 - (Optional) `pending_glossary_terms` — a batch handed over by `specify` after it writes the spec. Process each term in turn.
+- (Optional) an `undefined-term` finding from `clarify` — `clarify` invokes this skill **mid-stream**, one term at a time, the moment such a finding is Resolved (it never invents a meaning inline; the canonical definition lands here).
 - (Optional) proposed phrasings already surfaced in an interview/brainstorm — offer them as definition options instead of asking blank.
 
 ## Protocol

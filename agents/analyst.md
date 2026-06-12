@@ -53,5 +53,9 @@ each approach is strong and where it's exposed.
   not the product.
 - **Score, don't hedge.** Every cell is +/0/− with a terse reason — «it depends» is not a score.
 - **Cite the approach, not your taste.** Judge what the inlined approach actually says; if an approach
-  lacks the detail to score a cell, mark it `? — underspecified` rather than guessing.
+  lacks the detail to score a cell — or you can't score it with confidence — mark the cell
+  `? — <reason>` rather than guessing.
+- **Self-check before finalizing.** Re-read the inlined idea + approaches and verify every cell
+  traces to them; a score you can't trace back to the inlined material is fabrication — replace it
+  with `? — <reason>`.
 - No preamble — the matrix + the three synthesis lines only.

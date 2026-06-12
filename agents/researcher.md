@@ -41,7 +41,10 @@ A single markdown table, 3–5 rows:
 
 - **Value (1–5)** = how well it solves *our* user's problem (5 = solves it well, 1 = barely adjacent).
 - **Gap** = the opening our feature exploits — this is the row that justifies building anything.
-- **Footnote every row** with the date and the exact search query you used: `^[YYYY-MM-DD · "<query>"]`.
+- **Footnote every row** with the date and the exact search query you used — append the inline
+  annotation `^[YYYY-MM-DD · "<query>"]` to the end of the row's Gap cell (one per row), e.g.
+  `…our feature targets ^[2026-06-12 · "team workload dashboard"]`. It's an inline footnote on the
+  row, not a separate footnotes section.
 - End with **one synthesis line**: the single biggest gap across the table (the competitive wedge the
   spec's recommendation should name).
 

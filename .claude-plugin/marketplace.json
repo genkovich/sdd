@@ -9,8 +9,8 @@
     {
       "name": "sdd",
       "source": "./",
-      "version": "1.10.0",
-      "description": "Spec-Driven Development pipeline: 16 atomic Socratic skills (survey → spec → design → data-model → api → tasks → tests → implement → review → ship) + a living Now/Next/Later roadmap above the per-feature flow + 9 subagents, plus a TDD implementation engine with agent-team and dynamic-workflow modes. The Q&A skills are depth-tunable (easy/medium/hard); the ideation analyses (researcher/strategist/analyst/devil's-advocate) run as named subagents gated by that dial; diagrams are confirmed in prose; and every acceptance criterion is covered end-to-end. Surface-aware: declare target surfaces at design (backend/web/mobile/desktop/CLI/worker/library, as C4 containers); downstream gates the `ui` task layer, UI-driven flows, frontend test tiers, and `ui` reuse of the repo's design system (components / tokens / styling). Every stage prints a copy-ready handoff (what changed + files to review + `/clear` + the next command).",
+      "version": "1.10.1",
+      "description": "Spec-Driven Development pipeline: 17 atomic Socratic skills (survey → spec → design → data-model → api → tasks → tests → implement → review → ship) + a living Now/Next/Later roadmap above the per-feature flow + 9 subagents, plus a TDD implementation engine with agent-team and dynamic-workflow modes. The Q&A skills are depth-tunable (easy/medium/hard); the ideation analyses (researcher/strategist/analyst/devil's-advocate) run as named subagents gated by that dial; diagrams are confirmed in prose; and every acceptance criterion is covered end-to-end. Surface-aware: declare target surfaces at design (backend/web/mobile/desktop/CLI/worker/library, as C4 containers); downstream gates the `ui` task layer, UI-driven flows, frontend test tiers, and `ui` reuse of the repo's design system (components / tokens / styling). Every stage prints a copy-ready handoff (what changed + files to review + `/clear` + the next command).",
       "category": "workflow",
       "tags": [
         "sdd",

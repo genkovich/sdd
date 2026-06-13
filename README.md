@@ -506,6 +506,8 @@ enabled, serves a **local browser dashboard** (`dashboard/`) on `127.0.0.1`. It:
 3. Run **`/sdd:start`** — it hands the server your project dir, confirms the channel, and prints the URL
    (`http://127.0.0.1:<port>/?session=<id>&token=<cap>`). Pure-markdown users who skip this are unaffected.
 
+**Setup, usage, config & troubleshooting:** [`server/README.md`](./server/README.md).
+
 **Security:** binds loopback only; reads/writes are realpath-contained to `docs/` with an extension
 allowlist; mutating routes require a per-session capability token; inbound commands are built **only** from
 a server-side skill + slug allowlist (browser text never becomes an arbitrary `/sdd:` command).

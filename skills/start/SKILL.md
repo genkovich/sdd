@@ -1,6 +1,6 @@
 ---
 name: start
-model: sonnet
+model: inherit
 effort: low
 description: >
   Use to open the SDD visual dashboard — the local browser UI that shows every feature's

@@ -1,7 +1,7 @@
 {
   "name": "sdd",
   "displayName": "SDD — Spec-Driven Development",
-  "version": "1.11.1",
+  "version": "1.11.2",
   "description": "Spec-Driven Development pipeline: 17 atomic Socratic skills (survey → spec → design → data-model → api → tasks → tests → implement → review → ship) + a living Now/Next/Later roadmap above the per-feature flow, plus a TDD implementation engine. Depth-tunable Q&A (easy/medium/hard), surface-aware design (backend/web/mobile/desktop/CLI/worker/library as C4 containers), every acceptance criterion covered end-to-end, and a copy-ready handoff block at every stage. Skills are the open Agent Skills format (SKILL.md); the Claude-specific mechanisms degrade per skills/_shared/tool-adapters.md.",
   "author": {
     "name": "Kyrylo Genkov",

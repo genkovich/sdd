@@ -8,25 +8,28 @@ description: >
   lets you edit artifact text back to disk, and drives the pipeline by sending /sdd:<skill>
   commands back into this live session. Triggers on "start the dashboard", "open the SDD
   dashboard", "sdd dashboard", "/sdd:start", "show the pipeline UI", "відкрий дашборд",
-  "запусти панель SDD". This is the HANDSHAKE skill: the MCP server auto-starts at session
-  open (via .mcp.json) — start hands it the authoritative project directory, confirms the
-  channel works in both directions, and prints the dashboard URL with its capability token.
-  Opt-in: requires dashboard_enabled: true in .claude/sdd.local.md and Bun installed; if
-  either is missing it prints guidance and exits cleanly (pure-markdown skills are unaffected).
+  "запусти панель SDD". The sdd-dashboard MCP server auto-starts at session open (via .mcp.json),
+  resolves the project from CLAUDE_PROJECT_DIR, binds its loopback HTTP listener, and writes the
+  dashboard URL (with a per-session capability token) to ~/.claude/sdd-dashboard/current.url —
+  so start's job is simply to READ that file and print the URL. No MCP tool call, no channel
+  round-trip on the common path. Opt-in: requires dashboard_enabled: true in .claude/sdd.local.md
+  and Bun installed; if either is missing it prints guidance and exits cleanly (pure-markdown
+  skills are unaffected).
 ---
 
 # Skill: start
 
 Opens the **SDD visual dashboard** — a local, loopback-only browser UI served by the
 `sdd-dashboard` MCP server (Bun + `Bun.serve()`), embedded in the same process that holds this
-session's MCP channel. The dashboard reads `docs/features/` straight off disk, renders every
-artifact, and — the point of it — **drives the pipeline back into this session**: a click in the
-browser sends a validated `/sdd:<skill> <slug>` command through the channel, this Claude runs it,
-and progress streams back to the browser live.
+session's MCP channel. The dashboard reads `docs/features/` off disk, renders every artifact, and —
+the point of it — **drives the pipeline back into this session**: a click in the browser sends a
+validated `/sdd:<skill> <slug>` command through the channel, this Claude runs it, and progress
+streams back to the browser live.
 
 `start` is **not** "start the server" — the server auto-starts when the session opens (declared in
-`.mcp.json`, so the HTTP listener is up before any command). `start` is the **handshake**:
-hand over the real project dir, ping the channel, print the URL.
+`.mcp.json`). On boot it resolves the project from `CLAUDE_PROJECT_DIR`, binds the HTTP listener, and
+**writes the dashboard URL to `~/.claude/sdd-dashboard/current.url`**. So on the common path `start`
+just **reads that file and prints the URL** — a plain file read, no MCP tool, no channel message.
 
 ## Owner
 
@@ -34,65 +37,70 @@ The developer running the session. No artifact is produced — this is a connect
 
 ## Inputs
 
-- `.claude/sdd.local.md` — read `dashboard_enabled` (must be `true`) and `dashboard_port` (optional).
-  Auto-created with documented defaults by `specify`/`implement` → [`../implement/references/settings.md`](../implement/references/settings.md).
-- The current **project root** (the session cwd — `start` runs in-session where cwd *is* the project,
-  so it can hand the authoritative path to the server, covering hosts where `CLAUDE_PROJECT_DIR` is unset).
-- The `sdd-dashboard` MCP server (auto-started). Its `dashboard_handshake` tool is the handover point.
+- `.claude/sdd.local.md` — read `dashboard_enabled` (must be `true`). Auto-created with documented
+  defaults by `specify`/`implement` → [`../implement/references/settings.md`](../implement/references/settings.md).
+- `~/.claude/sdd-dashboard/current.url` — the file the server writes when it binds: line 1 is the
+  dashboard URL (with the capability token), line 2 is the project dir it resolved. **This is the
+  primary input** — present whenever the server bound HTTP at boot.
+- (Fallback only) the `sdd-dashboard` MCP server's `dashboard_handshake` tool — used **only** when the
+  URL file is absent (the server couldn't resolve the project at boot, e.g. `CLAUDE_PROJECT_DIR` unset).
 
 ## Protocol
 
 1. **Gate on opt-in.** Read `.claude/sdd.local.md`.
    - **Absent** → the dashboard is opt-in and off by default. Auto-create the file with the documented
-     defaults per [`../implement/references/settings.md`](../implement/references/settings.md) (which now
+     defaults per [`../implement/references/settings.md`](../implement/references/settings.md) (which
      include `dashboard_enabled: false` + `dashboard_port: 4178`), then tell the user: «The dashboard is
      opt-in — set `dashboard_enabled: true` in `.claude/sdd.local.md` and re-run `/sdd:start`.» **Stop.**
    - **Present, `dashboard_enabled` not `true`** → print the same one-line enable instruction and **stop**.
-     (Pure-markdown users are unaffected — nothing else changes.)
-2. **Check Bun.** Run `bun --version`. If Bun is missing, print: «The dashboard needs Bun —
-   install from https://bun.sh, then re-run `/sdd:start`. The markdown skills work without it.» **Stop.**
-3. **Confirm the MCP server is connected.** The `dashboard_handshake` tool should be available (the
-   `sdd-dashboard` server auto-started). If it is not, tell the user to check `/mcp` — the server may
-   have failed to boot (Bun missing, or `.mcp.json` not picked up; re-open the session). **Stop** if absent.
-4. **Resolve the project root + hand it over.** Determine the absolute project root — prefer
+     (Pure-markdown users are unaffected.)
+2. **Read the URL file (the common, channel-free path).** Read `~/.claude/sdd-dashboard/current.url`
+   (e.g. `cat "$HOME/.claude/sdd-dashboard/current.url"`).
+   - **Present** → line 1 is the live dashboard URL. **Print it and go to step 5. Do NOT call any MCP
+     tool** — the server is already up and bound; nothing else is needed. (Optionally note line 2, the
+     project dir, if it differs from the current project — that would mean another session's server is
+     bound; tell the user rather than guessing.)
+   - **Absent** → the server is connected but idle (it couldn't resolve the project at boot). Continue to step 3.
+3. **(Fallback) check Bun + the MCP server.** Run `bun --version`; if Bun is missing, print «The dashboard
+   needs Bun — install from https://bun.sh, then re-run `/sdd:start`. The markdown skills work without it.»
+   and **stop**. If the `dashboard_handshake` tool is unavailable, tell the user to check `/mcp` (the
+   `sdd-dashboard` server may have failed to boot — Bun missing, or `.mcp.json` not picked up; re-open the
+   session) and **stop**.
+4. **(Fallback) hand the project over.** Determine the absolute project root — prefer
    `git rev-parse --show-toplevel`; fall back to the cwd that contains `docs/` or `.git`. Call
-   **`dashboard_handshake`** with `project_dir` set to that absolute path. This is the session↔project
-   binding *and* the channel test (a successful tool result proves the outbound path; the server also
-   fires one inbound handshake ping — see step 5).
-   - If the tool returns the **"not enabled"** message (the server read a different settings state),
-     surface it verbatim and stop.
-5. **Acknowledge the inbound ping.** The handshake fires one `<channel source="sdd-dashboard"
-   kind="handshake">` ping to confirm the inbound path end-to-end. Acknowledge it in one line — **run no
-   skill**. (This is the round-trip proof: outbound = the tool result, inbound = the ping.)
-6. **Print the URL + how it behaves.** Show the returned URL prominently (`http://127.0.0.1:<port>/?session=<id>&token=<cap>`)
-   and offer to open it. Then state the **load-bearing UX truth** so the user isn't surprised:
+   **`dashboard_handshake`** with `project_dir` set to that path. It binds HTTP, writes
+   `current.url`, and returns the URL. Use the returned URL.
+5. **Print the URL + how it behaves.** Show the URL prominently
+   (`http://127.0.0.1:<port>/?session=<id>&token=<cap>`) and offer to open it. Then state the
+   **load-bearing UX truth** so the user isn't surprised:
    - The dashboard is a **driver + observer**, not a synchronous remote control.
    - A click is consumed **only while this session is idle at the prompt**; mid-task it **queues**.
    - Dashboard-driven runs default to **`--depth=easy`** (the skill self-decides reversible calls and
      asks far fewer questions) because the browser can't answer a blocking `AskUserQuestion`; if a stage
      genuinely needs a decision, it surfaces in **this terminal** — answer it here.
-7. **Handoff.** **Emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md)
-   (utility variant) — *What I did* (dashboard handshake done; the URL + port + session) + *Review* (open
-   the URL; the dashboard mirrors `docs/features/` and the session activity pane streams runs) + *Run next*
-   (open the dashboard and click **Run next stage** on a feature, or run a backbone command here, e.g.
-   `/sdd:specify <slug>`). `/clear` is **optional** for this utility.
+6. **Handoff.** **Emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md)
+   (utility variant) — *What I did* (printed the dashboard URL) + *Review* (open the URL; the dashboard
+   mirrors `docs/features/` and the session activity pane streams runs) + *Run next* (open the dashboard
+   and click **Run next stage** on a feature, or run a backbone command here, e.g. `/sdd:specify <slug>`).
+   `/clear` is **optional** for this utility.
 
 ## Definition of Done
 
-- `dashboard_enabled: true` confirmed (or guidance printed + stopped) and Bun present (or guidance + stopped).
-- `dashboard_handshake` called with the authoritative absolute project root; the returned URL printed.
-- The inbound handshake ping acknowledged in one line; no skill auto-run from it.
-- The queued/busy/depth=easy behaviour stated so the user knows the dashboard is a driver, not a remote control.
+- `dashboard_enabled: true` confirmed (or guidance printed + stopped).
+- The dashboard URL printed — read from `~/.claude/sdd-dashboard/current.url` on the common path, or
+  (fallback only, when that file is absent) obtained from `dashboard_handshake` after a Bun check.
+- The queued/busy/`--depth=easy` behaviour stated so the user knows the dashboard is a driver, not a remote control.
 - The stage-handoff block emitted (utility variant).
 
 ## Anti-patterns
 
-- **Treating `start` as "boot the server".** The server auto-starts via `.mcp.json`; `start` only hands
-  over the project dir and prints the URL. Never try to spawn `bun` yourself.
+- **Calling `dashboard_handshake` when `current.url` already exists.** The common path is a plain file
+  read — the server is already bound. Only hand over via the tool when the URL file is absent.
+- **Treating `start` as "boot the server".** The server auto-starts via `.mcp.json`; `start` only prints
+  the URL. Never try to spawn `bun` yourself.
 - **Proceeding when `dashboard_enabled` is not `true`.** It is opt-in — print the enable line and stop.
-- **Faking the URL.** The URL (with its per-session capability token) comes *only* from the
-  `dashboard_handshake` tool result — never fabricate a port or token.
-- **Acting on the handshake ping as if it were a command.** It is a connectivity probe — acknowledge, run nothing.
+- **Fabricating the URL.** It comes only from `current.url` (or the `dashboard_handshake` result) — never
+  invent a port or token.
 - **Running a dashboard-triggered stage at `--depth=hard`.** Browser-driven runs default to `--depth=easy`;
   a Socratic prompt the browser can't answer would block the queue.
 

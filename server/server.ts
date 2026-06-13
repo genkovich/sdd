@@ -134,6 +134,18 @@ function dashboardUrl(): string {
   return `http://127.0.0.1:${boundPort}/?session=${SESSION_ID}&token=${TOKEN}`
 }
 
+// Persist the URL (with its capability token) to a known file so /sdd:start can
+// just READ + print it — no MCP tool call, no channel round-trip. The channel is
+// the one thing that differs from a plain tool; keeping it out of the start path
+// makes the handshake a file read, which can't perturb the session context.
+const URL_FILE = join(STATE_DIR, 'current.url')
+function writeUrlFile(): void {
+  if (!boundPort) return
+  try {
+    writeFileSync(URL_FILE, `${dashboardUrl()}\n${getProjectDir() ?? ''}\n`, { mode: 0o600 })
+  } catch {}
+}
+
 function ensureHttp(): number {
   if (boundPort) return boundPort
   const startPort = readConfig().port
@@ -169,6 +181,7 @@ function ensureHttp(): number {
         },
       })
       boundPort = port
+      writeUrlFile()
       log(`HTTP listening on http://127.0.0.1:${port}`)
       return port
     } catch (err) {
@@ -458,15 +471,14 @@ mcp.setRequestHandler(CallToolRequestSchema, async (req) => {
         }
       }
       const port = ensureHttp()
+      writeUrlFile() // refresh with the just-handed-over project dir
       const url = dashboardUrl()
-      // Inbound handshake ping — confirms the inbound channel path end-to-end.
-      void mcp.notification({
-        method: 'notifications/claude/channel',
-        params: {
-          content: 'dashboard connected — handshake ping (acknowledge briefly, run nothing)',
-          meta: { source: 'sdd-dashboard', kind: 'handshake', session_id: SESSION_ID, ts: new Date().toISOString() },
-        },
-      })
+      // NB: no inbound channel ping here. The channel is the one mechanism that
+      // differs from a plain MCP tool, and a proactive ping on /sdd:start was the
+      // suspected trigger for a session-context blow-up. Outbound is already
+      // proven by this tool result; the inbound path is exercised on the first
+      // real command. /sdd:start prefers reading current.url and never calls this
+      // tool when the project resolved at boot — so the common path is channel-free.
       broadcast({ type: 'project', project: abs })
       return {
         content: [
@@ -529,6 +541,9 @@ function shutdown(): void {
   log('shutting down')
   try {
     if (parseInt(readFileSync(PID_FILE, 'utf8'), 10) === process.pid) rmSync(PID_FILE)
+  } catch {}
+  try {
+    rmSync(URL_FILE, { force: true })
   } catch {}
   try {
     httpServer?.stop(true) // free the port

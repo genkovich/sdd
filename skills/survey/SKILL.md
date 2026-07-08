@@ -10,7 +10,7 @@ description: >
   conventions WITH you (defaults-heavy), fixes them as the foundation + foundational ADRs, and emits
   a scaffold tasks.json that implement materializes into a real skeleton. Triggers on "survey the
   codebase", "map the architecture", "set up a new project", "bootstrap the foundation",
-  "/sdd:survey", "вивчи кодову базу", "карта архітектури", "новий проєкт", "заклади фундамент".
+  "/sdd:survey".
   Output: docs/architecture-map.md (+ adr/ + scaffold tasks.json on greenfield). Records
   reflects_commit for staleness; reads, never overwrites, an authored architecture doc.
 ---

@@ -7,8 +7,7 @@ description: >
   Use to run an ambiguity sweep over a written spec.md and close every under-specified
   point before planning or design proceeds — so two engineers can't reasonably build
   different things from the same spec. Triggers on "clarify {slug}", "find ambiguities in
-  {slug}", "is the spec ready", "sharpen the spec", "/sdd:clarify {slug}",
-  "прояснити специфікацію", "знайди неоднозначності {slug}", "чи готова специфікація".
+  {slug}", "is the spec ready", "sharpen the spec", "/sdd:clarify {slug}".
   Re-reads the spec, dispatches a clean-context devil's-advocate subagent to list where the
   spec forks, then for each ambiguity runs AskUserQuestion to RESOLVE it (tighten §1/§5/§6
   in place) or DEFER it (→ §8 Open questions with owner+due). Output: an updated

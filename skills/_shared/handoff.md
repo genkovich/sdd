@@ -3,24 +3,24 @@
 > **Reference-only.** Not a skill. **Every** skill ends by emitting the handoff block defined here —
 > as its **last output**, after it has proposed its commit. The format lives only in this file; each
 > skill keeps a one-line pointer and supplies its own *What I did* / *Review* / *next command*. This
-> exists because a bare «Next: …» line is hard to act on — the user can't tell what changed, which
+> exists because a bare "Next: …" line is hard to act on — the user can't tell what changed, which
 > files to open, or what to run next without scrolling back.
 
 Running under Codex CLI or Cursor? The `/clear` and `/sdd:<next>` forms map to the host tool's
 equivalents per [`tool-adapters.md`](./tool-adapters.md).
 
-## TL;DR (короткий вступ українською)
+## TL;DR
 
-Кожен крок (skill) наприкінці **завжди** друкує однаковий хендоф-блок із трьох секцій:
+Every step (skill) **always** prints the same three-section handoff block at the end:
 
-1. **What I did** — що стадія зробила + який коміт запропонувала (не змушуй гортати вгору).
-2. **Review before continuing** — посилання на файли, які стадія створила/змінила і які треба
-   глянути на цьому геті (реальні `docs/features/<slug>/…` шляхи — клікабельні/копіювані).
-3. **Run next** — спершу `/clear` (обов'язково для forward-переходу — наступна стадія перечитує
-   все з диска), потім наступна команда `/sdd:<next> <slug>` у **fenced-блоці** (копіюється в один
-   клік) + альтернатива-пропуск, якщо вона є.
+1. **What I did** — what the stage did + the commit it proposed (no scrolling up required).
+2. **Review before continuing** — links to the files the stage created/changed that should be
+   reviewed at this gate (real `docs/features/<slug>/…` paths — clickable/copyable).
+3. **Run next** — first `/clear` (mandatory for a forward transition — the next stage re-reads
+   everything from disk), then the next command `/sdd:<next> <slug>` in a **fenced block** (one-click
+   copy) + a skip alternative when one exists.
 
-Це прибирає головний біль: «погано виводить, незручно копіювати і перевіряти».
+This removes the main pain point: "hard to read, awkward to copy and review".
 
 ---
 

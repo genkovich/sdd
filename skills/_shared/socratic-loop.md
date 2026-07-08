@@ -4,15 +4,15 @@
 > Skills that run a Socratic validation pass (`specify`, `design`) read this file for the
 > canonical machine and keep only a short **delta** of their own decision-types and section list.
 
-## TL;DR (короткий вступ українською)
+## TL;DR
 
-«Сократичний цикл» — діалог із користувачем по кожній **секції/групі** артефакту. Логіка:
+The "Socratic loop" is a dialogue with the user over each **section/group** of the artifact. The logic:
 
-1. Skill **малює всю секцію відразу** + нумерує рішення всередині (велика картина перед деталями).
-2. Питає **по одному рішенню** через `AskUserQuestion` (формулювання → [ask-style.md](./ask-style.md)).
-3. Користувач обирає одну з **4 дій**: **Прийняти** / **Виправити** / **Винести у відкрите питання** / **Викинути**.
-4. Skill **застосовує перехід** у пам'яті, веде **edits-log**, і лише наприкінці секції пише на диск + комітить.
-5. Внутрішні протиріччя між секціями ловить окремий clean-context критик ([critic.md](./critic.md)).
+1. The skill **renders the whole section at once** + numbers the decisions inside it (big picture before details).
+2. Asks **one decision at a time** via `AskUserQuestion` (phrasing → [ask-style.md](./ask-style.md)).
+3. The user picks one of **4 actions**: **Approve** / **Edit** / **Save as Open Question** / **Drop**.
+4. The skill **applies the transition** in memory, keeps an **edits-log**, and writes to disk + commits only at the end of the section.
+5. Contradictions between sections are caught by a separate clean-context critic ([critic.md](./critic.md)).
 
 ---
 
@@ -31,8 +31,8 @@ On-disk artifacts are **not touched** until step 5. Everything before that is in
 
 ## The 4-state machine (uniform across every decision-type)
 
-> **UA-перифраза.** 4 дії з кожним рішенням: **Прийняти** (Approve) / **Виправити** (Edit) /
-> **Винести у відкрите питання** (Save as OQ) / **Викинути** (Drop). `Cancel` і `Reject` — синоніми Drop.
+> **The 4 actions on each decision:** **Approve** / **Edit** / **Save as Open Question** (Save as OQ) /
+> **Drop**. `Cancel` and `Reject` are synonyms for Drop.
 
 - **`Approve`** → keep the decision verbatim. No edits-log entry (Approved is the baseline). Run the per-skill gate if any. Move on.
 - **`Edit`** → user supplies new wording / option / value in one go; skill regenerates the decision under the new constraint and asks **once more** (single-iteration cap — the second answer is final). Log entry `action: "edit"`.

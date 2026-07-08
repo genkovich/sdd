@@ -7,8 +7,7 @@ description: >
   Use to produce a Software Architecture Document for a feature — Arc42 12 sections + C4 L1/L2
   inline + ADRs spawned on a blast-radius gate — once spec.md exists. Triggers on
   "design {slug}", "architecture for {slug}", "SAD for {slug}", "arc42 for {slug}",
-  "C4 context+container for {slug}", "/sdd:design {slug}", "спроектуй архітектуру {slug}",
-  "SAD для {slug}", "архітектурний документ {slug}". Drafts §1–§12 in-memory, batch-validates each
+  "C4 context+container for {slug}", "/sdd:design {slug}". Drafts §1–§12 in-memory, batch-validates each
   section Socratically (4-state machine), spawns an ADR only when a decision crosses the
   blast-radius threshold (irreversible / multi-module / has legitimate alternatives), writes each
   resolved section + its ADRs atomically, then runs a clean-context critic before finalizing.
@@ -18,7 +17,7 @@ description: >
 
 # Skill: design
 
-Generator of the **Software Architecture Document** (`docs/features/<slug>/sad.md` — Arc42 12 sections, C4 Context inline in §3 and C4 Container inline in §5) plus supporting ADRs (`docs/features/<slug>/adr/NNNN-*.md`). It drafts all 12 sections in memory, walks them Socratically one section at a time, spawns an ADR only when a decision's *blast radius* (масштаб удару — how painful it is to reverse the decision later) crosses the gate, writes each resolved section and its ADRs as one atomic commit (on route `quick` + depth `easy`, sections still hit the disk immediately but commits batch — step 6), and runs a clean-context critic over the finished SAD. The document itself is the state — resuming after an interrupt is free. L3 Component / L4 Code are out of scope. This file is the spine; detail lives in `references/`.
+Generator of the **Software Architecture Document** (`docs/features/<slug>/sad.md` — Arc42 12 sections, C4 Context inline in §3 and C4 Container inline in §5) plus supporting ADRs (`docs/features/<slug>/adr/NNNN-*.md`). It drafts all 12 sections in memory, walks them Socratically one section at a time, spawns an ADR only when a decision's *blast radius* (how painful it is to reverse the decision later) crosses the gate, writes each resolved section and its ADRs as one atomic commit (on route `quick` + depth `easy`, sections still hit the disk immediately but commits batch — step 6), and runs a clean-context critic over the finished SAD. The document itself is the state — resuming after an interrupt is free. L3 Component / L4 Code are out of scope. This file is the spine; detail lives in `references/`.
 
 The Socratic machine, the critic, and the size matrix are **shared** — this skill keeps only its deltas:
 → [`../_shared/socratic-loop.md`](../_shared/socratic-loop.md) · [`../_shared/critic.md`](../_shared/critic.md) · [`../_shared/size-matrix.md`](../_shared/size-matrix.md) · [`../_shared/ask-style.md`](../_shared/ask-style.md)

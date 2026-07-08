@@ -8,7 +8,7 @@ description: >
   front (capture the idea, deep-dive the problem) merged with a full product spec (context,
   goals, user stories, acceptance criteria, NFRs, KPIs). Triggers on "specify {slug}",
   "spec for {slug}", "write the spec", "capture this idea", "draft requirements for {slug}",
-  "/sdd:specify {slug}", "напиши специфікацію {slug}", "опиши вимоги", "зафіксуй ідею".
+  "/sdd:specify {slug}".
   Opens by setting the interview-depth dial (easy/medium/hard), drafts from templates/spec.md,
   validates each acceptance criterion Socratically, runs a clean-context critic, then writes
   docs/features/{slug}/spec.md. The ideation analyses (competitive research, strategic approaches,

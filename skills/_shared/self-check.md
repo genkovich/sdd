@@ -3,17 +3,17 @@
 > **Reference-only.** Not a skill. Every skill verifies its own output before handing off —
 > this file is the one contract for how. A skill either runs a **named structural checklist**
 > (defined in its own SKILL.md, penultimate protocol step) or maps an existing heavy verifier
-> onto this contract (see «Heavy verifiers count» below). Either way, the SKILL.md names the
+> onto this contract (see "Heavy verifiers count" below). Either way, the SKILL.md names the
 > phrase **structural self-check** at the place where the contract is satisfied — that is the
 > greppable evidence the validator enforces.
 
-## TL;DR (короткий вступ українською)
+## TL;DR
 
-Кожен скіл перед хендофом перевіряє власний артефакт **з диска** за іменованим чеклістом.
-Знайшов проблему → виправив і перевірив ще раз (максимум 2 цикли). Не зміг виправити →
-чесно каже користувачу, ніколи мовчки. Результат — один рядок у хендофі: «self-check: 6/6 pass».
-Скіли з важкими верифікаторами (critic, reviewer, drift-check, mermaid-check, GATE) не дублюють
-роботу — їхній верифікатор і **є** self-check; вони додають лише структурні пункти, які він не покриває.
+Before its handoff, every skill verifies its own artifact **from disk** against a named checklist.
+Found a problem → fix it and check again (at most 2 cycles). Couldn't fix it →
+tell the user honestly, never silently. Result — one line in the handoff: "self-check: 6/6 pass".
+Skills with heavy verifiers (critic, reviewer, drift-check, mermaid-check, GATE) don't duplicate
+the work — their verifier **is** the self-check; they add only the structural items it doesn't cover.
 
 ## The contract (five steps)
 

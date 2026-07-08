@@ -1,4 +1,4 @@
-# Ask-style — junior-friendly bilingual `AskUserQuestion`
+# Ask-style — junior-friendly `AskUserQuestion`
 
 > **Reference-only.** Not a skill. Every skill that calls `AskUserQuestion` reads this for the
 > canonical shape of questions and options. The rule: an **option label is the next mechanical
@@ -14,7 +14,7 @@
 
 **Never ask dryly.** The most common failure is a terse, jargon-dense question — a few words plus acronyms, no context — that forces the user to already know the project to answer. Fix it two ways, every time:
 
-1. **Gloss every technical term inline, on first use** — the plain meaning in parentheses, right there. Not «order by RICE» but «order by RICE — a quick score, Reach × Impact × Confidence ÷ Effort, where higher = more value per unit of work». Not «forces a worktree» but «forces a worktree — a separate working copy of the repo so two agents don't edit the same files». The reader should never have to look a term up to choose.
+1. **Gloss every technical term inline, on first use** — the plain meaning in parentheses, right there. Not "order by RICE" but "order by RICE — a quick score, Reach × Impact × Confidence ÷ Effort, where higher = more value per unit of work". Not "forces a worktree" but "forces a worktree — a separate working copy of the repo so two agents don't edit the same files". The reader should never have to look a term up to choose.
 2. **Spend the words on the WHY and the trade-off**, not the WHAT. A short label is fine; the *description* is where you explain — in plain language — what happens, what you gain and lose, and the hidden catch.
 
 If a question reads like a config dump or a spec excerpt, it's wrong. Write it as if explaining the choice to a capable colleague who just joined and doesn't know your acronyms yet. **More explanation always beats less here** — a long, clear description is a feature, not bloat.
@@ -26,31 +26,41 @@ If a question reads like a config dump or a spec excerpt, it's wrong. Write it a
   - **WHY IT MATTERS** — which quality goal / NFR / spec vector it touches; reversibility (irreversible? multi-module? affects performance / security / UX?); the main trade-off in play.
   - **READ OPTIONS** — a nudge to read the descriptions before choosing.
 - **Each option**:
-  - `label` — 1–5 words, **action form** = the next mechanical step: «Прийняти», «Виправити», «Винести у відкрите питання», «Викинути», «Зафіксувати як ADR». Add «(Recommended)» to the first option when you recommend it.
+  - `label` — 1–5 words, **action form** = the next mechanical step: "Approve", "Edit", "Save as Open Question", "Drop", "Lock as ADR". Add "(Recommended)" to the first option when you recommend it.
   - `description` — 3–5 sentences with four mandatory elements (below).
 
 ## The four mandatory elements of a `description`
 
-1. **What technically happens** — concrete names: tables / endpoints / files / ADR numbers. Not «modify the API» but «add field `is_active BOOLEAN` to table `members` and a new route in the module's handler».
+1. **What technically happens** — concrete names: tables / endpoints / files / ADR numbers. Not "modify the API" but "add field `is_active BOOLEAN` to table `members` and a new route in the module's handler".
 2. **What you gain / what you lose** — the trade-off in plain words, **every technical term glossed**:
-   - not «backfill migration» → «a script that walks every existing row and fills the new field; while it runs the rows are read-locked for writes»
-   - not «cursor pagination» → «the client sends the last id it saw so the next page starts after it; avoids `OFFSET`, which slows down on large pages»
-   - not «GIN index» → «a special index type that lets you search inside JSON columns, but takes 3–5× more space and writes slower»
-3. **The skill's next mechanical step** — «I spawn ADR-NNNN titled X, add a row to the §9 ADR table, the schema is locked for the data-model stage».
-4. **Hidden trade-off** — if there's a condition under which the choice breaks («only works if Redis is already in your stack», «in 6 months you'll need downtime for a backfill», «existing users have to re-login»), state it **right in the description**, not in a follow-up. A junior won't see that trigger on their own.
+   - not "backfill migration" → "a script that walks every existing row and fills the new field; while it runs the rows are read-locked for writes"
+   - not "cursor pagination" → "the client sends the last id it saw so the next page starts after it; avoids `OFFSET`, which slows down on large pages"
+   - not "GIN index" → "a special index type that lets you search inside JSON columns, but takes 3–5× more space and writes slower"
+3. **The skill's next mechanical step** — "I spawn ADR-NNNN titled X, add a row to the §9 ADR table, the schema is locked for the data-model stage".
+4. **Hidden trade-off** — if there's a condition under which the choice breaks ("only works if Redis is already in your stack", "in 6 months you'll need downtime for a backfill", "existing users have to re-login"), state it **right in the description**, not in a follow-up. A junior won't see that trigger on their own.
 
 ## Language
 
-- **Ukrainian throughout** — labels + descriptions. Technical identifiers stay in their original form (ADR, JSONB, JWT, UUID, FK, OpenAPI) — they are names. The *actions* are Ukrainian («Прийняти», «Відредагувати», «Винести у §11 OQ», «Видалити»).
-- Glossary roles and domain-invariant **names** (natural-language phrases like «no published lessons») are allowed — they are business terms.
-- This section governs **conversation** (question + option text) only. The language documents are *written in* is a separate per-project switch — `artifact_language` in `.claude/sdd.local.md` → [`artifact-language.md`](./artifact-language.md).
+- **Conversation language is a per-project switch** — `conversation_language` in `.claude/sdd.local.md`
+  (default `en`, any language tag). It governs the **question + option text** (labels + descriptions)
+  shown in `AskUserQuestion`. Write both in the configured language so the whole prompt reads natural
+  to the user; default `en` keeps everything English.
+- **Technical identifiers stay in their original form** (ADR, JSONB, JWT, UUID, FK, OpenAPI) regardless
+  of language — they are names, not words. The *actions* are the localized part (e.g. under `en`:
+  "Approve" / "Edit" / "Save as §11 OQ" / "Drop").
+- Glossary roles and domain-invariant **names** (natural-language phrases like "no published lessons")
+  are allowed — they are business terms.
+- This section governs **conversation** (question + option text) only. The language documents are
+  *written in* is a separate per-project switch — `artifact_language` in `.claude/sdd.local.md` →
+  [`artifact-language.md`](./artifact-language.md). The two are independent: you can ask in one
+  language and write artifacts in another.
 
 ## Forbidden
 
-- Terse English labels («Approve», «Edit», «Drop», «Reword»).
+- Terse labels ("Approve", "Edit", "Drop", "Reword" with no explanatory description behind them).
 - One-line descriptions.
 - Technical terms without a gloss (UNION, backfill, GIN, cursor, idempotent, transactional…).
-- Trade-offs hidden in a follow-up («if you pick this I'll later ask about X, which has complexity Y»).
+- Trade-offs hidden in a follow-up ("if you pick this I'll later ask about X, which has complexity Y").
 
 ## Counter-example (deprecated) vs correct
 
@@ -60,21 +70,21 @@ If a question reads like a config dump or a spec excerpt, it's wrong. Write it a
   description: "Apply decision."
 
 # DO — action-form label, description names the concrete step + glossed trade-off
-- label: "Прийняти JSONB-колонку (→ spawn ADR-0002)"
-  description: "Одна колонка `body` типу jsonb зберігає весь масив блоків як JSON. ПЛЮСИ: редагування уроку одним UPDATE; новий тип блоку не потребує schema-migration. МІНУСИ: валідація блоків лягає на app-layer (БД не знає типів); пошук всередині body потребує GIN-індексу (спеціальний індекс Postgres для пошуку в JSON — у 3–5× більше місця, повільніший запис). НАСЛІДОК: спавню ADR-0002 з 3 розглянутими варіантами, додаю рядок у §9, схема фіксується для stage data-model."
+- label: "Approve JSONB column (→ spawn ADR-0002)"
+  description: "A single `body` column of type jsonb stores the whole array of blocks as JSON. PROS: editing a lesson is one UPDATE; a new block type needs no schema migration. CONS: block validation moves to the app layer (the DB doesn't know the types); searching inside body needs a GIN index (a special Postgres index type for searching in JSON — 3–5× more space, slower writes). RESULT: I spawn ADR-0002 with 3 considered options, add a §9 row, and the schema is locked for the data-model stage."
 ```
 
 ## The 4-state actions, phrased this way (canonical set)
 
 ```
-- label: "Прийняти як є"
-  description: "Лишаю рішення дослівно, запускаю наступну перевірку (gate, якщо є для цієї секції)."
-- label: "Виправити"
-  description: "Ти даєш нове формулювання/значення; я регенерую рішення під нову умову і питаю ще раз (один раунд — друга відповідь фінальна)."
-- label: "Винести у відкрите питання"
-  description: "Прибираю рішення з секції і додаю рядок у таблицю Open-Questions з owner+due (питаю наступним кроком). Без обох — рішення стає Drop."
-- label: "Викинути"
-  description: "Прибираю рішення. Якщо воно обов'язкове — переформулюю опції і питаю ще раз; якщо опціональне — лишаю без заміни."
+- label: "Approve as is"
+  description: "I keep the decision verbatim and run the next check (the gate, if there is one for this section)."
+- label: "Edit"
+  description: "You give new wording/value; I regenerate the decision under the new constraint and ask once more (one round — the second answer is final)."
+- label: "Save as Open Question"
+  description: "I remove the decision from the section and add a row to the Open-Questions table with owner+due (asked next). Without both, the decision becomes a Drop."
+- label: "Drop"
+  description: "I remove the decision. If it's mandatory — I reframe the options and ask again; if it's optional — I leave it out with no replacement."
 ```
 
 ## Dry → explanatory (worked rewrite)
@@ -108,6 +118,6 @@ Options:
 
 The dry version is unanswerable without knowing what RICE is; the explanatory version teaches the term in the act of asking and makes the trade-off obvious.
 
-## Why (feedback, 2026-05-23 + reinforced 2026-05-29)
+## Why (feedback)
 
-The user is a PM, methodist, or junior dev opening the repo for the first time. Terse English questions give them neither the substance of the decision nor the difference between options. Verbatim (2026-05-23): «Треба щоб пояснення були ще більш зрозумілими для людей котрі буквально джуни в розробці». Reinforced (2026-05-29): «при опитуваннях треба більш explanatory запитання і варіанти відповідей, бо зараз клод доволі сухо опитує і багато термінів на короткий текст» — i.e. the dryness + term-density was still happening, so this file now leads with the "never ask dryly / gloss every term" rule above.
+The user is a PM, methodist, or junior dev opening the repo for the first time. Terse questions give them neither the substance of the decision nor the difference between options. The recurring feedback: make the explanations more understandable for people who are literally juniors in development, and make interview questions more explanatory — the earlier prompts were too dry and packed too many terms into a short text. That's why this file leads with the "never ask dryly / gloss every term" rule above.

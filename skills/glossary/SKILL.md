@@ -8,8 +8,7 @@ description: >
   whenever a fuzzy word shows up in an interview, spec, or review and you want one
   canonical definition plus a NOT-reference so a homonym can't bite you in six months.
   Triggers on "add term {X}", "what is {X} in our domain", "add to CONTEXT", "fix the
-  glossary", "define {X}", "/sdd:glossary {term}", "додай термін", "онови глосарій",
-  "що означає {X}". Two-level contract: repo-root CONTEXT.md holds project-wide terms,
+  glossary", "define {X}", "/sdd:glossary {term}". Two-level contract: repo-root CONTEXT.md holds project-wide terms,
   docs/features/{slug}/CONTEXT.md holds feature-scoped ones; readers read both and the
   per-feature entry wins. Lazy-bootstraps the target from a template, checks BOTH levels
   for a conflicting existing entry, asks for a one-sentence definition + the concept it's

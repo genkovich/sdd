@@ -361,15 +361,18 @@ defaults** the first time a skill needs it — normally `specify` at the start �
 `.gitignore` (it's per-developer). The file is **self-documenting**: every key carries its default,
 its allowed values, and a one-line explanation inline. Edit it to change behaviour. Two keys are
 **plugin-wide** — `interview_depth` is read by the Q&A skills (`specify` / `clarify` / `design`) to
-pre-select the depth dial, and `artifact_language` is read by every artifact-writing skill: it sets
-the language pipeline documents are written in — prose only, while section headings, frontmatter and
-machine tokens stay English (full rule →
-[`skills/_shared/artifact-language.md`](./skills/_shared/artifact-language.md)); the rest configure
+pre-select the depth dial, and the two language keys let each team tune the plugin to its own working
+language (both default to `en` and accept **any language tag**): `artifact_language` sets the language
+pipeline documents are written in — prose only, while section headings, frontmatter and machine tokens
+stay English (full rule → [`skills/_shared/artifact-language.md`](./skills/_shared/artifact-language.md)) —
+and `conversation_language` sets the language of the questions the skills ask you (full rule →
+[`skills/_shared/ask-style.md`](./skills/_shared/ask-style.md)); the rest configure
 the `implement` engine:
 
 ```yaml
 interview_depth: medium    # easy | medium | hard — default depth for specify/clarify/design
-artifact_language: en      # en | uk — the language pipeline documents are written in (headings + machine tokens stay English)
+artifact_language: en      # any language tag (default en) — the language pipeline documents are written in (headings + machine tokens stay English)
+conversation_language: en  # any language tag (default en) — the language the skills ask their questions in
 tdd: true                  # enforce red→green→refactor
 team_mode: false           # true → agent team via TeamCreate
 workflow_mode: auto        # auto → dynamic Workflow; off → never

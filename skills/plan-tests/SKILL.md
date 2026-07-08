@@ -9,7 +9,7 @@ description: >
   levels (unit / integration / e2e / contract / load) without binding to a language or
   framework, and fixes the integration and data strategy. Triggers on "plan tests for {slug}",
   "test plan for {slug}", "how do we test {slug}", "test strategy for {slug}",
-  "/sdd:plan-tests {slug}", "план тестів для {slug}", "як тестувати {slug}", "тест-план".
+  "/sdd:plan-tests {slug}".
   Output: docs/features/{slug}/test-plan.md (separate file for M+), or inline in spec.md for
   XS/S per the size matrix. Hard-refuse if spec.md is missing → run `specify {slug}` first.
 ---

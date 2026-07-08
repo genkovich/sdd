@@ -7,8 +7,7 @@ description: >
   Use to add Mermaid sequenceDiagram blocks to the SAD's runtime view (sad.md §6) — one per
   critical flow, showing how a request moves between participants with happy + error paths.
   Triggers on "sequences for {slug}", "sequence diagram for {slug}", "draw the runtime flow",
-  "add a sequence to the SAD", "/sdd:sequences {slug}", "діаграми послідовності {slug}",
-  "sequence для {slug}", "намалюй потік {slug}". Reads sad.md §5 for participants, drafts each
+  "add a sequence to the SAD", "/sdd:sequences {slug}". Reads sad.md §5 for participants, drafts each
   flow from templates/sequence.md with generic participants, walks them Socratically one flow at
   a time, and writes confirmed blocks into sad.md §6 — they inform data-model indexes downstream.
   Hard-refuse if sad.md is missing → run `design {slug}` first.

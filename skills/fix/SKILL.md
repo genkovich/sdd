@@ -8,7 +8,7 @@ description: >
   acceptance criteria, pin it with a failing (RED) test, apply the minimal GREEN fix through the
   same per-task gate implement uses, then patch the spec so the bug class can't silently return.
   Triggers on "fix {bug}", "fix the bug in {slug}", "bug in {feature}", "/sdd:fix {slug}",
-  "regression in {slug}", "полагодь баг", "виправ багу", "регресія в {slug}", "чому зламалось".
+  "regression in {slug}".
   Triage is three-way: AC exists and is violated (regression) / AC is ambiguous (spec-bug —
   patch the wording) / no AC covers it (gap — add one, marked added-by-fix). Works on a repo
   with no specs at all (soft mode — code-first, recommends survey after). Writes a fix record

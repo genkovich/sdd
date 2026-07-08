@@ -5,18 +5,20 @@
 > **read** the declaration and gate their own output by it. Each keeps a one-line pointer here and its
 > own delta — the taxonomy and the gating table live **only** in this file, never duplicated per skill.
 
-## TL;DR (короткий вступ українською)
+## TL;DR
 
-«Таргет-сёрфейс» (target surface) — це **що саме ми будуємо** для фічі: бекенд-сервіс, веб-фронтенд,
-мобільний застосунок, CLI тощо — «різні речі». Раніше плагін мовчазно припускав один зріз
-(сервіс + його HTTP-контракт), а фронт жив як «зовнішній споживач». Тепер `design` **явно обирає**
-поверхні на етапі архітектури, записує їх у `sad.md` → frontmatter `target_surfaces: [...]`, і всі
-наступні етапи **читають** цей вибір (а не передеривовують щоразу), щоб увімкнути саме свої
-поверхне-специфічні артефакти: UI-архітектурні ADR, шар задач `ui`, фронтові рівні тестів,
-UI-орієнтовані flow-діаграми, правильну форму `api`-контракту.
+A **target surface** is **what exactly we are building** for a feature: a backend service, a web
+frontend, a mobile app, a CLI, and so on — "different things". Previously the plugin silently assumed
+one slice (a service + its HTTP contract) and the frontend lived as an "external consumer". Now
+`design` **explicitly chooses** the surfaces at the architecture stage, records them in `sad.md` →
+frontmatter `target_surfaces: [...]`, and all downstream stages **read** that choice (rather than
+re-deriving it each time) to enable exactly their surface-specific artifacts: UI-architecture ADRs,
+the `ui` task layer, frontend test tiers, UI-oriented flow diagrams, the correct form of the `api`
+contract.
 
-Поверхня прив'язана до C4: **поверхня = контейнер C4, який фіча вводить або володіє ним**. Це не нове
-поняття — плагін уже говорить мовою C4 у §5 SAD; тут лише робимо вибір контейнерів **явним і типізованим**.
+A surface is anchored to C4: **a surface = a C4 container the feature introduces or owns**. This is
+not a new concept — the plugin already speaks C4 in §5 of the SAD; here we simply make the container
+choice **explicit and typed**.
 
 ---
 

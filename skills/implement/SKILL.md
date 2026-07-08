@@ -6,8 +6,7 @@ agents: [test-author, implementer, reviewer]
 description: >
   Use to implement a feature from its tasks.json with test-driven development — writes a failing
   test first, makes it pass, refactors, gates, and commits per task. Triggers on "implement {slug}",
-  "build {slug}", "TDD {slug}", "code up the tasks for {slug}", "/sdd:implement {slug}",
-  "імплементуй {slug}", "реалізуй фічу {slug}", "напиши код за задачами". Reads
+  "build {slug}", "TDD {slug}", "code up the tasks for {slug}", "/sdd:implement {slug}". Reads
   docs/features/{slug}/tasks.json + the upstream artifacts, detects the repo's test/lint/vet
   commands stack-agnostically, builds a dependency DAG, and runs one of three modes — sequential
   single-agent TDD, an agent team (TeamCreate), or a dynamic Workflow — chosen from settings +

@@ -8,7 +8,7 @@ description: >
   docs/features/{slug}/contracts/openapi.yaml plus a drift/sync report (and an events doc when
   the feature has async flows). Triggers on "api for {slug}", "openapi for {slug}",
   "API contract for {slug}", "lock the interface for {slug}", "events for {slug}",
-  "/sdd:api {slug}", "контракт API для {slug}", "OpenAPI для {slug}", "опиши ендпоінти".
+  "/sdd:api {slug}".
   The contract is never hand-written: it is a derived function of data-model.md (typed fields +
   constraints), the sad.md §6 sequence diagrams (error branches, async actors), and spec.md
   acceptance criteria. Runs an inline drift check (does the contract match the model and the

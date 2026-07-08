@@ -7,8 +7,7 @@ description: >
   Use to break a designed feature into atomic, ≤1-day tasks with a dependency graph, a
   per-task Definition of Done, and a machine-readable tasks.json that the implement engine
   consumes. Triggers on "task breakdown for {slug}", "break down tasks for {slug}",
-  "tasks for {slug}", "plan the work for {slug}", "/sdd:tasks {slug}", "розбий на задачі {slug}",
-  "декомпозиція {slug}", "список задач". Reads spec.md + sad.md + Accepted ADRs (+ data-model +
+  "tasks for {slug}", "plan the work for {slug}", "/sdd:tasks {slug}". Reads spec.md + sad.md + Accepted ADRs (+ data-model +
   openapi if present), writes docs/features/{slug}/tasks/{_epic,tracker,<task>}.md AND
   docs/features/{slug}/tasks.json. Tracker export to any issue tracker is optional and
   tool-neutral. Hard-refuses if spec.md or sad.md or an Accepted ADR is missing.

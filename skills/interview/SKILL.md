@@ -9,8 +9,7 @@ description: >
   imprecisions, and proposes fresh angles. Scope is any idea (product, content, business,
   architecture, refactor approach), but in an SDD repo the natural exit is /sdd:specify on
   the surviving idea. Triggers on "interview {slug}", "stress test {slug}", "challenge this",
-  "poke holes", "rip this apart", "/sdd:interview {slug}", "погрилити", "розбери цю ідею",
-  "розʼєби". Runs 3 phases (understand intent → surface tradeoffs and weak spots → propose
+  "poke holes", "rip this apart", "/sdd:interview {slug}". Runs 3 phases (understand intent → surface tradeoffs and weak spots → propose
   new angles) via AskUserQuestion, ends with a summary of risks, alternatives, and the next
   step. Optional — the backbone starts at specify; reach for interview when the idea itself
   isn't settled yet.
@@ -40,7 +39,7 @@ delta — the **3–4 / 6–10 / 10–15** question budget per level and each le
 canonical `interview` row in [`../_shared/interview-depth.md`](../_shared/interview-depth.md)
 (no table duplicated here).
 
-The adversarial triggers (grill / rip apart / розʼєби / погрилити) imply **hard** unless the
+The adversarial triggers (grill / rip apart) imply **hard** unless the
 user says otherwise. State the depth in one line, then start.
 
 ## Hard rules
@@ -58,7 +57,7 @@ user says otherwise. State the depth in one line, then start.
 ## Phases
 
 Use **1-3 questions per phase**, targeting the count from the depth dial. Move on from a phase
-when answers repeat, the user says "next" / "хватить", or the latest answer added nothing.
+when answers repeat, the user says "next", or the latest answer added nothing.
 
 ### Phase 1 — Understand the idea
 If the idea isn't stated in one sentence yet, ask for it in plain text (no AskUserQuestion).
@@ -76,7 +75,7 @@ cost of waiting · the other person). Pick what fits, mix them, don't name the f
 user. Worked before/after examples per lens → [`references/probing-frames.md`](references/probing-frames.md).
 
 **Intensity dial.** Default tone is Socratic; the adversarial triggers escalate phrasing
-("Why do you think X is even true?"). The user dials back with "ease up" / "помʼякши".
+("Why do you think X is even true?"). The user dials back with "ease up".
 
 **Drill vs move on.** Drill the same dimension when an answer surfaced a new assumption; move
 on once the position is clear and the tradeoff named.
@@ -138,7 +137,7 @@ whatever you were doing. Never end on a bare «Next: …».
 - **Idea is for someone else** — re-route: "what would they say to question X?"
 
 ### Stuck protocol
-If the user picks **Other twice in a row** OR writes "I don't know" / "не знаю", switch to a
+If the user picks **Other twice in a row** OR writes "I don't know", switch to a
 single open text question ("In your own words — what's bugging you most about this right now?").
 Once they answer, resume AskUserQuestion with a new angle.
 

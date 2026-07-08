@@ -7,8 +7,8 @@ description: >
   Use to classify a feature into XS/S/M/L/XL and write docs/features/{slug}/.size plus the
   pipeline route docs/features/{slug}/.route (quick|standard|full) so later skills know how
   much of each artifact to produce and how handoffs resolve skips. Triggers on "classify size",
-  "feature size", "is this XS or M for {slug}", "size {slug}", "change route", "/sdd:classify-size {slug}",
-  "класифікуй розмір {slug}", "який розмір фічі", "XS чи M". Asks four AskUserQuestion
+  "feature size", "is this XS or M for {slug}", "size {slug}", "change route", "/sdd:classify-size {slug}".
+  Asks four AskUserQuestion
   (PR count / time / new module-API-migration / breaking changes), maps to a size class via
   the shared size matrix, derives the default route (XS/S→quick, M→standard, L/XL→full),
   confirms size + route in ONE question, and writes the one-line .size and .route files — the

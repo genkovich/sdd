@@ -50,7 +50,7 @@ key's scope entirely.
 ## Agent reports
 
 A skill dispatching a report-writing subagent carries the language in the **dispatch prompt** — e.g.
-«Write your report's prose in Ukrainian; keep identifiers, file paths and verdict literals as-is.»
+"Write your report's prose in <artifact_language>; keep identifiers, file paths and verdict literals as-is."
 The skill's own pass is the backstop; `agents/*.md` stay language-neutral.
 
 ## Template comments

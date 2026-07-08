@@ -6,8 +6,8 @@ agents: [explorer]
 description: >
   Use to design the data model AND generate the actual forward + rollback migrations in one
   pass — shippable SQL, not a plan. Triggers on "data model for {slug}", "schema for {slug}",
-  "generate migrations for {slug}", "DB design + migration", "/sdd:data-model {slug}",
-  "модель даних для {slug}", "схема для {slug}", "згенеруй міграції". Reads spec.md §5 +
+  "generate migrations for {slug}", "DB design + migration", "/sdd:data-model {slug}".
+  Reads spec.md §5 +
   sad.md §5 building blocks + the §6 sequence diagrams, then writes docs/features/{slug}/data-model.md plus
   paired *.up.sql / *.down.sql migrations STAGED under docs/features/{slug}/migrations/ (NOT the
   live migrations/ tree — implement promotes them when the feature is actually built) and an audit

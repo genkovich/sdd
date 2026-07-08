@@ -22,7 +22,7 @@ English, verbatim from the template. Concretely:
 
 ## Never translate
 
-These are parsed by the dashboard's state derivation, the implement engine, or downstream skills —
+These are parsed by the implement engine or downstream skills —
 translating one silently breaks the pipeline:
 
 - Headings the state derivation reads: `## Shipped` (roadmap), `## Test plan` (spec), `## Glossary`

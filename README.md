@@ -1,8 +1,11 @@
 # SDD — Spec-Driven Development for Claude Code
 
 A self-contained Claude Code plugin that carries a feature from a one-line idea to
-**reviewed, verified, shipped** code through **19 atomic, stack-agnostic skills** and a
+**reviewed, verified, shipped** code through **18 atomic, stack-agnostic skills** and a
 **TDD implementation engine** — with a living roadmap above the per-feature flow.
+
+> **De-networked fork.** This is a security-hardened fork: pure markdown, no MCP servers, no
+> network listeners, install from a local checkout only. See **[Security](#security)**.
 
 Every skill is Socratic (it walks decisions with you, it doesn't dump a wall of output),
 gated (a stage hard-refuses when its prerequisite artifact is missing), and stack-agnostic
@@ -21,13 +24,15 @@ dial decides how much the skill decides for you vs. interrogates you with trade-
 
 After updating to a new release: re-run `/plugin install sdd@sdd`, then `/reload-plugins`.
 
-**Codex CLI** — `cd` into your project first: the script installs into the **current directory**
-(`.agents/skills/` + `.codex/agents/`). Add `--global` after `codex` to install under `~` instead,
-or `--prefix DIR` to install under an arbitrary directory (useful for trying it out in a sandbox):
+**Codex CLI** — install from a **local checkout** (this fork has no network install path — clone the
+repo, then run the installer with `--src .`). `cd` into your project first: the script installs into
+the **current directory** (`.agents/skills/` + `.codex/agents/`). Add `--global` to install under `~`
+instead, or `--prefix DIR` to install under an arbitrary directory (useful for trying it out in a sandbox):
 
 ```sh
+git clone <your-internal-fork-url> sdd && cd sdd     # clone the vetted fork once
 cd your-project
-curl -fsSL https://raw.githubusercontent.com/genkovich/sdd/main/install.sh | bash -s -- codex
+/path/to/sdd/install.sh codex --src /path/to/sdd
 ```
 
 Then restart codex (skills are discovered at session start) and type `$sdd-specify`.
@@ -53,13 +58,13 @@ The script warns when it detects a marketplace install already registered.
 > it writes (`.agents/`, `.codex/`, `.cursor/`) start with a dot, which Explorer hides by
 > default — enable «Hidden items» (or `dir /a`) to see them.
 
-**Cursor** (2.4+) — the same script; `cd` into your project first (installs into
-`.cursor/skills/` + `.cursor/agents/` of the current directory; `--global` for `~`,
+**Cursor** (2.4+) — the same script, from the local checkout; `cd` into your project first (installs
+into `.cursor/skills/` + `.cursor/agents/` of the current directory; `--global` for `~`,
 `--prefix DIR` for an arbitrary directory):
 
 ```sh
 cd your-project
-curl -fsSL https://raw.githubusercontent.com/genkovich/sdd/main/install.sh | bash -s -- cursor
+/path/to/sdd/install.sh cursor --src /path/to/sdd
 ```
 
 Then restart Cursor (or run **Developer: Reload Window**) and invoke a stage by typing `/` in
@@ -489,9 +494,6 @@ agents/           explorer, test-author, implementer, reviewer, critic, devils-a
 scripts/          validate_plugin.py (CI gate: manifests + skill/agent frontmatter + the consistency invariants — links resolve, /sdd: form, handoff block, single-source taxonomy, no _shared orphans)
 skills/_shared/   canonical socratic-loop / critic / size-matrix / ask-style / interview-depth / diagram-presentation / surfaces / handoff / tool-adapters (referenced, not duplicated)
 skills/<name>/    SKILL.md spine + references/ (heavy detail) + templates/ (output scaffolds)
-.mcp.json         declares the sdd-dashboard MCP server (auto-starts at session open; opt-in via dashboard_enabled)
-server/           the dashboard MCP server (Bun + TypeScript): server.ts (MCP stdio + Bun.serve HTTP/WS), http.ts (routing + gating, testable), state.ts (disk→pipeline derivation), channel.ts (dashboard_* tools + command allowlist), paths.ts (docs/ scoping), frontmatter.ts (shared parser) + tests/ (bun test)
-dashboard/        the browser UI (vanilla JS, terminal-green, read-only): index.html + app.js + style.css + vendor/ (marked, mermaid — vendored, offline; mermaid lazy-loads)
 ```
 
 ## Roadmap
@@ -507,83 +509,26 @@ Directions under consideration — not promises, no dates:
 - **Constitution file** — a repo-level set of inviolable rules (security, compliance, style) every
   stage reads and the validator enforces, complementing the per-feature artifacts.
 
-**Shipped:** ~~MCP exposure~~ → see **[The visual dashboard](#the-visual-dashboard-opt-in)** below.
+## Security
 
-## The visual dashboard (opt-in)
+This is a **security-hardened, de-networked fork** — safe to use in a work environment. It is a
+**pure-markdown Claude Code plugin**: skills, agents, and templates only.
 
-The roadmap's *"MCP exposure — pipeline state served over MCP so external tools and dashboards can read
-where every feature stands"* has shipped — and gained a control surface. The plugin carries an
-**`sdd-dashboard` MCP server** (`server/`, Bun + TypeScript) that auto-starts with every Claude Code
-session (declared in `.mcp.json`) and, when enabled, serves a **local browser dashboard** (`dashboard/`)
-on `127.0.0.1`. It reads every feature off disk (`docs/features/<slug>/`), shows its pipeline as a
-per-step checklist — `done` / `skipped` / `pending` / `blocked` — and renders each artifact (markdown +
-**mermaid** diagrams from vendored libs, fully offline; OpenAPI as plain YAML). Artifacts render in
-whatever language they're written — the state derivation reads only the English structural tokens,
-which never translate (see `artifact_language` above). Pure-markdown users who
-never opt in are unaffected — nothing binds, nothing opens.
+- **No MCP servers.** There is no `.mcp.json`, so opening a session in this repo spawns no process
+  and binds no port. Nothing auto-starts.
+- **No network listeners.** The browser dashboard and its local HTTP/WebSocket server (`server/` +
+  `dashboard/`, Bun) have been removed outright — no loopback socket, no command relay into your
+  session, and no vendored third-party JS blobs.
+- **Install from a local checkout only.** `install.sh` has no download path: it installs from a
+  vetted local tree via `--src DIR` and never fetches code over the network. The README carries no
+  `curl … | bash` one-liners.
+- **Runtime web access matches the Claude Code baseline.** The only component that can reach the
+  public internet is the `researcher` agent (`WebSearch` / `WebFetch`), used by `specify`'s ideation
+  pass — the same tools Claude Code exposes by default. It degrades cleanly to local-only research
+  (`RESEARCH_LIMITED`) when web access is unavailable. Disable it by dropping `researcher` from
+  `skills/specify` if your policy forbids any egress.
 
-### Launch it — three steps
-
-1. Install **[Bun](https://bun.sh)** (the server runtime — the same dependency the official Telegram
-   plugin uses): `curl -fsSL https://bun.sh/install | bash` or `brew install bun`.
-2. Set `dashboard_enabled: true` in your project's `.claude/sdd.local.md`
-   (see [Configuration](#configuration--claudesddlocalmd)).
-3. Run **`/sdd:start`** in your Claude Code session. The server is already running — it auto-started
-   with the session; this step just hands it your project directory, binds the port if needed, and
-   prints the URL: `http://127.0.0.1:<port>/?session=<id>&token=<capability-token>`. Open that exact
-   URL in a browser — the token in it authorises the session.
-
-A new session (or a server restart) mints a new token, so an old tab goes stale: re-run `/sdd:start`
-and open the fresh URL.
-
-### How the panel updates
-
-Three mechanisms, layered:
-
-1. **Live, from disk.** The server watches `docs/` (`fs.watch`) and pushes a refresh over the
-   WebSocket whenever an artifact changes — no matter who changed it: a dashboard-driven run, a skill
-   you ran in the terminal, or you editing `spec.md` in vim. Changes appear within ~1 second.
-2. **Enriched, from Claude.** When Claude runs a stage it also calls `dashboard_update` /
-   `dashboard_log` / `dashboard_done` — that is what feeds the live activity feed, stage transitions,
-   review verdicts and the final handoff. A terminal-only run still refreshes the artifacts
-   (mechanism 1); it just doesn't narrate.
-3. **Self-healing connection.** The server pings the WebSocket to keep it alive; if it drops anyway,
-   the browser reconnects with backoff and re-syncs everything from disk — nothing stays stale.
-
-### How you control it
-
-The **▶ Run next stage** / per-stage **run** / **⚒ Fix** (appears on a CHANGES REQUESTED review) /
-**+ new** buttons drive your live session — with honest **asynchronous** semantics:
-
-- A click sends the request to the server, which builds a validated `/sdd:<skill> <slug>` command from
-  a strict server-side allowlist and **queues** it into your Claude session — over the same channel
-  mechanism the official Telegram plugin uses (`notifications/claude/channel`).
-- The session consumes a queued command **only while idle at the prompt**. If Claude is mid-task, the
-  command waits; every queued command gets its own `queued → running → done` status line and the UI
-  never fakes synchronous execution.
-- The **depth selector** (topbar) sets `--depth` for dashboard-driven runs: `easy` (default — skills
-  self-decide reversible calls and rarely block on questions), `medium`, or `hard`.
-- If a dashboard-driven run genuinely needs a human decision, Claude posts the question **into the
-  panel** (`dashboard_ask`): a card with 2–4 option buttons appears in the activity pane and the run
-  pauses; your click sends the answer back through the same queue and the run resumes. The browser
-  only ever sends an option *index* — the option text was authored by Claude itself. You can always
-  answer in the terminal instead.
-- Free browser text can never become a command — only the validated skill name + slug + depth pass
-  the allowlist.
-
-### What the panel does NOT do
-
-- It never writes to disk — artifacts are edited only by the pipeline in your terminal.
-- It has no chat input, and a blocking `AskUserQuestion` in the **terminal** stays terminal-only —
-  the panel's option cards exist precisely so dashboard-driven runs don't block there, but free text
-  never travels from the browser into the session.
-- It doesn't survive a server restart — re-run `/sdd:start` for a fresh URL/token.
-
-**Setup, config & troubleshooting:** [`server/README.md`](./server/README.md).
-
-**Security:** binds loopback only; the API is read-only and every read is realpath-contained to `docs/`
-with an extension allowlist; all routes require a per-session capability token; inbound commands are built
-**only** from a server-side skill + slug allowlist (browser text never becomes an arbitrary `/sdd:` command).
+The core pipeline (`survey` → `specify` → … → `ship`) is unchanged; only the networked surfaces are gone.
 
 ## License
 

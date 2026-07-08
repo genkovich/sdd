@@ -9,21 +9,19 @@
 # How each Claude-specific mechanism maps: skills/_shared/tool-adapters.md.
 #
 # Usage:
-#   install.sh <codex|cursor|claude> [--global] [--prefix DIR] [--ref REF] [--src DIR] [--uninstall]
+#   install.sh <codex|cursor|claude> --src DIR [--global] [--prefix DIR] [--uninstall]
 #
 #   codex | cursor   target tool (claude just prints the native /plugin commands)
+#   --src DIR        install from a local checkout (REQUIRED — this fork installs from a
+#                    vetted local tree only; there is no network download path)
 #   --global         install under $HOME instead of the current directory
 #   --prefix DIR     install under DIR (overrides --global and $PWD; mainly for testing)
-#   --ref REF        git ref of genkovich/sdd to download (default: main)
-#   --src DIR        install from a local checkout instead of downloading
 #   --uninstall      remove a previous install from the chosen prefix and exit
 #
-# Dependencies: curl + tar (download mode); python3 only for Codex custom agents (optional —
-# without it the skills still install and agent dispatch degrades to inline).
+# Dependencies: python3 only for Codex custom agents (optional — without it the skills
+# still install and agent dispatch degrades to inline). No network access, ever.
 
 set -euo pipefail
-
-REPO="genkovich/sdd"
 
 log()  { printf '%s\n' "$*"; }
 warn() { printf 'warning: %s\n' "$*" >&2; }
@@ -36,7 +34,6 @@ usage() {
 TOOL=""
 PREFIX=""
 GLOBAL=0
-REF="main"
 SRC=""
 UNINSTALL=0
 
@@ -45,7 +42,6 @@ while [ $# -gt 0 ]; do
     codex|cursor|claude) TOOL="$1" ;;
     --global)    GLOBAL=1 ;;
     --prefix)    shift; PREFIX="${1:?--prefix needs a directory}" ;;
-    --ref)       shift; REF="${1:?--ref needs a git ref}" ;;
     --src)       shift; SRC="${1:?--src needs a directory}" ;;
     --uninstall) UNINSTALL=1 ;;
     -h|--help)   usage; exit 0 ;;
@@ -85,13 +81,12 @@ if [ "$UNINSTALL" = 1 ]; then
 fi
 
 # --- resolve the source tree -------------------------------------------------------------
+# This fork installs from a vetted LOCAL checkout only — there is no network download path.
 # cleanup also rolls back a PARTIAL install: if the script dies after the copy started but
 # before the summary (INSTALL_DONE=1), the half-copied tree + generated agents are removed —
 # the prefix is left clean, not with a silently broken install.
-CLEANUP_DIR=""
 INSTALL_DONE=0
 cleanup() {
-  if [ -n "$CLEANUP_DIR" ]; then rm -rf "$CLEANUP_DIR"; fi
   if [ "$INSTALL_DONE" != 1 ]; then
     rm -rf "${SKILLS_ROOT:?}/sdd"
     rm -f "$AGENTS_DIR"/sdd-*.toml "$AGENTS_DIR"/sdd-*.md
@@ -99,17 +94,8 @@ cleanup() {
 }
 trap cleanup EXIT
 
-if [ -z "$SRC" ]; then
-  command -v curl >/dev/null 2>&1 || die "curl is required to download $REPO"
-  command -v tar  >/dev/null 2>&1 || die "tar is required to unpack $REPO"
-  CLEANUP_DIR="$(mktemp -d)"
-  log "downloading ${REPO}@${REF} …"
-  curl -fsSL "https://codeload.github.com/${REPO}/tar.gz/${REF}" \
-    | tar -xz --strip-components=1 -C "$CLEANUP_DIR" \
-    || die "download/unpack of ${REPO}@${REF} failed — check the ref exists (e.g. --ref main or a release tag like v1.9.2) and your network"
-  SRC="$CLEANUP_DIR"
-fi
-
+[ -n "$SRC" ] \
+  || die "--src DIR is required — install from a local checkout, e.g. ./install.sh $TOOL --src ."
 [ -f "$SRC/skills/specify/SKILL.md" ] \
   || die "source $SRC does not look like the sdd repo (skills/specify/SKILL.md missing)"
 

@@ -273,12 +273,10 @@ def main() -> int:
 
     # --- invocation form: the namespaced /sdd:<name>, never the hyphenated /sdd-<name> ---
     # The plugin ships skills (no commands/ dir), so Claude Code invokes them /sdd:<name>. The only
-    # legit /sdd- in the tree is the proof-run branch ref proof/sdd-notification-preferences and the
-    # `sdd-dashboard` MCP server / `~/.claude/sdd-dashboard/` state dir (a server name, not an
-    # invocation). We scan docs + the manifests (the v1.8.4 sweep missed plugin.json's description —
-    # that gap stays closed).
+    # legit /sdd- in the tree is the proof-run branch ref proof/sdd-notification-preferences. We scan
+    # docs + the manifests (the v1.8.4 sweep missed plugin.json's description — that gap stays closed).
     print("== invocation form ==")
-    SDD_HYPHEN = re.compile(r"(?<!proof)/sdd-(?!dashboard)")
+    SDD_HYPHEN = re.compile(r"(?<!proof)/sdd-")
     form_files = link_files + [ROOT / ".claude-plugin" / "plugin.json", ROOT / ".claude-plugin" / "marketplace.json"]
     offenders: list[str] = []
     for f in sorted(set(form_files)):
@@ -421,74 +419,15 @@ def main() -> int:
               f"_shared/{sf.name} is referenced by {len(referrers)} file(s)",
               f"_shared/{sf.name} is an orphan — nothing under skills/ or agents/ points to it")
 
-    # === dashboard: .mcp.json + server/ + dashboard/ + the `start` handshake skill ===
-    # The visual dashboard (the shipped "MCP exposure" feature) is opt-in but its files must
-    # stay structurally sound: the MCP server is declared correctly, the server/dashboard
-    # sources exist, the render libs are vendored (offline), and the `start` skill is the
-    # documented handshake. A missing piece silently breaks `/sdd:start` for everyone who opts in.
-    print("== dashboard (mcp server + ui) ==")
-    mcp_path = ROOT / ".mcp.json"
-    if check(mcp_path.exists(), ".mcp.json exists", ".mcp.json is missing (the dashboard MCP server is undeclared)"):
-        try:
-            mcp = json.loads(mcp_path.read_text())
-        except json.JSONDecodeError as exc:
-            mcp = None
-            check(False, "", f".mcp.json is not valid JSON: {exc}")
-        if mcp is not None:
-            srv = (mcp.get("mcpServers") or {}).get("sdd-dashboard")
-            check(isinstance(srv, dict),
-                  ".mcp.json declares the 'sdd-dashboard' server",
-                  ".mcp.json has no mcpServers.sdd-dashboard entry")
-            if isinstance(srv, dict):
-                check(srv.get("command") == "bun",
-                      ".mcp.json sdd-dashboard launches with `bun`",
-                      f".mcp.json sdd-dashboard command is {srv.get('command')!r}, expected 'bun'")
-                args = srv.get("args") or []
-                joined = " ".join(args) if isinstance(args, list) else str(args)
-                check("${CLAUDE_PLUGIN_ROOT}/server" in joined,
-                      ".mcp.json sdd-dashboard runs in ${CLAUDE_PLUGIN_ROOT}/server (not the plugin root)",
-                      ".mcp.json sdd-dashboard args must `--cwd ${CLAUDE_PLUGIN_ROOT}/server` — cwd is the plugin dir, never the project")
-                check("start" in args if isinstance(args, list) else False,
-                      ".mcp.json sdd-dashboard invokes the `start` package script",
-                      ".mcp.json sdd-dashboard args must end in the `start` script (bun run … start)")
-
-    # server/ sources — the seven modules + the Bun package manifest.
-    for rel in ("server/package.json", "server/server.ts", "server/state.ts",
-                "server/channel.ts", "server/paths.ts", "server/http.ts",
-                "server/frontmatter.ts", "server/watch.ts"):
-        check((ROOT / rel).exists(), f"{rel} exists", f"{rel} is missing")
-    # The server package must declare the MCP SDK dependency + a `start` script.
-    spkg = ROOT / "server" / "package.json"
-    if spkg.exists():
-        try:
-            pkg = json.loads(spkg.read_text())
-            check("@modelcontextprotocol/sdk" in (pkg.get("dependencies") or {}),
-                  "server/package.json depends on @modelcontextprotocol/sdk",
-                  "server/package.json is missing the @modelcontextprotocol/sdk dependency")
-            check(bool((pkg.get("scripts") or {}).get("start")),
-                  "server/package.json defines a `start` script",
-                  "server/package.json has no `start` script (the .mcp.json launch target)")
-        except json.JSONDecodeError as exc:
-            check(False, "", f"server/package.json is not valid JSON: {exc}")
-
-    # dashboard/ UI + vendored render libs (vendored, not CDN — offline reliability).
-    # mermaid stays vendored but is lazy-loaded by app.js (only when a ```mermaid
-    # block is actually rendered); redoc was dropped with the read-only dashboard.
-    for rel in ("dashboard/index.html", "dashboard/app.js", "dashboard/style.css",
-                "dashboard/vendor/marked.min.js", "dashboard/vendor/mermaid.min.js"):
-        check((ROOT / rel).exists(), f"{rel} exists", f"{rel} is missing")
-
-    # The `start` skill — the documented handshake (auto-discovered as a skill above, but
-    # its dashboard-specific contract must hold: it calls the handshake tool + gates on opt-in).
-    start_md = ROOT / "skills" / "start" / "SKILL.md"
-    if check(start_md.exists(), "skills/start/SKILL.md exists", "skills/start/SKILL.md is missing (the /sdd:start handshake)"):
-        start_text = start_md.read_text()
-        check("dashboard_handshake" in start_text,
-              "skills/start references the dashboard_handshake tool",
-              "skills/start/SKILL.md never mentions dashboard_handshake — the project-dir handover point")
-        check("dashboard_enabled" in start_text,
-              "skills/start gates on dashboard_enabled (opt-in)",
-              "skills/start/SKILL.md never mentions dashboard_enabled — it must gate on the opt-in flag")
+    # === no re-networking: the de-networked security posture must not regress ===
+    # This fork is pure-markdown — no MCP manifest, no server/dashboard tree, no vendored JS
+    # blobs. A re-added .mcp.json, server/, dashboard/, or skills/start/ would silently
+    # reintroduce a process spawn / listening socket / supply-chain blob on session open.
+    print("== no re-networking (security posture) ==")
+    for rel in (".mcp.json", "server", "dashboard", "skills/start"):
+        check(not (ROOT / rel).exists(),
+              f"{rel} is absent (de-networked)",
+              f"{rel} was re-added — this fork must stay pure-markdown (no MCP server / listener / vendored blob)")
 
     print()
     if errors:

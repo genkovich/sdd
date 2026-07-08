@@ -40,9 +40,6 @@ a fixed number.)
 ### Pre-PR checklist
 
 - [ ] **`python3 scripts/validate_plugin.py` passes** (exit 0).
-- [ ] **Server change? `cd server && bunx tsc --noEmit && bun test tests/` passes** — the same
-      gate CI's `server-tests` job runs (deterministic, no network; fixtures under
-      `server/tests/fixtures/`).
 - [ ] **One canonical source / DRY.** Shared logic — the Socratic machine, the critic, the size
       matrix, the ask-style, the surface taxonomy, the handoff block — lives once in
       `skills/_shared/`. Link to it with a relative path and keep only your per-skill *delta*; never
@@ -76,9 +73,9 @@ See [`evals/README.md`](./evals/README.md) for prerequisites and how to add a sc
    the validator fails on any mismatch.
 2. `python3 scripts/validate_plugin.py` → exit 0; push to `main`; tag `vX.Y.Z`.
 3. Claude Code and Codex pick the release up straight from git (`/plugin install sdd@sdd` +
-   `/reload-plugins`; `codex plugin marketplace upgrade sdd`). The `install.sh` path always
-   downloads `main` (or `--ref vX.Y.Z`). Only the Cursor **marketplace** listing goes through a
-   review — see below.
+   `/reload-plugins`; `codex plugin marketplace upgrade sdd`). The `install.sh` path installs from a
+   local checkout (`--src DIR`) — this fork has no network download path, so re-run it against the
+   updated checkout. Only the Cursor **marketplace** listing goes through a review — see below.
 
 ### Publishing to the Cursor marketplace
 
@@ -94,5 +91,5 @@ first listing and every subsequent update:
 3. **Submit** the repo URL at [cursor.com/marketplace/publish](https://cursor.com/marketplace/publish)
    and wait for the review. After approval the plugin appears on cursor.com/marketplace and in
    the in-app marketplace panel; users install it from there, project- or user-scoped.
-4. **Updates are re-reviewed** before the marketplace refreshes; the `install.sh` git path keeps
-   tracking `main` immediately, review or not.
+4. **Updates are re-reviewed** before the marketplace refreshes; the `install.sh` local-checkout
+   path installs whatever tree you point `--src` at, review or not.

@@ -30,27 +30,6 @@ jobs:
           bash -n install.sh
           shellcheck install.sh
 
-  # deterministic runtime tests for the dashboard MCP server (state derivation,
-  # path-security boundary, command allowlist) — no network, committed fixtures.
-  server-tests:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: server
-    steps:
-      - uses: actions/checkout@v5
-
-      - uses: oven-sh/setup-bun@v2
-
-      - name: Install (frozen lockfile)
-        run: bun install --frozen-lockfile
-
-      - name: Typecheck
-        run: bunx tsc --noEmit
-
-      - name: Tests
-        run: bun test tests/
-
   # matrix incl. macos-latest: BSD sed/find/wc differ from GNU — a cheap guard against
   # installer regressions that only bite on a Mac.
   smoke-install:

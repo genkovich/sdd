@@ -24,8 +24,6 @@ judgment_model: opus       # opus | fable — one switch for ALL judgment agents
 effort_test_author: medium    # per-role effort; raised to high on escalation
 effort_implementer: medium
 effort_reviewer: high
-dashboard_enabled: false   # true → opt into the SDD visual dashboard; see skills/start
-dashboard_port: 4178       # integer — loopback port the dashboard binds (scans upward if busy)
 ---
 
 Per-project SDD settings. Full key documentation lives in the plugin's

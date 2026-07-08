@@ -1,1 +1,0 @@
-{ "slug": "skipped-mid", "tasks": [ { "id": "T1", "title": "do it", "layer": "app", "deps": [], "acs": ["AC-01"], "dod": "test passes", "files_hint": ["src/"] } ] }

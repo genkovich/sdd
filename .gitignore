@@ -5,13 +5,6 @@
 # Implementation engine worktrees
 .worktrees/
 
-# Dashboard MCP server — installed deps (bun install runs on first launch; bun.lock is committed)
-server/node_modules/
-
-# Playwright / browser-automation scratch output
-.playwright-mcp/
-server/dash.png
-
 # OS / editor cruft
 .DS_Store
 *.swp

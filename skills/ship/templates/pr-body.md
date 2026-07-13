@@ -26,13 +26,15 @@
 ## Verification
 
 - Unit: <result>
-- Integration: <result, or "CI — Docker-backed">
+- Integration: <result, or "CI — Docker-backed", or mobile: "simulator/emulator-driven">
 - Lint + vet: <result>
 - Ran the feature: <what was exercised against the AC, or what was deferred and why>
+- Device-only ACs deferred <mobile only>: <named list — camera / push / biometrics / background — or none>.
 
 ## Operational notes
 
 - Migration: <run-on-deploy + rollback>, or none.
 - Feature flag / config: <any>, or none.
+- Mobile release <mobile-app surface only; else none>: **App** — version/build bump, signing, track, rollout; **or Library/SDK** — module semver, registries (SPM / CocoaPods / Maven), channel, public-API breaking change.
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)

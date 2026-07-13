@@ -81,6 +81,24 @@ re-deriving the contract kind (HTTP / gRPC / CLI / events) every run, `design` d
 once and `api` (plus the others) read it. The derive-from-architecture-map path stays only as the
 **fallback** when the SAD or the field is absent (a greenfield run where `design` was skipped).
 
+### Project-level default — `default_surfaces` (a pre-select, not an override)
+
+A project can declare its usual surface(s) **once** via `default_surfaces` in `.claude/sdd.local.md`
+(default `[backend-service]` = today's behaviour → [`../implement/references/settings.md`](../implement/references/settings.md)).
+This is the **same shape as `interview_depth`**: a project-level *pre-select*, never a lock.
+
+- **`design`** uses it to **pre-select** the recommended answer to its §4 Target-surface question. The
+  user still confirms/overrides per feature, and `design` still writes the authoritative
+  `target_surfaces` to `sad.md`. The key biases the default; it does **not** decide.
+- **`data-model`** uses it as the **fallback** when a run has no `sad.md` `target_surfaces` — replacing
+  the hard-coded `[backend-service]` assumption, so a mobile-only project stops getting server SQL for a
+  phone's local store.
+
+It is **not** a fourth place surfaces are defined (the taxonomy lives only here — the key *references*
+it) and it does **not** violate "`design` writes `target_surfaces`; nobody re-derives it": a pre-select +
+fallback is not a re-derivation. A mobile shop sets `default_surfaces: [mobile-app]` once instead of
+re-choosing every feature.
+
 ## The gating table (what each surface turns on)
 
 Each consuming skill reads `target_surfaces` and includes only the rows its declared surfaces select:
@@ -89,8 +107,8 @@ Each consuming skill reads `target_surfaces` and includes only the rows its decl
 |---|---|---|---|---|
 | `backend-service` | OpenAPI / gRPC / events (per the sub-kind) | service + async flows | domain · infra · app · ports | (existing) unit · integration · contract |
 | `web-frontend` | *consumes* the backend contract (does not author it) | UI-driven (`<user>` → `<ui>` → `<service>` → `<data-store>`) | **`ui`** | **component · visual-regression · e2e-through-UI** |
-| `mobile-app` | consumes the contract | UI-driven | **`ui`** | component · e2e-through-UI |
-| `desktop-app` | consumes the contract | UI-driven | **`ui`** | component · e2e-through-UI |
+| `mobile-app` | consumes the contract | UI-driven | **`ui`** | **component · snapshot/visual-regression · e2e-through-UI** (+ device-matrix note) |
+| `desktop-app` | consumes the contract | UI-driven | **`ui`** | component · snapshot/visual-regression · e2e-through-UI |
 | `cli` | `contracts/cli.md` (commands/flags/exit-codes) | command flows | app · ports | unit · e2e (command) |
 | `worker` | `contracts/events.md` (no request/response) | async flows | domain · infra | unit · integration |
 | `library-sdk` | `contracts/public-api.md` (public signatures) | usage flows | domain · app | unit · contract |
@@ -99,6 +117,13 @@ Read it as: a feature with `[backend-service, web-frontend]` produces the backen
 `ui` task layer, UI-driven sequence flows alongside the service flows, and the component /
 visual-regression / e2e-through-UI test tiers on top of the backend's unit/integration/contract.
 
+**Mobile keeps a snapshot / visual-regression tier** — it is *not* a web-only concern. Snapshot /
+screenshot testing is a mainstay of native mobile (iOS snapshot tests; Paparazzi / Roborazzi on
+Android), so `mobile-app` retains it rather than dropping it. Mobile also carries a **device-matrix**
+concern (OS versions × screen sizes × form factors) with no tier of its own: `plan-tests` records it as
+a coverage note on the e2e-through-UI tier (which matrix the suite runs against — e.g. a device farm),
+not as a separate tier.
+
 ## The UI-architecture decision (per UI surface — kept light, Option B)
 
 For each **UI surface** declared (`web-frontend` / `mobile-app` / `desktop-app`), `design` walks a
@@ -106,7 +131,7 @@ follow-on **UI-architecture decision** — this evolves today's "read-side deliv
 API-only)" §4 item up into a per-surface choice:
 
 - **web** → server-rendered (SSR) / SPA / hybrid;
-- **mobile** → native / cross-platform;
+- **mobile** → **platform(s)** first — iOS only / Android only / both
 - plus **state-management** and **routing** *only if* the feature's complexity warrants them.
 
 Gated like any §4 strategic decision → an ADR in §9 when it crosses the blast-radius gate. Kept
@@ -114,6 +139,13 @@ Gated like any §4 strategic decision → an ADR in §9 when it crosses the blas
 component-tree, no design-token doc, no screen/wireframe artifact (that would be a separate deep
 UI-design pipeline — out of scope). The `ui` task layer + the UI-architecture ADR + the frontend
 test tiers + the UI sequence flows are the whole of the frontend footprint.
+
+**Mobile ships as an *app* or as a *library/SDK* — detect which; they close differently.** A
+`mobile-app` surface that is a store-delivered application closes at a **store submission** (version +
+build bump, signing, TestFlight / Play internal track, phased rollout). A mobile **library/SDK** (use
+the `library-sdk` surface, or `[mobile-app, library-sdk]`) closes at a **package-registry publish**
+(per-module semver, SPM / CocoaPods / Maven, snapshot vs release channel, public-API breaking-change
+gate). `ship` branches on this rather than assuming App Store — see its mobile-release note.
 
 ## Reuse the existing UI foundation (don't reinvent)
 

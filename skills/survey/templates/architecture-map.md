@@ -44,11 +44,14 @@ C4Container
 
 ## Module inventory
 
-<!-- instruction: one row per top-level module/package, with its layers + where it's wired. -->
+<!-- instruction: one row per top-level module/package, with its layers + where it's wired.
+For a multi-module mobile / SDK repo (many independently-versioned modules in ONE platform), add the
+Version source column and cite where each module's version is declared (e.g. an xcconfig VERSION key,
+a gradle libs.versions.toml entry) — it feeds tasks (per-module work) + ship (per-module bump). -->
 
-| Module | Path | Layers | Wired at | Responsibility |
-|---|---|---|---|---|
-| <name> | `<path>` | domain/app/infra/ports | `<file:line>` | <one line> |
+| Module | Path | Layers | Wired at | Version source | Responsibility |
+|---|---|---|---|---|---|
+| <name> | `<path>` | domain/app/infra/ports | `<file:line>` | `<file:key>` or `<!-- single-version repo -->` | <one line> |
 
 ## Conventions (cited — the rules a new feature must match)
 
@@ -73,13 +76,27 @@ implement must conform to. -->
 
 <!-- instruction: fill ONLY if the repo has a frontend (web / mobile / desktop). This is the UI to
 REUSE — the design system + components the new `ui`-layer work must COMPOSE / EXTEND, never reinvent.
-Skip with <!-- N/A: no frontend --> for a backend-only repo. Cite a file for each. -->
+Skip with <!-- N/A: no frontend --> for a backend-only repo. Cite a file for each.
+BRANCH BY PLATFORM — fill the block that matches the repo (web / mobile); drop the other. -->
+
+**Web** (fill if the frontend is browser-delivered):
 
 - **Component library / design system:** <in-repo `shared/ui/` and/or a 3rd-party kit> — `<path>`
 - **Design tokens:** <colors / spacing / typography source — theme config / CSS vars / token file> — `<file>`
 - **Styling approach:** <Tailwind / CSS-modules / styled-components / vanilla — the one this repo uses> — `<file>`
 - **Shared primitives:** <the existing building blocks: Button, Input, Card, Modal, …> — `<path>`
 - **State / data-fetching:** <store + server-cache lib, if any> — `<file>`
+- **Closest UI precedent:** a new screen/component looks like `<existing screen/component>` (`<file:line>`)
+
+**Mobile** (fill if the app runs on iOS / Android):
+
+- **UI toolkit / design system:** <SwiftUI / UIKit on iOS; Jetpack Compose / Android Views on Android — the in-repo component library it wraps> — `<path>`
+- **Design tokens / theming:** <colors / spacing / typography source — asset catalog colors / a theme module / a tokens file> — `<file>`
+- **Shared components:** <the existing reusable views/widgets the new screen composes> — `<path>`
+- **Navigation stack:** <the routing/navigation approach — NavigationStack / a coordinator / Jetpack Navigation> — `<file>`
+- **DI / composition:** <how modules/screens are wired — the DI container / composition root> — `<file>`
+- **Min OS / deployment target:** <e.g. iOS 15 / minSdk 24> — `<file>`
+- **Module-per-platform layout / assets:** <where platform code + asset catalogs / drawable resources live> — `<path>`
 - **Closest UI precedent:** a new screen/component looks like `<existing screen/component>` (`<file:line>`)
 
 ## Where things live / closest precedents

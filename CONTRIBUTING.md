@@ -51,6 +51,9 @@ a fixed number.)
       detect what the repo uses, or name it «whatever your repo already uses».
 - [ ] **Every skill ends with the handoff block** ([`skills/_shared/handoff.md`](./skills/_shared/handoff.md))
       as its final step.
+- [ ] **Only `implement`, `fix`, and `review` link the focused progress contract**
+      ([`skills/_shared/progress-reporting.md`](./skills/_shared/progress-reporting.md)); it is
+      opt-in conversation formatting for long runs and must never constrain artifact completeness.
 - [ ] **Invocation form is `/sdd:<name>`** — the namespaced form, never the hyphenated `/sdd-<name>`.
 - [ ] **Relative links resolve.** A `[text](./path.md)` target is a real file. The one exception is a
       template-runtime path (`../spec.md`, `../sad.md`, `../contracts/…`, …) that resolves only inside

@@ -20,6 +20,9 @@ The implementation engine. It turns `tasks.json` into committed, tested code thr
 
 This file is the spine. Each step delegates to a file in `references/`.
 
+Conversational progress, when opted in, follows the artifact-safe shared contract →
+[`../_shared/progress-reporting.md`](../_shared/progress-reporting.md).
+
 ## Owner
 
 Tech Lead drives; the engine runs the cycle. The three subagents ship with the plugin: [`test-author`](../../agents/test-author.md) (RED), [`implementer`](../../agents/implementer.md) (GREEN/REFACTOR/GATE), [`reviewer`](../../agents/reviewer.md) (read-only review).

@@ -20,6 +20,9 @@ It reuses the shared clean-context discipline ([`../_shared/critic.md`](../_shar
 
 Review-record prose follows `artifact_language` (carry the language in the reviewer's dispatch prompt) — the verdict literals `PASS` / `CHANGES REQUESTED` / `REVIEW_CLEAN` and cited identifiers stay English → [`../_shared/artifact-language.md`](../_shared/artifact-language.md).
 
+Conversational progress, when opted in, follows the artifact-safe shared contract →
+[`../_shared/progress-reporting.md`](../_shared/progress-reporting.md).
+
 ## Owner
 
 Tech Lead / a reviewer who did **not** write the code (independence is the point).

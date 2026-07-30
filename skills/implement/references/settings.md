@@ -2,7 +2,7 @@
 
 The engine is configured per-project by a plugin-settings file with YAML frontmatter. On first run, **lazy-create** it with the defaults below and tell the user where it is; on later runs, read it.
 
-> **Plugin-wide, not implement-only.** Most keys below configure the `implement` engine, but a few are read by **other skills too**. `interview_depth` is read by the Q&A skills (`specify` / `clarify` / `design`) to pre-select the depth dial. `artifact_language` is read by **every artifact-writing skill** — it sets the language pipeline documents are written in (prose only; structure stays English → [`../../_shared/artifact-language.md`](../../_shared/artifact-language.md)). The file is **auto-created with documented defaults the first time any skill needs it** — normally `specify` at the start of the backbone — so the rest of the pipeline finds a real file instead of silently falling back. If for any reason it's still missing, a reader falls back to its own default (medium): there is **no hard ordering dependency** on `implement` having run first.
+> **Plugin-wide, not implement-only.** Most keys below configure the `implement` engine, but a few are read by **other skills too**. `interview_depth` is read by the Q&A skills (`specify` / `clarify` / `design`) to pre-select the depth dial. `artifact_language` is read by **every artifact-writing skill** — it sets the language pipeline documents are written in (prose only; structure stays English → [`../../_shared/artifact-language.md`](../../_shared/artifact-language.md)). `progress_style` is read only by the long-running `implement`, `fix`, and `review` skills and optionally adds compact, artifact-safe progress updates to those runs → [`../../_shared/progress-reporting.md`](../../_shared/progress-reporting.md). The file is **auto-created with documented defaults the first time any skill needs it** — normally `specify` at the start of the backbone — so the rest of the pipeline finds a real file instead of silently falling back. If for any reason it's still missing, each reader uses its documented default: there is **no hard ordering dependency** on `implement` having run first.
 
 ## Auto-create when absent
 
@@ -20,6 +20,7 @@ Created **automatically** the first time a skill needs it — normally `specify`
 ```yaml
 interview_depth: medium    # easy | medium | hard — plugin-wide default for specify/clarify/design (see _shared/interview-depth.md)
 artifact_language: en      # en | uk (any language tag) — language pipeline DOCUMENTS are written in; headings + machine tokens stay English (see _shared/artifact-language.md)
+progress_style: standard   # standard | focused — focused progress for implement/fix/review long runs only
 tdd: true                  # enforce red→green→refactor
 team_mode: false           # true → agent team via TeamCreate
 workflow_mode: auto        # auto → dynamic Workflow; off → never
@@ -51,6 +52,13 @@ dashboard_port: 4178       # integer — loopback port the dashboard binds (scan
 
 - **`interview_depth`** — `easy | medium | hard`. The plugin-wide default for the **Q&A skills'** depth dial (`specify` / `clarify` / `design`), which governs how much each skill decides on its own vs. interrogates you (question volume, autonomy, which ideation analyses run, per-diagram confirm vs. proceed). It only **pre-selects** the recommended option in each skill's opening depth question — the user can still override per run, or pass `--depth=` to skip the question. It does **not** affect AC-completeness (that's a floor at every level). Full semantics → [`../../_shared/interview-depth.md`](../../_shared/interview-depth.md). (Not read by the `implement` engine itself.)
 - **`artifact_language`** — `en | uk` (any language tag; default `en`). The language **pipeline documents** are written in — read by **every artifact-writing skill** (spec, SAD, ADRs, sequences, data-model, contracts, tasks, test plan, review/fix records, changelog, roadmap, CONTEXT.md), not by the `implement` engine. Only **prose** switches (paragraphs, table cells, diagram labels, the prose fields of `tasks.json` / `openapi.yaml`); **structure stays English** — section headings verbatim from the template, frontmatter keys+values, verdict literals, tracker states, Mermaid keywords, machine fields. Precedence when editing: an existing file's language wins over the setting, a new file matches its feature-folder neighbours, never retro-translate. Full rule + the never-translate token list → [`../../_shared/artifact-language.md`](../../_shared/artifact-language.md).
+- **`progress_style`** — `standard | focused` (default `standard`). `standard` preserves the existing
+  conversation exactly. In `implement`, `fix`, and `review`, `focused` adds compact
+  `Phase · Requirement · Completed · Next` updates at meaningful milestones, plus
+  `Location · Cause · Required fix` when blocked. Other skills ignore the setting. It applies to
+  conversation only: artifact completeness, Socratic explanations, gates, traceability, and the
+  canonical handoff stay unchanged. The canonical contract lives in the installed plugin at
+  `skills/_shared/progress-reporting.md`.
 - **`tdd`** — when false, RED is skipped and the engine writes code directly (warns; you lose the safety net).
 - **`team_mode` / `workflow_mode`** — feed the decision tree (see [`decision-tree.md`](./decision-tree.md)). `team_mode` wins when both could apply.
 - **`max_parallel_agents`** — fan-out cap for team/workflow modes. `1` forces sequential.

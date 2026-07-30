@@ -23,6 +23,9 @@ This skill keeps only its own machinery. Question phrasing → [`../_shared/ask-
 
 Fix-record prose follows `artifact_language` — but a **spec patch matches the existing spec's language** (the file wins over the setting); code, tests and commits stay English → [`../_shared/artifact-language.md`](../_shared/artifact-language.md).
 
+Conversational progress, when opted in, follows the artifact-safe shared contract →
+[`../_shared/progress-reporting.md`](../_shared/progress-reporting.md).
+
 ## Owner
 
 The engineer on the bug (drives). PM / Tech Lead is consulted only when triage lands on «spec-bug» or «gap» — changing an AC is a product decision, not a code one.

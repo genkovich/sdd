@@ -300,6 +300,33 @@ def main() -> int:
               f"skill '{base}' emits the stage-handoff block (the literal phrase is present)",
               f"skill '{base}' SKILL.md never says 'stage-handoff block' — every stage must end with «emit the stage-handoff block per _shared/handoff.md»")
 
+    # --- only long-running execution/recovery skills read the focused progress contract ---
+    # The setting defaults to standard, so adding this contract cannot silently change existing
+    # output. Keep it out of short and Socratic skills, where extra milestone chatter costs more
+    # attention than it saves.
+    print("== focused progress reporting ==")
+    progress_doc = ROOT / "skills" / "_shared" / "progress-reporting.md"
+    progress_text = progress_doc.read_text() if progress_doc.exists() else ""
+    check("progress_style: focused" in progress_text and "conversation only" in progress_text,
+          "_shared/progress-reporting.md defines opt-in, conversation-only focused reporting",
+          "_shared/progress-reporting.md must define `progress_style: focused` and state that it applies to conversation only")
+    settings_text = (ROOT / "skills" / "implement" / "references" / "settings.md").read_text()
+    check("progress_style: standard" in settings_text,
+          "settings default progress_style to standard (backward-compatible)",
+          "settings.md must default `progress_style` to `standard` so focused reporting stays opt-in")
+    focused_progress_skills = {"implement", "fix", "review"}
+    for skill_md in skill_specs:
+        base = skill_md.parent.name
+        has_progress_contract = "progress-reporting.md" in skill_md.read_text()
+        if base in focused_progress_skills:
+            check(has_progress_contract,
+                  f"long-running skill '{base}' points at the shared progress-reporting contract",
+                  f"long-running skill '{base}' must mention 'progress-reporting.md'")
+        else:
+            check(not has_progress_contract,
+                  f"skill '{base}' stays free of focused progress reporting",
+                  f"skill '{base}' mentions 'progress-reporting.md' — focused reporting is limited to implement/fix/review")
+
     # --- every skill verifies its own output (the structural self-check contract) ---
     # _shared/self-check.md defines the contract; every SKILL.md either runs a named checklist
     # or maps its heavy verifier (critic/reviewer/drift/mermaid/GATE) onto it — the literal

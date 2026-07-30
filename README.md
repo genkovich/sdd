@@ -354,17 +354,22 @@ Short version: if a run feels under-reasoned, set `CLAUDE_CODE_EFFORT_LEVEL`.
 The pipeline **auto-creates** this per-project settings file (YAML frontmatter) with **documented
 defaults** the first time a skill needs it — normally `specify` at the start — and adds it to
 `.gitignore` (it's per-developer). The file is **self-documenting**: every key carries its default,
-its allowed values, and a one-line explanation inline. Edit it to change behaviour. Two keys are
-**plugin-wide** — `interview_depth` is read by the Q&A skills (`specify` / `clarify` / `design`) to
-pre-select the depth dial, and `artifact_language` is read by every artifact-writing skill: it sets
-the language pipeline documents are written in — prose only, while section headings, frontmatter and
+its allowed values, and a one-line explanation inline. Edit it to change behaviour. Three keys are
+**plugin-wide**: `interview_depth` is read by the Q&A skills (`specify` / `clarify` / `design`) to
+pre-select the depth dial; `artifact_language` is read by every artifact-writing skill and sets the
+language pipeline documents are written in — prose only, while section headings, frontmatter and
 machine tokens stay English (full rule →
-[`skills/_shared/artifact-language.md`](./skills/_shared/artifact-language.md)); the rest configure
-the `implement` engine:
+[`skills/_shared/artifact-language.md`](./skills/_shared/artifact-language.md)); and
+`progress_style` is read only by `implement`, `fix`, and `review`. Its opt-in `focused` value adds
+compact progress and blocker updates to those long-running conversations without changing any
+generated artifact (full contract →
+[`skills/_shared/progress-reporting.md`](./skills/_shared/progress-reporting.md)). The remaining
+keys configure the `implement` engine:
 
 ```yaml
 interview_depth: medium    # easy | medium | hard — default depth for specify/clarify/design
 artifact_language: en      # en | uk — the language pipeline documents are written in (headings + machine tokens stay English)
+progress_style: standard   # standard | focused — focused progress for implement/fix/review only
 tdd: true                  # enforce red→green→refactor
 team_mode: false           # true → agent team via TeamCreate
 workflow_mode: auto        # auto → dynamic Workflow; off → never
@@ -389,6 +394,45 @@ effort_test_author: medium # raised to high on escalation / for L-XL features
 effort_implementer: medium
 effort_reviewer: high
 ```
+
+#### Focused progress for long runs
+
+Focused progress is **opt-in** and deliberately limited to the three skills where a run can span
+many tasks, failures, or findings:
+
+| Skill | What focused mode tracks |
+|---|---|
+| `implement` | Active task + AC through RED → GREEN → REFACTOR → GATE |
+| `fix` | Reproduction, triage outcome, pinning test, minimal fix, and gate |
+| `review` | Active AC/finding, evidence checked, and resolution status |
+
+Enable it in `.claude/sdd.local.md`:
+
+```yaml
+progress_style: focused
+```
+
+Existing settings files are not rewritten automatically; add the key manually when you want the
+mode. A missing key is `standard`, so upgrades preserve the previous output.
+
+During a long run, the skill reports only meaningful milestones:
+
+```text
+Progress — Phase: RED · Requirement: TASK-04 / AC-03 ·
+Completed: the test fails on the expected authorization assertion ·
+Next: implement the smallest authorization check
+```
+
+A blocker uses a stable diagnostic shape:
+
+```text
+Blocked — Location: integration gate · Cause: Docker daemon is unavailable ·
+Required fix: start Docker or change require_integration from always
+```
+
+`specify`, `clarify`, `design`, and every other skill ignore `progress_style`; their existing
+Socratic cadence remains unchanged. Focused mode affects conversation only — generated artifacts,
+coverage and traceability floors, gates, and the canonical stage handoff remain identical.
 
 Command detection is a stack-agnostic cascade: settings override → Makefile targets →
 `package.json` scripts → language manifests (`go.mod`, `Cargo.toml`, `pyproject.toml`, …) →

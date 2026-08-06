@@ -122,10 +122,13 @@ def main() -> int:
             check(False, "", f"{rel} is not valid JSON: {exc}")
             return None
 
+    codex_plugin = None
     for rel in (".codex-plugin/plugin.json", ".cursor-plugin/plugin.json"):
         data = load_tool_manifest(rel)
         if data is None:
             continue
+        if rel == ".codex-plugin/plugin.json":
+            codex_plugin = data
         check(data.get("name") == "sdd", f"{rel} name is 'sdd'",
               f"{rel} name is {data.get('name')!r}, expected 'sdd'")
         check(data.get("version") == version,
@@ -451,6 +454,28 @@ def main() -> int:
                 check("start" in args if isinstance(args, list) else False,
                       ".mcp.json sdd-dashboard invokes the `start` package script",
                       ".mcp.json sdd-dashboard args must end in the `start` script (bun run … start)")
+
+    # Codex does not expand Claude Code's ${CLAUDE_PLUGIN_ROOT}. An inline MCP object in the
+    # Codex-only manifest takes precedence over default .mcp.json discovery and gives Codex a
+    # plugin-root-relative launch without weakening Claude Code's canonical configuration.
+    codex_srv = ((codex_plugin or {}).get("mcpServers") or {}).get("sdd-dashboard")
+    check(isinstance(codex_srv, dict),
+          ".codex-plugin/plugin.json declares the 'sdd-dashboard' server inline",
+          ".codex-plugin/plugin.json must declare mcpServers.sdd-dashboard inline so Codex does not load the Claude-only ${CLAUDE_PLUGIN_ROOT} path")
+    if isinstance(codex_srv, dict):
+        check(codex_srv.get("command") == "bun",
+              ".codex-plugin sdd-dashboard launches with `bun`",
+              f".codex-plugin sdd-dashboard command is {codex_srv.get('command')!r}, expected 'bun'")
+        check(codex_srv.get("cwd") == ".",
+              ".codex-plugin sdd-dashboard resolves relative paths from the plugin root",
+              f".codex-plugin sdd-dashboard cwd is {codex_srv.get('cwd')!r}, expected '.'")
+        codex_args = codex_srv.get("args") or []
+        check(isinstance(codex_args, list) and "./server" in codex_args,
+              ".codex-plugin sdd-dashboard runs from ./server",
+              ".codex-plugin sdd-dashboard args must include `--cwd ./server`")
+        check("start" in codex_args if isinstance(codex_args, list) else False,
+              ".codex-plugin sdd-dashboard invokes the `start` package script",
+              ".codex-plugin sdd-dashboard args must end in the `start` script (bun run … start)")
 
     # server/ sources — the seven modules + the Bun package manifest.
     for rel in ("server/package.json", "server/server.ts", "server/state.ts",

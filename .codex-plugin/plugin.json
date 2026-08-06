@@ -19,5 +19,12 @@
     "openapi",
     "tdd"
   ],
-  "skills": "./skills/"
+  "skills": "./skills/",
+  "mcpServers": {
+    "sdd-dashboard": {
+      "cwd": ".",
+      "command": "bun",
+      "args": ["run", "--cwd", "./server", "--silent", "start"]
+    }
+  }
 }

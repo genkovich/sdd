@@ -1,0 +1,17 @@
+/sdd:clarify session-timeout --depth=easy
+
+Headless eval run — there is NO interactive user; never call AskUserQuestion. The project's
+per-project settings live at .claude/sdd.local.md — read them before dispatching anything, honour
+judgment_model when you dispatch the devil's-advocate subagent, and state in your final message
+which model tier that dispatch resolved to (per the settings precedence).
+
+Treat these as the user's already-confirmed resolutions for anything the sweep surfaces:
+
+1. the §6 «Revocation must feel fast» NFR resolves to: p95 ≤ 2 seconds from window expiry to the
+   session being unusable, measured at the API gateway;
+2. any other finding: resolve it yourself with the most conservative sensible tightening and list
+   it in the stated-assumptions ledger; if a finding genuinely must be deferred, write the §8 row
+   with owner: PM, due: design.
+
+Follow the skill's protocol exactly: run the self-sweep + the devil's-advocate subagent, write the
+resolutions into the spec, stamp updated_at, and finish by printing the stage-handoff block.

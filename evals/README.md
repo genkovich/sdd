@@ -53,6 +53,7 @@ Exit code is non-zero when any scenario's verdict is `FAIL` (or unparseable).
 | `design-quick-commit-batching` | `/sdd:design` on route quick + depth easy writes all 12 SAD sections to disk but batches commits — ≤4 after the baseline (bootstrap + ≤3 batches), not per-section |
 | `tasks-compile-coupled-lane` | `/sdd:tasks` on a Go feature extending a shared interface emits no standalone interface-only task — it folds the contract change or marks the compile-coupled pair via a shared `files_hint` |
 | `terminal-run-no-dashboard-ask` | a TERMINAL `/sdd:design --depth=hard` run with the dashboard MCP (and its `dashboard_ask` tool) in context keeps its questions in the terminal — asks in the final message or self-decides; never routes the decision to the dashboard/panel |
+| `clarify-judgment-sonnet` | `/sdd:clarify` with `judgment_model: sonnet` in the fixture settings completes the sweep on the sonnet tier — the setting is read + honoured, the handoff reflects sonnet and never claims opus. *Limitation:* headless can't simulate a missing entitlement, so this covers the configuration path only, not the hard-failure fallback (retry on `inherit` per `agent-roster.md` §Model availability) |
 
 ## Adding a scenario
 

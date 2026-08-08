@@ -1,6 +1,6 @@
 ---
 name: fix
-model: opus
+model: inherit
 effort: high
 agents: [explorer]
 description: >

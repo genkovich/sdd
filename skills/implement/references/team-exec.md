@@ -14,7 +14,7 @@ Spawn each by its plugin-namespaced `subagent_type` — `sdd:test-author`, `sdd:
 
 1. Create the team (`TeamCreate`). Seed a shared **TaskList** from `tasks.json` — **the full task text goes in each task body** (title, `acs` text pulled from spec §5, `dod`, `files_hint`). Teammates do NOT read the plan or the conversation; the task body is their whole brief.
 2. Give each agent its own git **worktree** under `.worktrees/<agent>` (`isolation: worktree` is required for the team — the guard enforces it). No two agents share a tree.
-3. Set per-role **model + effort** from `model_*` / `effort_*` + the `.size` scaling, and export the env vars for the dispatch — all per [`../../_shared/agent-roster.md`](../../_shared/agent-roster.md) (roster defaults: test-author/implementer `sonnet`+`medium`, reviewer `opus`+`high`). Print the resolved per-role model+effort in the banner.
+3. Set per-role **model + effort** from `model_*` / `effort_*` + the `.size` scaling, and export the env vars for the dispatch — all per [`../../_shared/agent-roster.md`](../../_shared/agent-roster.md) (roster defaults: test-author/implementer `sonnet`+`medium`, reviewer `opus`+`high`; the reviewer's model resolves per `judgment_model`). Print the resolved per-role model+effort in the banner.
 
 ## Flow per task
 

@@ -10,6 +10,19 @@ gated (a stage hard-refuses when its prerequisite artifact is missing), and stac
 The Q&A skills (`specify` / `clarify` / `design`) are also **depth-tunable** — an easy / medium / hard
 dial decides how much the skill decides for you vs. interrogates you with trade-offs.
 
+## Requirements
+
+SDD runs on **any Claude plan / model tier** — no skill requires a specific model:
+
+- Skills declare `model: inherit` and run on your **session model** — run your SDD session on the
+  strongest tier your account has.
+- The **judgment agents** (reviewer / critic / devils-advocate / strategist / analyst) *default*
+  to `opus`. No Opus access? Set `judgment_model: sonnet` in `.claude/sdd.local.md` — the
+  supported path. Fable access? The floor rule lifts judgment to your session model automatically,
+  or pin `judgment_model: fable` explicitly.
+- A model tier that turns out unavailable **degrades, never blocks**: the dispatch retries once on
+  the session model and says so ([`skills/_shared/agent-roster.md`](./skills/_shared/agent-roster.md)).
+
 ## Install
 
 **Claude Code** — native plugin:
@@ -315,7 +328,7 @@ how much reasoning effort, and which agents it spawns:
 
 ```yaml
 # a skill's frontmatter
-model: opus        # haiku | sonnet | opus | fable | inherit (fable — reachable via judgment_model / env, agents keep tier-alias defaults)
+model: inherit     # skills run on the session model; agents pin role-fit tier-alias defaults (haiku|sonnet|opus), overridable at dispatch
 effort: high       # low | medium | high | xhigh | max
 agents: [critic]   # the agents this skill spawns
 ```
@@ -324,7 +337,7 @@ Model is chosen by the **kind of work**, not by taste:
 
 | Kind of work | Model | Effort | Who |
 |---|---|---|---|
-| Judgment (spec, design, review, critique, ambiguity, strategy) | `opus` | `high` | specify, clarify, design, review · `reviewer` / `critic` / `devils-advocate` / `strategist` / `analyst` |
+| Judgment (spec, design, review, critique, ambiguity, strategy) | `opus` — the **agents'** default, one switch via `judgment_model`; the dispatching skills (specify, clarify, design, review) run on the session model | `high` | `reviewer` / `critic` / `devils-advocate` / `strategist` / `analyst` |
 | Execution (write tests, write code) | `sonnet` | `medium` → `high` on escalation | `test-author`, `implementer` |
 | Research / gathering (+ web) | `sonnet` | `medium` | `researcher` (competitive / adjacent-solution research) |
 | Search / scan / derivation | `haiku` / `inherit` | `low` / `medium` | `explorer`; data-model, api, sequences, tasks |
@@ -337,10 +350,14 @@ The nine agents (`agents/`): **explorer** (brownfield scan), **test-author** (fa
 emit only cited findings. The last three are the **ideation analyses**, dispatched by `specify` and
 gated by the depth dial (easy skips them; hard runs the full suite).
 
-Two policy levers sit on top of the table. **`judgment_model`** (`.claude/sdd.local.md`;
-`opus | fable`) raises **all** judgment agents (`reviewer` / `critic` / `devils-advocate` /
-`strategist` / `analyst`) to the Mythos-tier model in one switch — `agents/*.md` keep their
-tier-alias defaults; a per-role `model_<role>` key still wins. And on **L/XL** features the
+Two policy levers sit on top of the table. **`judgment_model`** (`.claude/sdd.local.md`) moves
+**all** judgment agents (`reviewer` / `critic` / `devils-advocate` / `strategist` / `analyst`) in
+one switch — its value is open: a tier alias (`haiku | sonnet | opus | fable`), `inherit`, or a
+full model id (default `opus`; `sonnet` is the supported path without Opus access) — `agents/*.md`
+keep their tier-alias defaults; a per-role `model_<role>` key still wins. The default is a
+**floor, not a pin**: with the key unset, a session on a stronger tier than `opus` dispatches
+judgment at the session model (an explicit value is always honored literally), and an unavailable
+tier degrades — one retry on the session model, never a blocked stage. And on **L/XL** features the
 critical verifications — the `reviewer` in `review` and the `critic` in `design`/`specify` — run
 at **`effort: xhigh`** (via `CLAUDE_CODE_EFFORT_LEVEL`); the rest of the judgment work stays `high`.
 
@@ -384,7 +401,7 @@ cmd_vet: ""
 model_test_author: sonnet  # per-role model + effort (see Models, effort & agents)
 model_implementer: sonnet
 model_reviewer: opus
-judgment_model: opus       # opus | fable — one switch for all judgment agents (reviewer/critic/devils-advocate/strategist/analyst)
+judgment_model: opus       # tier alias (haiku|sonnet|opus|fable), inherit, or a full model id — one switch for all judgment agents; sonnet = supported path without Opus access
 effort_test_author: medium # raised to high on escalation / for L-XL features
 effort_implementer: medium
 effort_reviewer: high

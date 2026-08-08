@@ -1,6 +1,6 @@
 ---
 name: decide-adr
-model: opus
+model: inherit
 effort: high
 agents: []
 description: >

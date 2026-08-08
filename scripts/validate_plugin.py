@@ -205,6 +205,14 @@ def main() -> int:
               f"skill '{base}' has a description",
               f"skill '{base}' has no/short description")
         check_profile(f"skill '{base}'", fm, require=True, require_agents=True)
+        # Skill frontmatter executes BEFORE any settings are read — a skill that pins an
+        # entitlement-gated tier hard-fails at skill start for every account without that tier
+        # (proven by the 1140b0c-era hard-fail). Judgment tier lives on the AGENTS + judgment_model.
+        check(fm.get("model") not in ("opus", "fable"),
+              f"skill '{base}' does not pin an entitlement-gated model tier",
+              f"skill '{base}' frontmatter pins model: {fm.get('model')} — skill frontmatter runs "
+              f"before settings, so accounts without that tier hard-fail; use `model: inherit` "
+              f"(judgment quality belongs to the agents / judgment_model)")
     check((skills_dir / "_shared").is_dir() and not (skills_dir / "_shared" / "SKILL.md").exists(),
           "_shared is reference-only (no SKILL.md)",
           "_shared is missing or contains a SKILL.md")
@@ -365,15 +373,22 @@ def main() -> int:
               f"skills/survey/templates/architecture-map.md frontmatter lost the `{key}` key — "
               f"command-detection / staleness checks read it")
 
-    # --- model policy consistency: judgment_model is documented in both policy files ---
-    # The judgment_model settings key (opus|fable switch for the judgment agents) is defined in
-    # the settings doc and consumed per agent-roster's precedence — if either file drops the
-    # mention, the policy silently forks.
+    # --- model policy consistency: judgment_model is documented everywhere it matters ---
+    # The judgment_model settings key (open value-set switch for the judgment agents) is defined in
+    # the settings doc, consumed per agent-roster's precedence, and surfaced to users in the README —
+    # if any file drops the mention, the policy silently forks. Both policy files must also carry
+    # the "floor" rule (default-is-a-floor: never silently downgrade judgment below the session),
+    # so the rule can't vanish from one of them.
     print("== model policy ==")
-    for rel in ("skills/implement/references/settings.md", "skills/_shared/agent-roster.md"):
+    for rel in ("skills/implement/references/settings.md", "skills/_shared/agent-roster.md",
+                "README.md"):
         check("judgment_model" in (ROOT / rel).read_text(),
               f"{rel} documents judgment_model",
-              f"{rel} never mentions 'judgment_model' — the settings doc and the roster policy must both carry it")
+              f"{rel} never mentions 'judgment_model' — the settings doc, the roster policy and the README must all carry it")
+    for rel in ("skills/implement/references/settings.md", "skills/_shared/agent-roster.md"):
+        check("floor" in (ROOT / rel).read_text().lower(),
+              f"{rel} carries the judgment_model floor rule",
+              f"{rel} never says 'floor' — the default-is-a-floor rule (no silent judgment downgrade below the session) must stay in both policy files")
 
     # --- artifact language: the key is defined + the rule is threaded through every writer ---
     # The artifact_language settings key (en|uk prose switch for pipeline documents) is defined in

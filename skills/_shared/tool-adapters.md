@@ -27,6 +27,8 @@ Cursor ignore them; use the host's own model settings instead.
 ## The rule
 
 When a mechanism is unavailable in the host tool, **degrade to the inline sequential
-equivalent — never block the stage** on a missing host feature. The stage-handoff block
-([`handoff.md`](./handoff.md)) is still printed in full every run; only substitute the host's
-invocation + fresh-context forms from the table above.
+equivalent — never block the stage** on a missing host feature. The same rule covers a missing
+**model tier**: when the selected model is unavailable to the account, retry the dispatch once on
+`inherit` and continue — canonical in [`agent-roster.md`](./agent-roster.md) §Model availability.
+The stage-handoff block ([`handoff.md`](./handoff.md)) is still printed in full every run; only
+substitute the host's invocation + fresh-context forms from the table above.

@@ -1,6 +1,6 @@
 ---
 name: review
-model: opus
+model: inherit
 effort: high
 agents: [reviewer]
 description: >

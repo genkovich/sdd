@@ -19,8 +19,13 @@ A skill lives in `skills/<name>/` and is the **source of truth** for its stage.
 
 ## Subagents
 
-Engine subagents live in `agents/*.md` with `name` / `description` / `model: inherit`
-frontmatter and a system prompt that instructs them to read upstream artifacts directly.
+Engine subagents live in `agents/*.md` with `name` / `description` / `model` / `effort`
+frontmatter and a system prompt that instructs them to read upstream artifacts directly. Each
+agent pins the **role-fit tier alias** per
+[`skills/_shared/agent-roster.md`](./skills/_shared/agent-roster.md) — `haiku` for scan, `sonnet`
+for execution, `opus` for judgment — overridable at dispatch (the `judgment_model` switch, the
+`model_<role>` keys, env). `install.sh` rewrites the generated Codex / Cursor agent copies to
+`model: inherit`.
 
 ## Before you open a PR
 
@@ -56,6 +61,11 @@ a fixed number.)
       template-runtime path (`../spec.md`, `../sad.md`, `../contracts/…`, …) that resolves only inside
       a generated `docs/features/<slug>/` folder — those are allowlisted in the validator.
 - [ ] **References in `references/`, templates in `templates/`** — one level deep, no nested folders.
+- [ ] **Skill frontmatter never pins an entitlement-gated tier** (`model: opus` / `model: fable`) —
+      frontmatter executes before any settings are read, so an account without that tier hard-fails
+      at skill start; skills declare `model: inherit` and the validator fails otherwise.
+- [ ] **No version-pinned model-capability claims** (like «only on Opus 4.8») — they rot with every
+      model release; phrase by tier / by what the resolved model supports.
 
 ### Behaviour evals (on-demand — NOT in CI)
 

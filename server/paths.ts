@@ -1,7 +1,7 @@
 /**
  * Path scoping + project-root discovery for the SDD dashboard server.
  *
- * The MCP server is launched with `--cwd ${CLAUDE_PLUGIN_ROOT}/server`, so
+ * The host-specific MCP launchers run the package from `<plugin>/server`, so
  * `process.cwd()` is the PLUGIN dir, never the project. Every read/write must be
  * proven to live under `<PROJECT>/docs/` before it touches disk — the inverse of
  * the Telegram channel's `assertSendable` (it refuses to LEAK its own state; we

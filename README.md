@@ -1,8 +1,9 @@
 # SDD — Spec-Driven Development for Claude Code
 
 A self-contained Claude Code plugin that carries a feature from a one-line idea to
-**reviewed, verified, shipped** code through **19 atomic, stack-agnostic skills** and a
-**TDD implementation engine** — with a living roadmap above the per-feature flow.
+**reviewed, verified, shipped** code through **22 atomic, stack-agnostic skills** and a
+**TDD implementation engine** — with a living roadmap above the per-feature flow and a
+**design pipeline** (design-system · ux-flows · screens) for UI features.
 
 Every skill is Socratic (it walks decisions with you, it doesn't dump a wall of output),
 gated (a stage hard-refuses when its prerequisite artifact is missing), and stack-agnostic
@@ -134,9 +135,13 @@ after the code is written.
 ```mermaid
 flowchart LR
     IV[interview<br/>optional] -.-> S
-    SV[survey<br/>once per repo] --> S
+    SV[survey<br/>once per repo] -->|brownfield| S
+    SV -->|greenfield| SC[scaffold] --> S
+    DS[design-system<br/>once per repo, UI] -.-> UX
     subgraph backbone["BACKBONE — run in order"]
-        S[specify] --> CL[clarify] --> D[design] --> SQ[sequences] --> DM[data-model] --> API[api] --> T[tasks] --> PT[plan-tests] --> IM[implement]
+        S[specify] --> CL[clarify] --> UX[ux-flows<br/>UI features] --> D[design] --> SQ[sequences] --> DM[data-model] --> API[api] --> SCR[screens<br/>UI features] --> T[tasks] --> PT[plan-tests] --> IM[implement]
+        CL -.->|no UI| D
+        API -.->|no UI| T
     end
     IM --> RV[review] --> SH[ship]
     subgraph util["UTILITIES — call anytime"]
@@ -153,7 +158,9 @@ flowchart LR
 
 | # | Skill | What it does | Reads → Produces |
 |---|---|---|---|
-| 0 | **survey** | Existing repo → scans once, persists the current architecture. Empty repo → level-adaptive foundation session → fixes the foundation + emits a scaffold `tasks.json` for `implement`. | the repo → `docs/architecture-map.md` (+ scaffold `tasks.json` on greenfield) |
+| 0 | **survey** | Existing repo → scans once, persists the current architecture. Empty repo → level-adaptive foundation session → fixes the foundation + emits a scaffold `tasks.json` for `scaffold`. | the repo → `docs/architecture-map.md` (+ scaffold `tasks.json` on greenfield) |
+| 0b | **scaffold** | *Greenfield only:* materializes the skeleton the foundation planned — sequentially inline, anchored on the **skeleton smoke test** (builds + boots + empty test suite + migration tool) | `architecture-map.md` + `_scaffold/tasks.json` → the committed skeleton |
+| 0c | **design-system** | *Once per repo, before the first UI feature:* fixes the committed design canon — the drawing tool (Figma / Pencil / code), platform posture, tokens, component inventory | the repo (+ design MCPs) → `docs/design-system.md` |
 
 ### Backbone — the straight line (run in order)
 
@@ -161,20 +168,22 @@ flowchart LR
 |---|---|---|---|
 | 1 | **specify** | Interviews you to capture the idea, writes the product spec + acceptance criteria (reads the architecture map for constraints) | *your idea*, `architecture-map.md` → `spec.md` |
 | 2 | **clarify** | Sweeps the spec for ambiguities (a devil's-advocate pass), closes or defers each | `spec.md` → tightened `spec.md` |
-| 3 | **design** | **Matches the feature to your existing architecture** (see below) + **declares the target surfaces**, writes the Arc42 SAD + C4 + ADRs | `spec.md` (+ `CONTEXT.md` if present) → `sad.md`, `adr/*` |
-| 4 | **sequences** | Draws the runtime flows as Mermaid sequence diagrams | `sad.md` → `sad.md §6` |
-| 5 | **data-model** | Designs the schema and writes the actual forward+rollback migrations — **staged** under the feature folder, not the live tree (`implement` promotes them) | `spec.md`, `sad.md`, sequences → `data-model.md`, staged `migrations/*.up/down.sql` |
-| 6 | **api** | Derives the OpenAPI contract from the data model (or the existing schema on the fast lane) + sequences + spec | `data-model.md`, sequences, `spec.md` → `contracts/openapi.yaml` |
-| 7 | **tasks** | Breaks the work into atomic ≤1-day tasks + a `tasks.json` dependency DAG | all of the above → `tasks/*`, **`tasks.json`** |
-| 8 | **plan-tests** | Maps every acceptance criterion to ≥1 test (inline in the spec for XS/S) | `spec.md`, `data-model.md` → `test-plan.md` (M+) or an inline `## Test plan` in `spec.md` (XS/S) |
-| 9 | **implement** | The TDD engine: writes a failing test, makes it pass, gates, commits — per task; **promotes** each staged migration into the live `migrations/` as it builds | `tasks.json` + all artifacts → code + tests + promoted migrations, committed |
+| 3 | **ux-flows** | *UI features only (auto-skipped otherwise):* derives one user flow per UI-touching user story (happy + AC-driven error branches) + the `SCR-NN` screen inventory — always markdown+mermaid, whatever the design tool | `spec.md`, `design-system.md` → `ux-flows.md` |
+| 4 | **design** | **Matches the feature to your existing architecture** (see below) + **declares the target surfaces** (reading `ux-flows.md` as evidence), writes the Arc42 SAD + C4 + ADRs | `spec.md` (+ `ux-flows.md`, `CONTEXT.md` if present) → `sad.md`, `adr/*` |
+| 5 | **sequences** | Draws the runtime flows as Mermaid sequence diagrams (UI-driven flows agree with `ux-flows.md`) | `sad.md` → `sad.md §6` |
+| 6 | **data-model** | Designs the schema and writes the actual forward+rollback migrations — **staged** under the feature folder, not the live tree (`implement` promotes them) | `spec.md`, `sad.md`, sequences → `data-model.md`, staged `migrations/*.up/down.sql` |
+| 7 | **api** | Derives the OpenAPI contract from the data model (or the existing schema on the fast lane) + sequences + spec | `data-model.md`, sequences, `spec.md` → `contracts/openapi.yaml` |
+| 8 | **screens** | *UI features only (auto-skipped otherwise):* the canonical screen manifest — every screen in every state (default / loading / empty / error / …), reuse-first components; drawn per the canon's tool (Figma / `screens.pen` / inline wireframes) | `ux-flows.md`, `sad.md`, contracts, `design-system.md` → `screens.md` |
+| 9 | **tasks** | Breaks the work into atomic ≤1-day tasks + a `tasks.json` dependency DAG (each `ui` task cites `screens.md` SCR ids + states) | all of the above → `tasks/*`, **`tasks.json`** |
+| 10 | **plan-tests** | Maps every acceptance criterion to ≥1 test (inline in the spec for XS/S; e2e-through-UI paths from `ux-flows.md`, component states from `screens.md`) | `spec.md`, `data-model.md` → `test-plan.md` (M+) or an inline `## Test plan` in `spec.md` (XS/S) |
+| 11 | **implement** | The TDD engine: writes a failing test, makes it pass, gates, commits — per task; **promotes** each staged migration into the live `migrations/` as it builds; a `ui` task builds to the `screens.md` states, reusing the inventory | `tasks.json` + all artifacts → code + tests + promoted migrations, committed |
 
 ### Close the loop (after the code is written)
 
 | # | Skill | What it does | Reads → Produces |
 |---|---|---|---|
-| 10 | **review** | An **independent, clean-context** code review of the *whole* change against spec/AC + quality | the diff + `spec.md` → review record, `PASS` / `CHANGES REQUESTED` |
-| 11 | **ship** | **Verifies the feature actually runs** (not just green tests), writes the changelog, opens the PR | the reviewed change → changelog + PR (never auto-merges) |
+| 12 | **review** | An **independent, clean-context** code review of the *whole* change against spec/AC + quality (incl. built-screen ↔ `screens.md` match) | the diff + `spec.md` → review record, `PASS` / `CHANGES REQUESTED` |
+| 13 | **ship** | **Verifies the feature actually runs** (not just green tests), writes the changelog, opens the PR | the reviewed change → changelog + PR (never auto-merges) |
 
 `review` can bounce back to `implement` if it finds an unmet acceptance criterion. `ship` is the
 end: a reviewed, verified change with a changelog and an open PR — merging to main stays your call.
@@ -190,6 +199,7 @@ end: a reviewed, verified change with a changelog and an open PR — merging to 
 
 - **interview** *(before specify)* — stress-test a raw idea before you commit to a spec: a Socratic pass that surfaces hidden assumptions, names tradeoffs, and proposes sharper angles, ending with the weakest spot + the next step (usually `/sdd:specify`). Any idea, not just features; optional — reach for it when the idea itself isn't settled.
 - **classify-size** — size the feature XS/S/M/L/XL (writes `.size`); later skills read it to decide MVP vs full depth. Run it at the start, or any time scope changes.
+- **design-system** *(once per repo, before the first UI feature)* — fixes the **committed** design canon `docs/design-system.md`: the drawing tool (**Figma MCP / Pencil MCP / `code`** — markdown wireframes), the platform posture, the token source, the component inventory. `ux-flows` reads the posture, `screens` draws per the tool, `implement` registers `NEW` components back into it.
 - **glossary** — capture a domain term in `CONTEXT.md` with a definition. Run it whenever a new term shows up; `design` and the spec read the glossary.
 - **decide-adr** — write a standalone ADR after the fact, when `tasks` (or a review) flags a decision that needs recording but wasn't captured during `design`.
 - **fix** — the **bugfix entry point**: reproduce, trace the symptom to the spec's acceptance
@@ -250,10 +260,40 @@ output by it — they never re-derive it:
   extend** it (modelled on the closest existing screen) instead of hand-rolling new UI — the frontend
   echo of the backend's match-the-repo + copy-the-closest-precedent.
 
-It's **Option B** — frontend-awareness threaded through the existing stages (a `ui` layer,
-UI-architecture ADRs, UI flows, frontend test tiers); there is deliberately **no** separate
-component-tree / design-token / screen artifact. Full semantics:
+The SAD keeps the **UI-architecture decision** (SSR/SPA, native/cross-platform, state/routing);
+**screen-level design lives in the design pipeline** — `design-system` / `ux-flows` / `screens`
+(next section). The boundary is two-way: the SAD never duplicates screens, and the design skills
+never make architecture decisions. Full semantics:
 [`skills/_shared/surfaces.md`](./skills/_shared/surfaces.md).
+
+## The design pipeline (UI features)
+
+Three skills carry a UI feature from user flows to a per-state screen manifest — and are
+**auto-skipped end-to-end for backend-only work** (the no-UI N/A conditions in
+[`skills/_shared/size-matrix.md`](./skills/_shared/size-matrix.md)):
+
+- **`design-system`** *(utility, once per repo)* — the committed canon `docs/design-system.md`:
+  which tool screens are drawn with (**Figma MCP / Pencil MCP / `code`** — inline markdown
+  wireframes, always available), the platform posture (mobile-first / desktop-first / responsive),
+  the token source, and the component inventory. Committed on purpose — the tool choice is
+  team-wide, never in the per-developer `sdd.local.md`.
+- **`ux-flows`** *(after `clarify`)* — one mermaid `flowchart` per UI-touching user story (happy
+  path + the error branches the ACs demand), the **`SCR-NN` screen inventory**, and an AC→flow
+  map. Always markdown+mermaid whatever the tool; `design` reads it as **evidence** for the
+  `target_surfaces` declaration.
+- **`screens`** *(between `api` and `tasks`)* — the canonical manifest
+  `docs/features/<slug>/screens.md`: **every screen in every state** (default / loading / empty /
+  error / success / validation), *derived* from the ACs + the sequence branches + the contract
+  error responses; per state, the components to **reuse** from the inventory — a `NEW` component
+  only with a why-no-primitive-fits justification, registered back into the canon. Visuals per the
+  canon's tool: Figma node-refs, a `screens.pen`, or inline wireframes. A missing MCP **degrades
+  to `code` mode with a named degradation — never a blocked stage**
+  ([`skills/_shared/tool-adapters.md`](./skills/_shared/tool-adapters.md)).
+
+Downstream, the manifest is the contract: `tasks` cites SCR ids + states in each `ui` task,
+`implement` builds the screen to the declared states with the named components (new dependencies
+only as a last resort, confirmed with you), and `review` checks the built screen against the
+approved manifest.
 
 ## Where the spec comes from
 
@@ -285,9 +325,9 @@ gate and become ADRs.
 Its greenfield mode gauges how you want to engage, then picks the stack / structure / data approach
 / conventions with you (defaults-heavy), fixes them as the foundation (the same map, marked
 `mode: greenfield-bootstrap`, + foundational ADRs for the irreversible choices), and emits a
-scaffold `tasks.json`. `implement` then materializes the skeleton — anchored on a smoke test
-(«builds + boots + the test and migration tooling run») rather than per-folder TDD. After that the
-repo is real and the per-feature flow builds into it normally.
+scaffold `tasks.json`. **`/sdd:scaffold` then materializes the skeleton** — sequentially inline,
+anchored on a smoke test («builds + boots + the test and migration tooling run») rather than
+per-folder TDD. After that the repo is real and the per-feature flow builds into it normally.
 
 ## The roadmap (the portfolio layer)
 
@@ -506,9 +546,6 @@ agents/           explorer, test-author, implementer, reviewer, critic, devils-a
 scripts/          validate_plugin.py (CI gate: manifests + skill/agent frontmatter + the consistency invariants — links resolve, /sdd: form, handoff block, single-source taxonomy, no _shared orphans)
 skills/_shared/   canonical socratic-loop / critic / size-matrix / ask-style / interview-depth / diagram-presentation / surfaces / handoff / tool-adapters (referenced, not duplicated)
 skills/<name>/    SKILL.md spine + references/ (heavy detail) + templates/ (output scaffolds)
-.mcp.json         declares the sdd-dashboard MCP server (auto-starts at session open; opt-in via dashboard_enabled)
-server/           the dashboard MCP server (Bun + TypeScript): server.ts (MCP stdio + Bun.serve HTTP/WS), http.ts (routing + gating, testable), state.ts (disk→pipeline derivation), channel.ts (dashboard_* tools + command allowlist), paths.ts (docs/ scoping), frontmatter.ts (shared parser) + tests/ (bun test)
-dashboard/        the browser UI (vanilla JS, terminal-green, read-only): index.html + app.js + style.css + vendor/ (marked, mermaid — vendored, offline; mermaid lazy-loads)
 ```
 
 ## Roadmap
@@ -523,84 +560,6 @@ Directions under consideration — not promises, no dates:
   export is one-shot and copy-paste).
 - **Constitution file** — a repo-level set of inviolable rules (security, compliance, style) every
   stage reads and the validator enforces, complementing the per-feature artifacts.
-
-**Shipped:** ~~MCP exposure~~ → see **[The visual dashboard](#the-visual-dashboard-opt-in)** below.
-
-## The visual dashboard (opt-in)
-
-The roadmap's *"MCP exposure — pipeline state served over MCP so external tools and dashboards can read
-where every feature stands"* has shipped — and gained a control surface. The plugin carries an
-**`sdd-dashboard` MCP server** (`server/`, Bun + TypeScript) that auto-starts with every Claude Code
-session (declared in `.mcp.json`) and, when enabled, serves a **local browser dashboard** (`dashboard/`)
-on `127.0.0.1`. It reads every feature off disk (`docs/features/<slug>/`), shows its pipeline as a
-per-step checklist — `done` / `skipped` / `pending` / `blocked` — and renders each artifact (markdown +
-**mermaid** diagrams from vendored libs, fully offline; OpenAPI as plain YAML). Artifacts render in
-whatever language they're written — the state derivation reads only the English structural tokens,
-which never translate (see `artifact_language` above). Pure-markdown users who
-never opt in are unaffected — nothing binds, nothing opens.
-
-### Launch it — three steps
-
-1. Install **[Bun](https://bun.sh)** (the server runtime — the same dependency the official Telegram
-   plugin uses): `curl -fsSL https://bun.sh/install | bash` or `brew install bun`.
-2. Set `dashboard_enabled: true` in your project's `.claude/sdd.local.md`
-   (see [Configuration](#configuration--claudesddlocalmd)).
-3. Run **`/sdd:start`** in your Claude Code session. The server is already running — it auto-started
-   with the session; this step just hands it your project directory, binds the port if needed, and
-   prints the URL: `http://127.0.0.1:<port>/?session=<id>&token=<capability-token>`. Open that exact
-   URL in a browser — the token in it authorises the session.
-
-A new session (or a server restart) mints a new token, so an old tab goes stale: re-run `/sdd:start`
-and open the fresh URL.
-
-### How the panel updates
-
-Three mechanisms, layered:
-
-1. **Live, from disk.** The server watches `docs/` (`fs.watch`) and pushes a refresh over the
-   WebSocket whenever an artifact changes — no matter who changed it: a dashboard-driven run, a skill
-   you ran in the terminal, or you editing `spec.md` in vim. Changes appear within ~1 second.
-2. **Enriched, from Claude.** When Claude runs a stage it also calls `dashboard_update` /
-   `dashboard_log` / `dashboard_done` — that is what feeds the live activity feed, stage transitions,
-   review verdicts and the final handoff. A terminal-only run still refreshes the artifacts
-   (mechanism 1); it just doesn't narrate.
-3. **Self-healing connection.** The server pings the WebSocket to keep it alive; if it drops anyway,
-   the browser reconnects with backoff and re-syncs everything from disk — nothing stays stale.
-
-### How you control it
-
-The **▶ Run next stage** / per-stage **run** / **⚒ Fix** (appears on a CHANGES REQUESTED review) /
-**+ new** buttons drive your live session — with honest **asynchronous** semantics:
-
-- A click sends the request to the server, which builds a validated `/sdd:<skill> <slug>` command from
-  a strict server-side allowlist and **queues** it into your Claude session — over the same channel
-  mechanism the official Telegram plugin uses (`notifications/claude/channel`).
-- The session consumes a queued command **only while idle at the prompt**. If Claude is mid-task, the
-  command waits; every queued command gets its own `queued → running → done` status line and the UI
-  never fakes synchronous execution.
-- The **depth selector** (topbar) sets `--depth` for dashboard-driven runs: `easy` (default — skills
-  self-decide reversible calls and rarely block on questions), `medium`, or `hard`.
-- If a dashboard-driven run genuinely needs a human decision, Claude posts the question **into the
-  panel** (`dashboard_ask`): a card with 2–4 option buttons appears in the activity pane and the run
-  pauses; your click sends the answer back through the same queue and the run resumes. The browser
-  only ever sends an option *index* — the option text was authored by Claude itself. You can always
-  answer in the terminal instead.
-- Free browser text can never become a command — only the validated skill name + slug + depth pass
-  the allowlist.
-
-### What the panel does NOT do
-
-- It never writes to disk — artifacts are edited only by the pipeline in your terminal.
-- It has no chat input, and a blocking `AskUserQuestion` in the **terminal** stays terminal-only —
-  the panel's option cards exist precisely so dashboard-driven runs don't block there, but free text
-  never travels from the browser into the session.
-- It doesn't survive a server restart — re-run `/sdd:start` for a fresh URL/token.
-
-**Setup, config & troubleshooting:** [`server/README.md`](./server/README.md).
-
-**Security:** binds loopback only; the API is read-only and every read is realpath-contained to `docs/`
-with an extension allowlist; all routes require a per-session capability token; inbound commands are built
-**only** from a server-side skill + slug allowlist (browser text never becomes an arbitrary `/sdd:` command).
 
 ## License
 

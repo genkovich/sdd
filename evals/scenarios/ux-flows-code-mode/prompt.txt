@@ -1,0 +1,10 @@
+/sdd:ux-flows saved-searches --depth=easy
+
+Headless eval run — there is NO interactive user; never call AskUserQuestion. Take the platform
+posture from docs/design-system.md (it is committed in the fixture) — do not deviate from it and
+do not re-ask it. For anything the Socratic pass would normally confirm, decide the reversible
+option yourself and record it in the assumptions ledger.
+
+Follow the skill's protocol exactly: derive one flow per UI-touching §4 user story with the
+alt/error branches the §5 ACs demand, build the SCR screen inventory, fill the AC-coverage table,
+validate every mermaid block, commit, and finish by printing the stage-handoff block.

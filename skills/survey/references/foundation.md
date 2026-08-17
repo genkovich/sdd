@@ -2,8 +2,8 @@
 
 When `survey` detects an empty repo, it doesn't write «greenfield — nothing here». It runs a short
 session to **establish the foundation** so the per-feature flow has something real to build into,
-then hands a skeleton to `implement`. The session is **adaptive to the person** — gauge their level
-once, then meet them there.
+then hands the skeleton plan to `scaffold`. The session is **adaptive to the person** — gauge their
+level once, then meet them there.
 
 ## G2 — Calibrate (one question, sets everything after)
 
@@ -37,9 +37,9 @@ Each irreversible pick (stack, module style, persistence) becomes a **foundation
 
 Write `docs/architecture-map.md` from the template with `mode: greenfield-bootstrap`. The C4 + module inventory describe the **target baseline** (what we're about to scaffold), the conventions catalog is the rule set the scaffold + every future feature follows. This is the same file brownfield mode produces, so downstream skills don't care which mode created it.
 
-## G6 — Scaffold `tasks.json` contract (handed to `implement`)
+## G6 — Scaffold `tasks.json` contract (handed to `scaffold`)
 
-Emit `docs/features/_scaffold/tasks.json` (a repo-level, not per-feature, task set) so `implement` can materialize the skeleton. Same shape as the `tasks` contract, with `layer: scaffold`:
+Emit `docs/features/_scaffold/tasks.json` (a repo-level, not per-feature, task set) so [`scaffold`](../../scaffold/SKILL.md) can materialize the skeleton. Same shape as the `tasks` contract, with `layer: scaffold`:
 
 ```json
 {
@@ -59,6 +59,6 @@ Emit `docs/features/_scaffold/tasks.json` (a repo-level, not per-feature, task s
 }
 ```
 
-**The skeleton smoke test is the TDD anchor.** Scaffold tasks have no feature AC, so `implement` anchors the red→green on the structural smoke test: RED = «the project does not build / boot / the tooling doesn't run», GREEN = «build + boot + empty test suite + migration tool all succeed». That keeps the engine's discipline meaningful for structural work (no per-folder TDD theatre). `implement` reads the foundation map for the exact conventions to scaffold to.
+**The skeleton smoke test is the TDD anchor** — canonical in [`../../scaffold/SKILL.md`](../../scaffold/SKILL.md). Scaffold tasks have no feature AC, so `scaffold` anchors the red→green on the structural smoke test: RED = «the project does not build / boot / the tooling doesn't run», GREEN = «build + boot + empty test suite + migration tool all succeed». That keeps the discipline meaningful for structural work (no per-folder TDD theatre). `scaffold` reads the foundation map for the exact conventions to materialize to.
 
 After scaffold: the repo is real, `docs/architecture-map.md` describes it, and the normal per-feature flow (`specify → … → implement`) builds features into it — `implement`'s feature tests are real TDD against a project that now boots.

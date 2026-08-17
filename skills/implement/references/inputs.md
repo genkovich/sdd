@@ -12,13 +12,13 @@ The loaded `tasks.json` must satisfy the shape from the `tasks` skill:
 - each task: `id` (unique), `title`, `layer`, `deps` (array of existing ids), `acs` (array), `dod` (string), `files_hint` (array).
 - `deps` forms a DAG (no cycles) — verified in step 4. A cycle is a hard error: report the cycle and stop (it is a `tasks` bug, not an `implement` one).
 
-## Scaffold task sets (from `survey` greenfield)
+## Scaffold task sets (from `survey` greenfield) → run `scaffold`, not `implement`
 
-A `tasks.json` with `slug: "_scaffold"` and `layer: scaffold` tasks comes from `survey`'s greenfield foundation (not from `tasks`). These tasks have **no feature `acs`** — they create the project skeleton (structure, baseline module, test harness, migration tooling, CI, conventions doc). Handle them specially:
-
-- **The skeleton smoke test is the red→green anchor**, not a feature AC: RED = «the project does not build / boot / the tooling doesn't run»; GREEN = «build + boot + the empty test suite + the migration tool all succeed». Write that smoke test as part of the scaffold (task S2 in the foundation contract) and drive the skeleton to make it pass — no per-folder TDD theatre.
-- Read `docs/architecture-map.md` (`mode: greenfield-bootstrap`) for the exact stack + conventions to scaffold to.
-- After the scaffold is green the repo is real, and the normal per-feature flow (`specify → … → implement`) builds into it with real feature TDD.
+A `tasks.json` with `slug: "_scaffold"` and `layer: scaffold` tasks is the scaffold plan from
+`survey`'s greenfield foundation — it is **not** an `implement` input. Redirect: «this is the
+scaffold set — run `/sdd:scaffold` (the materialization protocol + the skeleton smoke-test anchor
+are canonical there); `implement` is the feature engine.» After the skeleton is green, the normal
+per-feature flow (`specify → … → implement`) builds into it with real feature TDD.
 
 ## Context the agents read directly
 
@@ -30,6 +30,7 @@ The engine does **not** paste these into prompts — each agent (or the sequenti
 - `docs/features/<slug>/contracts/openapi.yaml` — the API contract handlers must match.
 - `docs/features/<slug>/sad.md` + Accepted `adr/` — the architecture and the locked decisions.
 - `docs/architecture-map.md` (from `survey`, if present) — the existing system's conventions the new code must match (module wiring, error handling, IDs, tests, migrations; **for a `ui` surface, §Frontend / UI foundation — the design system / components / tokens / styling to reuse**) + the closest precedent to copy (including the **closest UI precedent** for a new screen). Saves the agents re-discovering the patterns.
+- `docs/design-system.md` + `docs/features/<slug>/ux-flows.md` + `docs/features/<slug>/screens.md` (when they exist) — the **`ui`-task reading list**: the design canon (tool, posture, tokens, component inventory), the user flows, and the per-state screen manifest the task builds to (see «`ui`-layer tasks» below).
 
 ## Staged migrations → promote before running
 
@@ -45,7 +46,7 @@ A `layer: migration` task with **no** staged file under the feature's `migration
 
 A `layer: ui` task (present only when `sad.md` frontmatter `target_surfaces` declares a UI surface — `web-frontend` / `mobile-app` / `desktop-app`) runs through the **same TDD cycle** as any other task; it just follows the **repo's frontend test convention** — component / e2e-through-UI runners detected from `package.json` scripts (Playwright / Storybook / a visual-diff tool / etc.) — **not** a backend assumption. No engine change: command-detection already picks up frontend scripts in its cascade.
 
-**Reuse the UI foundation (don't reinvent).** A `ui` task **composes the existing design system** from `architecture-map.md` §Frontend — reuse the existing components / shared primitives, pull design tokens (colors / spacing / typography) from the repo's token source, and build in the repo's **one** styling approach. Find the **closest existing screen/component** (the §Frontend UI precedent) and extend/compose it; write a **new** component only when no existing primitive fits, in the repo's styling approach — never a second one. This is the frontend echo of "match the repo + copy the closest precedent" → [`../../_shared/surfaces.md`](../../_shared/surfaces.md).
+**Reuse the UI foundation (don't reinvent).** A `ui` task **composes the existing design system** from `architecture-map.md` §Frontend and the `docs/design-system.md` inventory — reuse the existing components / shared primitives, pull design tokens (colors / spacing / typography) from the repo's token source, and build in the repo's **one** styling approach. When `docs/features/<slug>/screens.md` exists, **build the screen to the states it declares** (default / loading / empty / error / … — the manifest is the contract) and **reuse the components the manifest names**; a **NEW** component only when no existing primitive fits — built in the repo's styling approach and **registered back into the `docs/design-system.md` §Component inventory** (flip its «Registered» row). Libraries: always the repo's existing ones — a **new dependency only as a last resort, confirmed with the user**, never silently added. Find the **closest existing screen/component** (the §Frontend UI precedent) and extend/compose it. This is the frontend echo of "match the repo + copy the closest precedent" → [`../../_shared/surfaces.md`](../../_shared/surfaces.md).
 
 ## Repo state
 

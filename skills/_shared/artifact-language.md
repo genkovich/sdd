@@ -22,10 +22,10 @@ English, verbatim from the template. Concretely:
 
 ## Never translate
 
-These are parsed by the dashboard's state derivation, the implement engine, or downstream skills —
-translating one silently breaks the pipeline:
+These are parsed by the implement engine, downstream skills, or external tooling that greps the
+artifacts — translating one silently breaks the pipeline:
 
-- Headings the state derivation reads: `## Shipped` (roadmap), `## Test plan` (spec), `## Glossary`
+- Headings downstream stages grep for: `## Shipped` (roadmap), `## Test plan` (spec), `## Glossary`
   (CONTEXT.md) — and every other template heading, as a class.
 - Review verdict literals: `PASS`, `CHANGES REQUESTED`, `REVIEW_CLEAN`.
 - Tracker states `todo / in_progress / review / done` and task ids `T<n>`.

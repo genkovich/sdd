@@ -31,6 +31,10 @@ Tech Lead (drives the runtime decomposition). The PM confirms that each drawn fl
 - `<slug>` — same feature slug used by every earlier stage.
 - **Gate (hard-refuse if missing):** `docs/features/<slug>/sad.md`. The §5 building-block view names the participants; §6 is where flows are written. If `sad.md` is absent → STOP and point: «run `design <slug>` first — sequences are written into its §6».
 - (Expected) `sad.md` frontmatter `target_surfaces` — picks the participant vocabulary (UI-driven flows for a UI surface). **Absent or empty → warn** («surfaces undeclared — re-run `design`, or proceeding as `backend-service`») **and treat as `[backend-service]`** (→ [`../_shared/surfaces.md`](../_shared/surfaces.md)); never silently guess a UI surface.
+- (Optional) `docs/features/<slug>/ux-flows.md` — when it exists, the **UI-driven flows drawn here
+  agree with it**: the `<ui>` steps follow the same screen path, and a flow may reference the
+  `SCR-NN` id in a note; a divergence between a §6 flow and a ux-flow is surfaced, never silently
+  drawn over.
 - **Strongly expected:** `docs/features/<slug>/spec.md` — §4 user stories tell you *which* flows exist; §5 acceptance criteria are the **coverage floor** — every AC must be shown by a flow, a branch, or an explicit non-runtime N/A (the step-7 coverage check). Present by this stage in the normal pipeline; if genuinely absent, fall back to §6/§5 of `sad.md` for the flow list and note that AC-coverage can't be verified.
 - (Optional) `docs/features/<slug>/.size` — depth hint for *detail* (XS/S may collapse a flow's internal steps), never for *coverage*. Absent → default to M **and say so loudly in the handoff** — «size M (default — no `.size`; run `/sdd:classify-size <slug>`)».
 - (Optional) `.claude/sdd.local.md` `interview_depth` (else medium) — governs only the diagram-confirmation UX (per-diagram prose+ask vs. write+summarize-and-proceed); `sequences` does **not** open its own depth question (it honors the setting, or a `--depth=` arg if passed).

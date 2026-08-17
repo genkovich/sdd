@@ -1,7 +1,0 @@
-/sdd:design webhook-retries --depth=hard
-
-This command was typed by the user in their TERMINAL (headless print mode: the user reads your
-final message and replies in the next turn — there is no other surface they are watching).
-Follow the design skill's protocol exactly as written for --depth=hard. If the protocol needs
-the user's decision, put the question to the user and stop — do not decide irreversible forks
-silently.

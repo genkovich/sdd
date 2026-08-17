@@ -47,8 +47,8 @@ Artifact depth ∝ feature size. XS/S → minimal set; M+ → full.
 
 ## Routes — quick / standard / full (the auto-router)
 
-The **route** decides how the optional stages (`clarify`, `sequences`, `data-model`, `api`,
-`plan-tests`) are handled at each handoff. It lives in **`docs/features/<slug>/.route`** — one
+The **route** decides how the optional stages (`clarify`, `ux-flows`, `sequences`, `data-model`,
+`api`, `screens`, `plan-tests`) are handled at each handoff. It lives in **`docs/features/<slug>/.route`** — one
 line, plain text, exactly one of `quick` / `standard` / `full` (same discipline as `.size`: no
 comments, no frontmatter — wrappers grep it cheaply). It is written by `classify-size` (the
 canonical owner) and by `specify` step 1 when it classifies inline; the route **default derives
@@ -81,9 +81,11 @@ schema change still runs `data-model` — on every route.
 | Stage | Skip when (the N/A condition) | Who evaluates/offers it |
 |---|---|---|
 | `clarify` | the spec came out with **zero §8 open questions** and no AC was flagged ambiguous during specify | `specify`'s handoff |
+| `ux-flows` | **no human-facing UI** — every spec §4 actor is a system/service (API-to-API, worker, scripted CLI), **or** the repo has no UI at all (`architecture-map.md` `frontend: ""` and no `docs/design-system.md`). `target_surfaces` doesn't exist yet at this point — the condition deliberately derives from the spec's actors + the repo signal; the **formal** surface declaration is made by `design`, which reads `ux-flows.md` as input | `clarify`'s handoff (`specify`'s when clarify was legally skipped) |
 | `sequences` | **one actor and no multi-step runtime flow** — a single request/response or a pure rule change; nothing an `alt`-branch diagram would reveal | `design`'s handoff |
 | `data-model` | **no schema change** — no new entity, column, index, or migration | `sequences`' handoff |
 | `api` | **no contract change** — no new/changed endpoint, event, CLI command, or public signature (the skill also self-skips on «no external interface»). `api` **accepts a legally-skipped `data-model`** (no schema change) — it derives from the existing schema; its hard gate fires only when a schema change exists | `data-model`'s handoff |
+| `screens` | **no UI surface declared** — `sad.md` frontmatter `target_surfaces` contains none of `web-frontend` / `mobile-app` / `desktop-app` | `api`'s handoff (carried forward when `api` is itself N/A) |
 | `plan-tests` | never fully skipped — it **collapses to the inline `## Test plan`** in `spec.md` (cheap; always inline on `quick`); skip entirely only when every task's DoD already names its test | `tasks`' handoff |
 
 **Never skippable — on any route:** `specify` (the spec is the trace anchor), `design` (declares

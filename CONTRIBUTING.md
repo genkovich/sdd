@@ -45,9 +45,6 @@ a fixed number.)
 ### Pre-PR checklist
 
 - [ ] **`python3 scripts/validate_plugin.py` passes** (exit 0).
-- [ ] **Server change? `cd server && bunx tsc --noEmit && bun test tests/` passes** — the same
-      gate CI's `server-tests` job runs (deterministic, no network; fixtures under
-      `server/tests/fixtures/`).
 - [ ] **One canonical source / DRY.** Shared logic — the Socratic machine, the critic, the size
       matrix, the ask-style, the surface taxonomy, the handoff block — lives once in
       `skills/_shared/`. Link to it with a relative path and keep only your per-skill *delta*; never

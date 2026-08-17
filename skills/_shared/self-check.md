@@ -18,7 +18,7 @@
 ## The contract (five steps)
 
 1. **Re-read the artifact from disk.** Never check the in-memory draft — the file as written is
-   what downstream stages read. (A skill that writes nothing — e.g. `interview`, `start` — checks
+   what downstream stages read. (A skill that writes nothing — e.g. `interview` — checks
    its emitted output against its DoD instead.)
 2. **Run the named checklist.** Each item is **structural and cheap to verify** — a grep, a count,
    a file-exists test, an enum membership — not a judgment call. The checklist lives in the skill's

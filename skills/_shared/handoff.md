@@ -74,7 +74,7 @@ Rules for filling it:
 
 - **Backbone forward handoff** (`survey → … → review → ship`): `/clear` mandatory + the next stage.
 - **Route-resolved forward handoff** (a backbone stage whose successor is an *optional* stage —
-  `specify`, `clarify`, `design`, `sequences`, `data-model`, `tasks`): before printing *Run next*,
+  `specify`, `clarify`, `design`, `sequences`, `data-model`, `api`, `tasks`): before printing *Run next*,
   resolve the next stage per `docs/features/<slug>/.route` and the Routes table in
   [`size-matrix.md`](./size-matrix.md):
   - **`quick`** — evaluate the next optional stage's N/A condition yourself. Holds → *Run next*
@@ -90,7 +90,7 @@ Rules for filling it:
   to iterate; *Run next* = `/sdd:implement <slug>` (fix), then re-review the changed surface.
 - **Terminal** (`ship`): there is no `/sdd` successor. *Run next* becomes **Done** — the PR command/URL
   + «merging to main is your call»; still print *What I did* + *Review* (the changelog + PR).
-- **Utility** (`classify-size`, `glossary`, `decide-adr`, `roadmap`, `fix`): called ad-hoc, not a
+- **Utility** (`classify-size`, `glossary`, `decide-adr`, `roadmap`, `design-system`, `fix`): called ad-hoc, not a
   gate. `/clear` is **optional** (recommend it only if the context is large); *Run next* = «resume
   your backbone stage», naming the likely one (e.g. `/sdd:design <slug>`). Print *What I did* +
   *Review* (the one file it wrote). One exception: `fix` alone adds a **conditional** recommendation —
@@ -101,19 +101,23 @@ Rules for filling it:
 
 | Stage | Review before continuing (files written) | Run next |
 |---|---|---|
-| `survey` | `docs/architecture-map.md` (+ scaffold `tasks.json` on greenfield) | `/sdd:specify <slug>` |
-| `specify` | `docs/features/<slug>/spec.md` | `/sdd:clarify <slug>` ↳ or `/sdd:design <slug>` (XS/S, zero §8 OQ — fast lane) |
-| `clarify` | `docs/features/<slug>/spec.md` (tightened) | `/sdd:glossary <slug>` ↳ or `/sdd:design <slug>` |
+| `survey` | `docs/architecture-map.md` (+ scaffold `tasks.json` on greenfield) | brownfield → `/sdd:specify <slug>`; greenfield → `/sdd:scaffold` |
+| `scaffold` | the materialized skeleton (committed diff) + green smoke test | `/sdd:specify <slug>` |
+| `specify` | `docs/features/<slug>/spec.md` | `/sdd:clarify <slug>` ↳ or `/sdd:ux-flows <slug>` (zero §8 OQ — fast lane; no human-facing UI → `/sdd:design <slug>`) |
+| `clarify` | `docs/features/<slug>/spec.md` (tightened) | `/sdd:glossary <slug>` ↳ or `/sdd:ux-flows <slug>` (no human-facing UI → `/sdd:design <slug>`) |
+| `ux-flows` | `docs/features/<slug>/ux-flows.md` (flows + SCR inventory) | `/sdd:design <slug>` |
 | `design` | `sad.md` (C4 §3/§5 + `target_surfaces`) + `adr/` | `/sdd:sequences <slug>` ↳ or `/sdd:data-model <slug>` (XS/S, no multi-step flow — fast lane) |
 | `sequences` | `sad.md` §6 (flows) | `/sdd:data-model <slug>` ↳ or `/sdd:api <slug>` (XS/S, no schema change — fast lane) |
-| `data-model` | `data-model.md` + staged `migrations/` | `/sdd:api <slug>` ↳ or `/sdd:tasks <slug>` (XS/S, no contract change — fast lane) |
-| `api` | `contracts/openapi.yaml` (+ `events.md`, `api-sync-report.md`) | `/sdd:tasks <slug>` |
+| `data-model` | `data-model.md` + staged `migrations/` | `/sdd:api <slug>` ↳ or `/sdd:screens <slug>` (XS/S, no contract change — fast lane; no UI surface → `/sdd:tasks <slug>`) |
+| `api` | `contracts/openapi.yaml` (+ `events.md`, `api-sync-report.md`) | `/sdd:screens <slug>` ↳ or `/sdd:tasks <slug>` (no UI surface in `target_surfaces` — fast lane) |
+| `screens` | `docs/features/<slug>/screens.md` (+ `screens.pen` / Figma node-refs per tool) | `/sdd:tasks <slug>` |
 | `tasks` | `tasks/` + `tasks.json` | `/sdd:plan-tests <slug>` ↳ then `/sdd:implement <slug>` |
 | `plan-tests` | `test-plan.md` (or `spec.md` `## Test plan` for XS/S) | `/sdd:implement <slug>` |
 | `implement` | the committed diff (code + tests) + `tasks/tracker.md` | `/sdd:review <slug>` |
 | `review` | `_review/review-<date>.md` | `/sdd:ship <slug>` (PASS) · `/sdd:implement <slug>` (CHANGES, no `/clear`) |
 | `ship` | `CHANGELOG` + the PR | **Done** — PR command/URL; merge is your call |
 | `classify-size` | `.size` + `.route` | resume — e.g. `/sdd:specify <slug>` |
+| `design-system` | `docs/design-system.md` | resume — e.g. `/sdd:ux-flows <slug>` |
 | `glossary` | `CONTEXT.md` | resume — e.g. `/sdd:design <slug>` |
 | `decide-adr` | `adr/NNNN-<title>.md` | resume — `/sdd:tasks <slug>` or `/sdd:plan-tests <slug>` |
 | `roadmap` | `docs/roadmap.md` | resume your backbone stage |

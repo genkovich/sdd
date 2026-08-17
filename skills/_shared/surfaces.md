@@ -97,7 +97,7 @@ Read it as: a feature with `[backend-service, web-frontend]` produces the backen
 `ui` task layer, UI-driven sequence flows alongside the service flows, and the component /
 visual-regression / e2e-through-UI test tiers on top of the backend's unit/integration/contract.
 
-## The UI-architecture decision (per UI surface — kept light, Option B)
+## The UI-architecture decision (per UI surface — architecture-altitude)
 
 For each **UI surface** declared (`web-frontend` / `mobile-app` / `desktop-app`), `design` walks a
 follow-on **UI-architecture decision** — this evolves today's "read-side delivery (SSR / SPA /
@@ -108,10 +108,15 @@ API-only)" §4 item up into a per-surface choice:
 - plus **state-management** and **routing** *only if* the feature's complexity warrants them.
 
 Gated like any §4 strategic decision → an ADR in §9 when it crosses the blast-radius gate. Kept
-**light**: this is the **only** UI artifact the plugin generates. There is deliberately **no**
-component-tree, no design-token doc, no screen/wireframe artifact (that would be a separate deep
-UI-design pipeline — out of scope). The `ui` task layer + the UI-architecture ADR + the frontend
-test tiers + the UI sequence flows are the whole of the frontend footprint.
+**architecture-altitude**: the SAD owns the UI-architecture *decision* (SSR/SPA,
+native/cross-platform, state/routing) — **screen-level design lives in the design pipeline's
+artifacts**: `docs/design-system.md` (the per-repo canon — tool, platform posture, tokens,
+component inventory; the `design-system` skill), `docs/features/<slug>/ux-flows.md` (user flows +
+the `SCR-NN` screen inventory, produced **before** design — the `ux-flows` skill) and
+`docs/features/<slug>/screens.md` (the per-state screen manifest, produced **after** `api` — the
+`screens` skill). The boundary is two-way: **the SAD never duplicates screens; the design skills
+never make architecture decisions** — a flow or screen that implies architecture is `design`
+*input*, not a decision made there.
 
 ## Reuse the existing UI foundation (don't reinvent)
 
@@ -142,24 +147,34 @@ visual-regression tool / etc.) from the repo, exactly as it already does for the
   same shape as `api` double-deriving the interface kind).
 - **The spec stays product-level.** Surfaces are derived from spec §1/§4 at design — the spec never
   names a surface, a stack, or an endpoint group.
-- **Option B boundary.** Thread frontend-awareness through the existing stages; do **not** grow a
-  parallel UI-design pipeline. No component-tree / token / screen artifact — if a run starts producing
-  one, it's left the scope this file fixes.
+- **Architecture ↔ design boundary.** The SAD keeps the UI-architecture decision; screen-level
+  design lives in the design skills' artifacts (`design-system.md` / `ux-flows.md` / `screens.md`).
+  The SAD never duplicates screens; the design skills never make architecture decisions.
 - **Data stores are not surfaces.** A `ContainerDb` is `data-model`'s job; a surface runs behaviour.
 - **Reuse the UI foundation.** `ui`-layer work composes the repo's existing design system / components / tokens / styling (from `architecture-map.md` §Frontend) — never reinvents them; a new primitive needs a justification that no existing one fits.
 
 ## Where each skill reads this
 
-- **`design`** — owns the **selection**: the Target-surface decision is §4's first decision, the
-  UI-architecture decision follows per UI surface, both gated to ADRs; writes `target_surfaces` to
-  `sad.md` frontmatter; draws one §5 C4 container per surface.
+- **`ux-flows`** — runs **before** design, so it never reads `target_surfaces`; its no-UI N/A
+  condition derives from the spec's actors + the repo signal (→ [`./size-matrix.md`](./size-matrix.md)),
+  and its output (`ux-flows.md` — flows + the SCR inventory) is `design`'s **evidence** for the
+  surface declaration.
+- **`design`** — owns the **selection**: the Target-surface decision is §4's first decision
+  (reading `ux-flows.md` as evidence when it exists), the UI-architecture decision follows per UI
+  surface, both gated to ADRs; writes `target_surfaces` to `sad.md` frontmatter; draws one §5 C4
+  container per surface.
 - **`api`** — reads `target_surfaces` first to pick the contract form (the table); falls back to
   derive-from-architecture-map only if the SAD/field is absent.
 - **`sequences`** — for a declared UI surface, draws UI-driven flows (`<user>` → `<ui>` → `<service>`
   → `<data-store>`); adds `<ui>` to the generic participant vocabulary.
 - **`tasks`** — gates the layer set by `target_surfaces`; a UI surface adds the `ui` layer (not
   auto-serialized — UI tasks can parallelize).
+- **`screens`** — gates on `target_surfaces` (no UI surface → skipped by `api`'s handoff); details
+  each declared UI surface into the per-state manifest `screens.md`.
 - **`plan-tests`** — adds the component / visual-regression / e2e-through-UI tiers when a UI surface
-  is declared.
-- **`review`** — the end-to-end AC trace spans UI surfaces (a UI AC traces to a component /
-  e2e-through-UI test), not only backend.
+  is declared (e2e-through-UI paths from `ux-flows.md`, states from `screens.md` when they exist).
+- **`implement`** — a `ui` task builds the screen to the states `screens.md` declares, composing
+  the `design-system.md` inventory (the reuse rule) — a `NEW` component is registered back into it.
+- **`review`** — the end-to-end AC trace spans UI surfaces (a UI AC traces through its `ux-flows.md`
+  flow and `screens.md` state to a component / e2e-through-UI test), not only backend; stage 2
+  checks the built screen against the approved manifest.

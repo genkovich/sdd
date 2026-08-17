@@ -1,13 +1,13 @@
 # SDD behaviour evals — on-demand, NOT CI
 
 End-to-end scenarios that drive a real `claude` session over a fixture repo and let an LLM judge
-verify the outcome against a rubric. They complement `scripts/validate_plugin.py` (structure) and
-`server/tests/` (deterministic runtime): evals check that a **skill's protocol actually behaves** —
+verify the outcome against a rubric. They complement `scripts/validate_plugin.py` (structure):
+evals check that a **skill's protocol actually behaves** —
 gates refuse, artifacts land in shape, handoffs are emitted.
 
 > **Why not CI.** Each run invokes `claude -p` (the run under test) + a judge call — it costs real
 > tokens, takes minutes, and is non-deterministic. Run evals locally when you change a skill's
-> protocol; CI stays deterministic (`validate` + `server-tests`).
+> protocol; CI stays deterministic (`validate`).
 
 ## Prerequisites
 
@@ -52,7 +52,7 @@ Exit code is non-zero when any scenario's verdict is `FAIL` (or unparseable).
 | `api-schema-change-refusal` | `/sdd:api` on a feature **with** a schema change (staged migration + new sad §5 entity) and no data-model.md hard-refuses, names `data-model`, writes no contract and no self-served data-model.md |
 | `design-quick-commit-batching` | `/sdd:design` on route quick + depth easy writes all 12 SAD sections to disk but batches commits — ≤4 after the baseline (bootstrap + ≤3 batches), not per-section |
 | `tasks-compile-coupled-lane` | `/sdd:tasks` on a Go feature extending a shared interface emits no standalone interface-only task — it folds the contract change or marks the compile-coupled pair via a shared `files_hint` |
-| `terminal-run-no-dashboard-ask` | a TERMINAL `/sdd:design --depth=hard` run with the dashboard MCP (and its `dashboard_ask` tool) in context keeps its questions in the terminal — asks in the final message or self-decides; never routes the decision to the dashboard/panel |
+| `ux-flows-code-mode` | `/sdd:ux-flows` on a UI feature with a committed `docs/design-system.md` (`tool: code`, mobile-first) derives `ux-flows.md` headlessly — valid mermaid flowcharts, an SCR inventory, a full AC-coverage map, the mobile-first posture honoured, and a handoff forwarding to `design` |
 | `clarify-judgment-sonnet` | `/sdd:clarify` with `judgment_model: sonnet` in the fixture settings completes the sweep on the sonnet tier — the setting is read + honoured, the handoff reflects sonnet and never claims opus. *Limitation:* headless can't simulate a missing entitlement, so this covers the configuration path only, not the hard-failure fallback (retry on `inherit` per `agent-roster.md` §Model availability) |
 
 ## Adding a scenario

@@ -20,7 +20,7 @@ The **portfolio layer** above the per-feature pipeline. SDD builds one feature a
 
 A roadmap is **direction, not a promise**, and **not a release plan**: feature-and-date roadmaps are the biggest source of waste — they project false certainty, go stale fastest the further out they reach, and commit to solutions before discovery. So this roadmap encodes *decreasing certainty over time* and never carries dates. Repo-level utility (like `survey`) — one file serves the whole repo. Question phrasing → [`../_shared/ask-style.md`](../_shared/ask-style.md).
 
-Item prose follows `artifact_language` — the `## Shipped` heading and the table structure stay English (the dashboard parses them) → [`../_shared/artifact-language.md`](../_shared/artifact-language.md).
+Item prose follows `artifact_language` — the `## Shipped` heading and the table structure stay English (the `ship` sync hook and external tooling grep them) → [`../_shared/artifact-language.md`](../_shared/artifact-language.md).
 
 ## Owner
 

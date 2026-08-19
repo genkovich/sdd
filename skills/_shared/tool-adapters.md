@@ -19,7 +19,7 @@
 | Fresh context between stages | `/clear` | `/new` | start a new chat |
 | `model:` / `effort:` frontmatter | honored | advisory — the installer rewrites the generated agents' `model:` to `inherit`; the frontmatter in the verbatim skill/agent copies stays as documentation | same as Codex |
 | Shared artifacts (`.size`, `.route`, `spec.md` + the other `docs/features/<slug>/…` files, `.claude/sdd.local.md`) | repo-relative files the **model itself** reads/writes with its file tools | identical — no host involvement, so they work unchanged; `.claude/` is just a directory in the repo here, not a host config dir | same as Codex |
-| Design-tool MCP (Figma / Pencil — used by `design-system` / `screens`) | the session's connected Figma / Pencil MCP tools, per the committed `docs/design-system.md` `tool` choice | MCP not available in the host/session → **`code` mode**: inline markdown wireframes in `screens.md` + a **named degradation** in the manifest §Source and the handoff — never a blocked stage | same as Codex |
+| Design-tool MCP (Figma / Pencil — used by `design-system` / `screens`) | the session's connected Figma / Pencil MCP tools, per the committed `docs/design-system.md` `tool` choice. ⚠ Pencil MCP writes into the app's **active document** and ignores `filePath` — verify identity via `get_app_state` before any write, and only the user's Cmd+S persists to disk | MCP not available in the host/session → **`code` mode**: inline markdown wireframes in `screens.md` + a **named degradation** in the manifest §Source and the handoff — never a blocked stage | same as Codex |
 
 The `CLAUDE_CODE_*` env vars the roster mentions (`CLAUDE_CODE_SUBAGENT_MODEL`,
 `CLAUDE_CODE_EFFORT_LEVEL`, `CLAUDE_CODE_FORK_SUBAGENT`) are **Claude Code-only** — Codex CLI and

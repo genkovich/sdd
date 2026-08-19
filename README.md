@@ -329,22 +329,23 @@ scaffold `tasks.json`. **`/sdd:scaffold` then materializes the skeleton** — se
 anchored on a smoke test («builds + boots + the test and migration tooling run») rather than
 per-folder TDD. After that the repo is real and the per-feature flow builds into it normally.
 
-## The roadmap (the portfolio layer)
+## The roadmap (the decomposition layer)
 
 The backbone builds **one feature at a time**. `roadmap` is the layer **above** it — one living
-`docs/roadmap.md` that shows the work *across* features, kept at **outcome altitude** (the "why",
-not a feature-and-date list, which is the biggest source of planning waste):
+`docs/roadmap.md` that breaks the overall idea into walkable steps (built by the dedicated
+`roadmapper` subagent, reviewed with you):
 
-- **Now** — committed, spec'd, in progress. Each item links to its `docs/features/<slug>/` (it
-  doesn't restate the spec) + a status.
-- **Next** — problems/opportunities, deliberately *not* yet spec'd, ordered by a light **RICE**
-  score (Reach × Impact × Confidence ÷ Effort). This is the candidate pool.
-- **Later** — directional outcomes/themes, no detail.
-- **Shipped** — what landed, with a link.
+- **Steps** — vertical increments, each row anchored to the section of the idea-brief/PRD that
+  justifies it, sized XS–XL, with a live `Status` (idea / spec'd / building / shipped).
+- **Dependency graph** — every edge has a one-line reason (data model, UI zone, auth
+  precondition); no phantom edges that serialize parallelizable work.
+- **Execution path** — dependency-respecting waves; steps inside one wave are conflict-safe in
+  the codebase (different modules / UI zones), so they can run as parallel worktree lanes.
 
-It stays current because the pipeline updates it: **`specify` promotes a feature to Now**, and
-**`ship` moves it to Shipped** — delivery itself keeps the roadmap in sync, so it doesn't rot. It
-carries a one-line "direction, not a promise" disclaimer and never carries dates.
+No RICE, no scoring — **order is the prioritization**; no dates outside shipped history. It stays
+current because the pipeline updates it: **`specify` marks a step spec'd** (linking the feature
+folder) and **`ship` marks it shipped** — delivery itself keeps the roadmap in sync, so it
+doesn't rot.
 
 ## The implementation engine
 

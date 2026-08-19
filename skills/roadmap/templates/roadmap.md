@@ -5,44 +5,48 @@ updated_at: "<YYYY-MM-DD>"
 
 # Roadmap — <repo>
 
-> **Direction, not a promise.** Near-term work is firm; the further out an item is, the more
-> directional and likely-to-change it is. This is **not** a release plan and carries **no dates** —
-> it's the set of outcomes we're pursuing, at decreasing certainty over time. The *solution* for any
-> item lives in its `docs/features/<slug>/` spec, not here.
+> **A decomposition, not a promise.** The overall idea broken into incremental steps: what each
+> step is, where it comes from, what it depends on, and in which order — and parallel lanes — we
+> walk them. **No dates** (except shipped history), **no scores** — order is the prioritization.
+> The *solution* for any step lives in its `docs/features/<slug>/` spec, not here.
 
-## Now — committed · spec'd · in progress
+## Steps
 
-<!-- instruction: features whose docs/features/<slug>/ spec exists and is being built. One ROW each:
-the OUTCOME (the why), a link to the feature folder, and a status (designing / implementing / review).
-No spec detail — link, don't duplicate. specify promotes an item here; ship moves it to Shipped. -->
+<!-- instruction: the idea decomposed into vertical, buildable increments. One ROW each.
+Source = the section of the idea-brief/PRD/canon that justifies the step (no anchor → no step).
+Size per _shared/size-matrix.md. Depends on = step ids with a defensible one-line reason (kept in
+the graph section). Status ∈ idea | spec'd | building | shipped — specify/ship keep it current. -->
 
-| Outcome (the why) | Feature | Status |
-|---|---|---|
-| <outcome — the problem this solves> | [<slug>](./features/<slug>/) | implementing |
+| # | Step | Source | Size | Depends on | Status |
+|---|---|---|:---:|:---:|---|
+| 1 | <increment — what the user can do after it> | <doc §> | S | — | idea |
+| 2 | <increment> | <doc §> | M | 1 | idea |
 
-## Next — problems / opportunities (deliberately not yet spec'd)
+## Dependency graph
 
-<!-- instruction: the prioritized candidate pool. Each row is an OUTCOME/PROBLEM, not a solution, and
-has NO feature folder yet (it gets one when pulled into Now via specify). Ordered by RICE desc.
-RICE = (Reach × Impact × Confidence) ÷ Effort — Impact 3/2/1/0.5/0.25, Confidence 100/80/50%, Effort person-weeks. -->
+<!-- instruction: mermaid flowchart of the step ids; every edge labeled with its one-line reason
+(data model / UI zone / auth precondition / …). Presented in prose in the terminal, written here. -->
 
-| Outcome / problem | RICE | R · I · C · E |
-|---|---|---|
-| <problem statement> | <score> | <reach> · <impact> · <conf%> · <effort wk> |
+```mermaid
+flowchart LR
+  s1["1 · <short>"] -->|<reason>| s2["2 · <short>"]
+```
 
-## Later — outcomes / themes (directional)
+## Execution path
 
-<!-- instruction: coarse, directional one-liners only — one ROW each. No features, no scores, no dates. -->
+<!-- instruction: waves that respect the graph — wave N holds only steps whose deps are in
+earlier waves; steps inside one wave are conflict-safe (different modules / UI zones), so they
+can run as parallel lanes (e.g. git worktrees). Zone names the code area that makes it safe. -->
 
-| Outcome / theme (directional) |
-|---|
-| <outcome or theme we expect to pursue, eventually> |
+| Wave | Steps | Zone per step (why parallel-safe) | Unlocks |
+|:---:|---|---|---|
+| 1 | 1 | <module/zone> | 2, 3 |
+| 2 | 2 ∥ 3 | 2: <zone> · 3: <zone> (disjoint) | 4 |
 
 ## Shipped
 
-<!-- instruction: ship moves delivered items here — one ROW each: date + outcome + link to the feature
-+ the PR/changelog. Keeps Now honest and records what landed. -->
+<!-- instruction: history — the only place dates are allowed. -->
 
-| Date | Outcome | Feature | PR |
-|---|---|---|---|
-| <YYYY-MM-DD> | <outcome> | [<slug>](./features/<slug>/) | [PR](<url>) |
+| Step | Shipped | Link |
+|---|---|---|
+| <step> | <YYYY-MM-DD> | <PR/changelog> |

@@ -19,7 +19,6 @@ Model is chosen by the **kind of work**, not by taste — judgment gets the stro
 | `researcher` | competitive / adjacent-solution research (ideation) | `sonnet` | `medium` | Read, Grep, Glob, WebSearch, WebFetch |
 | `strategist` | generate the 3 strategic approaches (judgment) | `opus` | `high` | Read, Grep, Glob |
 | `analyst` | multi-perspective review of approaches (judgment) | `opus` | `high` | Read, Grep, Glob |
-| `roadmapper` | idea → steps/dependencies/waves decomposition (judgment) | `opus` | `high` | Read, Grep, Glob |
 | `pen-keeper` | reconcile the .pen library with the canon (execution) | `sonnet` | `medium` | Read, Grep, Glob, Bash, Pencil MCP |
 
 Rationale: judgment quality (review, critique, ambiguity, strategy, multi-perspective synthesis) is where a stronger model pays off; execution (write code/tests to a clear spec) is well served by a balanced model and escalates only when it gets stuck; a read-only scan is cheap. The **ideation trio** (`specify` step 3, gated by the depth dial) follows the same logic: `researcher` is gathering-and-citing work (balanced model + web tools), while `strategist` and `analyst` are judgment (generating real alternatives, synthesizing across lenses) and get the strongest model. (Treat model-by-role as a sound principle — the headline "stronger orchestrator + cheaper workers wins by X%" claim from the multi-agent literature did not survive verification, so we lean on role-fit, not a magic ratio.)
@@ -28,7 +27,7 @@ Rationale: judgment quality (review, critique, ambiguity, strategy, multi-perspe
 
 These agents are **plugin-namespaced**. Spawn each with `subagent_type: "sdd:<name>"` — the id Claude Code registers and shows in the available-agents list — **not** the bare name and **not** an `sdd-…` prefix:
 
-`sdd:explorer` · `sdd:test-author` · `sdd:implementer` · `sdd:reviewer` · `sdd:critic` · `sdd:devils-advocate` · `sdd:researcher` · `sdd:strategist` · `sdd:analyst` · `sdd:roadmapper` · `sdd:pen-keeper`
+`sdd:explorer` · `sdd:test-author` · `sdd:implementer` · `sdd:reviewer` · `sdd:critic` · `sdd:devils-advocate` · `sdd:researcher` · `sdd:strategist` · `sdd:analyst` · `sdd:pen-keeper`
 
 So when a skill says «dispatch the `explorer` agent», the call is `subagent_type: "sdd:explorer"`. If the namespaced agent isn't available at runtime, fall back to the general-purpose (or `Explore`) agent the skill names, passing the same prompt. A fallback agent never reads `agents/*.md` — everything it must know arrives in the prompt, **including the async report-delivery instruction** (shared-contract point 2 below) when the host runs it in background/teammate mode.
 

@@ -90,7 +90,7 @@ Rules for filling it:
   to iterate; *Run next* = `/sdd:implement <slug>` (fix), then re-review the changed surface.
 - **Terminal** (`ship`): there is no `/sdd` successor. *Run next* becomes **Done** — the PR command/URL
   + «merging to main is your call»; still print *What I did* + *Review* (the changelog + PR).
-- **Utility** (`classify-size`, `glossary`, `decide-adr`, `roadmap`, `design-system`, `fix`): called ad-hoc, not a
+- **Utility** (`interview`, `classify-size`, `glossary`, `decide-adr`, `roadmap`, `design-system`, `fix`): called ad-hoc, not a
   gate. `/clear` is **optional** (recommend it only if the context is large); *Run next* = «resume
   your backbone stage», naming the likely one (e.g. `/sdd:design <slug>`). Print *What I did* +
   *Review* (the one file it wrote). One exception: `fix` alone adds a **conditional** recommendation —
@@ -101,7 +101,8 @@ Rules for filling it:
 
 | Stage | Review before continuing (files written) | Run next |
 |---|---|---|
-| `survey` | `docs/architecture-map.md` (+ scaffold `tasks.json` on greenfield) | brownfield → `/sdd:specify <slug>`; greenfield → `/sdd:scaffold` |
+| `interview` | `docs/idea-brief.md` (the 8-section brief — nothing on disk outside a repo) | `/sdd:survey` (the repo answers what it is), then `/sdd:roadmap` (decompose it) ↳ or `/sdd:specify <slug>` straight through when the brief covers exactly one feature |
+| `survey` | `docs/architecture-map.md` (+ scaffold `tasks.json` on greenfield) | `/sdd:roadmap` when a brief is on disk (the map supplies the zones) ↳ or brownfield → `/sdd:specify <slug>`; greenfield → `/sdd:scaffold` |
 | `scaffold` | the materialized skeleton (committed diff) + green smoke test | `/sdd:specify <slug>` |
 | `specify` | `docs/features/<slug>/spec.md` | `/sdd:clarify <slug>` ↳ or `/sdd:ux-flows <slug>` (zero §8 OQ — fast lane; no human-facing UI → `/sdd:design <slug>`) |
 | `clarify` | `docs/features/<slug>/spec.md` (tightened) | `/sdd:glossary <slug>` ↳ or `/sdd:ux-flows <slug>` (no human-facing UI → `/sdd:design <slug>`) |

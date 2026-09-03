@@ -134,9 +134,12 @@ after the code is written.
 
 ```mermaid
 flowchart LR
-    IV[interview<br/>optional] -.-> S
-    SV[survey<br/>once per repo] -->|brownfield| S
+    IV[interview<br/>optional] -->|docs/idea-brief.md| SV[survey<br/>once per repo]
+    SV -->|docs/architecture-map.md| RM[roadmap<br/>decomposition]
     SV -->|greenfield| SC[scaffold] --> S
+    RM -.->|per step| S
+    IV -.-> S
+    SV -.->|brownfield| S
     DS[design-system<br/>once per repo, UI] -.-> UX
     subgraph backbone["BACKBONE — run in order"]
         S[specify] --> CL[clarify] --> UX[ux-flows<br/>UI features] --> D[design] --> SQ[sequences] --> DM[data-model] --> API[api] --> SCR[screens<br/>UI features] --> T[tasks] --> PT[plan-tests] --> IM[implement]
@@ -197,7 +200,7 @@ end: a reviewed, verified change with a changelog and an open PR — merging to 
 
 ### Utilities — call whenever you need them (not part of the line)
 
-- **interview** *(before specify)* — stress-test a raw idea before you commit to a spec: a Socratic pass that surfaces hidden assumptions, names tradeoffs, and proposes sharper angles, ending with the weakest spot + the next step (usually `/sdd:specify`). Any idea, not just features; optional — reach for it when the idea itself isn't settled.
+- **interview** *(before roadmap / specify)* — gets the idea **out of your head and onto disk**: a Socratic pass that surfaces hidden assumptions, names tradeoffs and proposes sharper angles, then writes the 8-section `docs/idea-brief.md` (raw idea · problem · users · why now · out of scope · risks · recommendation · open questions). That file is what `roadmap` refuses to start without — the repo holds what an agent can read for itself, the brief holds what only you know. Any idea, not just features; outside a git repo it stays talk-only and writes nothing.
 - **classify-size** — size the feature XS/S/M/L/XL (writes `.size`); later skills read it to decide MVP vs full depth. Run it at the start, or any time scope changes.
 - **design-system** *(once per repo, before the first UI feature)* — fixes the **committed** design canon `docs/design-system.md`: the drawing tool (**Figma MCP / Pencil MCP / `code`** — markdown wireframes), the platform posture, the token source, the component inventory. `ux-flows` reads the posture, `screens` draws per the tool, `implement` registers `NEW` components back into it.
 - **glossary** — capture a domain term in `CONTEXT.md` with a definition. Run it whenever a new term shows up; `design` and the spec read the glossary.
@@ -332,13 +335,25 @@ per-folder TDD. After that the repo is real and the per-feature flow builds into
 ## The roadmap (the decomposition layer)
 
 The backbone builds **one feature at a time**. `roadmap` is the layer **above** it — one living
-`docs/roadmap.md` that breaks the overall idea into walkable steps (built by the dedicated
-`roadmapper` subagent, reviewed with you):
+`docs/roadmap.md` that breaks the idea into walkable steps, cut with you rather than
+by a subagent standing in for you. Scope is whatever you bring: a whole product, an epic, or a
+single feature — a small request gets a small roadmap, not a refusal. It runs after
+[`survey`](#step-0--survey-once-per-repo-before-the-backbone) when there is a repo to look at, so
+the zones in its waves are read off the architecture map instead of guessed; **the map is optional
+though** — without one the zones are marked `(new)` and the waves are a first cut to re-cut later.
 
+- **Destination** — one sentence for what is true about the product once the last step ships. The
+  steps say how far along we are; this is the only line that says where along.
 - **Steps** — vertical increments, each row anchored to the section of the idea-brief/PRD that
   justifies it, sized XS–XL, with a live `Status` (idea / spec'd / building / shipped).
-- **Dependency graph** — every edge has a one-line reason (data model, UI zone, auth
-  precondition); no phantom edges that serialize parallelizable work.
+- **A word for what you don't know yet** — `Size` reads `XS…XL` **or** `fog`, one cell, because
+  only one of the two can be true: sizing the unformulated is how an estimate becomes a lie. A
+  `fog` row waits in `Not yet specified` and trades `fog` for a real size once a recon pass
+  sharpens it; `Open decisions` keeps each undecided thing with a type
+  (research / prototype / grilling / task) and an owner (agent / human).
+- **Dependency graph** — the one place edges live, each with a one-line reason (data model, UI
+  zone, auth precondition); no phantom edges that serialize parallelizable work, and no second
+  copy in a column that could drift out of sync with the picture.
 - **Execution path** — dependency-respecting waves; steps inside one wave are conflict-safe in
   the codebase (different modules / UI zones), so they can run as parallel worktree lanes.
 

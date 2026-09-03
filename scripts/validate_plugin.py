@@ -35,6 +35,17 @@ def check(ok: bool, ok_msg: str, fail_msg: str) -> bool:
     return ok
 
 
+def flat(path: Path) -> str:
+    """Whitespace-normalised body, lowercased — for contract-phrase substring tests.
+
+    A contract phrase like «stage-handoff block» is prose, so a writer is free to
+    wrap it across a line. A raw substring test then fails on a purely typographic
+    choice, which is exactly what turned the v2.1.0 release red. Collapse every run
+    of whitespace to a single space before testing.
+    """
+    return " ".join(path.read_text().split()).lower()
+
+
 def load_json(rel: str):
     path = ROOT / rel
     if not path.exists():
@@ -304,7 +315,7 @@ def main() -> int:
     print("== handoff block ==")
     for skill_md in skill_specs:
         base = skill_md.parent.name
-        check("stage-handoff block" in skill_md.read_text(),
+        check("stage-handoff block" in flat(skill_md),
               f"skill '{base}' emits the stage-handoff block (the literal phrase is present)",
               f"skill '{base}' SKILL.md never says 'stage-handoff block' — every stage must end with «emit the stage-handoff block per _shared/handoff.md»")
 
@@ -316,7 +327,7 @@ def main() -> int:
     print("== structural self-check ==")
     for skill_md in skill_specs:
         base = skill_md.parent.name
-        check("structural self-check" in skill_md.read_text().lower(),
+        check("structural self-check" in flat(skill_md),
               f"skill '{base}' names its structural self-check",
               f"skill '{base}' SKILL.md never says 'structural self-check' — every skill must run "
               f"the checklist (or map its heavy verifier) per _shared/self-check.md")

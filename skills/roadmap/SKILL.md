@@ -70,10 +70,10 @@ Whoever owns product direction (PM / lead / the solo maintainer).
    dependencies' waves; (3) statuses ∈ {idea, spec'd, building, shipped} and every spec'd+
    step links an existing `docs/features/<slug>/` (`test -d`); (4) zero dates outside Shipped
    (`\b20\d\d-` scan) and `updated_at` = today. Fix + re-check ≤2 cycles; surface the rest.
-6. **Commit + handoff.** Propose commit `roadmap: <what changed>`. **Emit the stage-handoff
-   block** per [`../_shared/handoff.md`](../_shared/handoff.md) (utility variant) — *What I did*
-   (incl. «self-check: 4/4 pass») + *Review* (`docs/roadmap.md`) + *Run next*: `/sdd:specify
-   <first unblocked step>` (greenfield) or resume your backbone stage.
+6. **Commit + handoff.** Propose commit `roadmap: <what changed>`. **Emit the
+   stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) (utility variant) —
+   *What I did* (incl. «self-check: 4/4 pass») + *Review* (`docs/roadmap.md`) +
+   *Run next*: `/sdd:specify <first unblocked step>` (greenfield) or resume your backbone stage.
 
 ## Sync hooks (delivery keeps it current — anti-drift)
 

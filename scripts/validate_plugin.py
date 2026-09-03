@@ -424,7 +424,7 @@ def main() -> int:
         check("artifact_language" in (ROOT / rel).read_text(),
               f"{rel} documents artifact_language",
               f"{rel} never mentions 'artifact_language' — the settings doc and the shared rule must both carry it")
-    ARTIFACT_WRITERS = ("specify", "clarify", "glossary", "design", "decide-adr", "sequences",
+    ARTIFACT_WRITERS = ("interview", "specify", "clarify", "glossary", "design", "decide-adr", "sequences",
                         "data-model", "api", "tasks", "plan-tests", "review", "ship", "fix",
                         "roadmap", "survey", "design-system", "ux-flows", "screens")
     for name in ARTIFACT_WRITERS:

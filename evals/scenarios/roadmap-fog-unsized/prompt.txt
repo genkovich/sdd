@@ -1,0 +1,5 @@
+/sdd:roadmap
+
+Headless eval run — there is NO interactive user; never call AskUserQuestion and do not spawn
+subagents. Read docs/idea-brief.md, make protocol step 4's review calls yourself, write
+docs/roadmap.md, run the structural self-check, and finish by printing the stage-handoff block.

@@ -10,6 +10,13 @@
 > explanatory rule below is unchanged at every depth** — even a single easy-level question is glossed
 > and explained in full. Depth tunes the count; it never licenses a dry question.
 
+> **Hosts without the tool.** `AskUserQuestion` is a Claude Code mechanism. On Codex CLI and Cursor
+> its form is **numbered plain text** — the same question, the same options with the same
+> descriptions, one at a time, then stop and wait for the answer
+> ([`tool-adapters.md`](./tool-adapters.md)). Everything below applies unchanged: same shape, same
+> glosses, same four mandatory elements per option. A missing native tool is **never** a reason to
+> skip a question, answer it for the user, or block the stage.
+
 ## The one rule that matters most
 
 **Never ask dryly.** The most common failure is a terse, jargon-dense question — a few words plus acronyms, no context — that forces the user to already know the project to answer. Fix it two ways, every time:

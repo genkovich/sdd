@@ -6,7 +6,9 @@ catches, a **flat** question (what a neutral interviewer asks) and the **framed*
 question (sharper, forces a position). Mix frames; don't iterate the list in order.
 
 Every framed question still obeys the hard rules: it goes through AskUserQuestion
-with 2-4 concrete options, the first marked `(Recommended)`.
+(or its host adapter — numbered plain text on Codex CLI / Cursor, see
+[`../../_shared/tool-adapters.md`](../../_shared/tool-adapters.md)) with 2-4 concrete
+options, the first marked `(Recommended)`.
 
 ---
 

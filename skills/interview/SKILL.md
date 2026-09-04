@@ -132,7 +132,11 @@ strongest bet, with reasoning in `description`. → §7 Recommendation, §8 Open
 
 1. **Every question goes through AskUserQuestion**, not free text — 2-4 concrete options, the
    first marked `(Recommended)`, each option's `description` spelling out what follows from it.
-   Free text slips into "I don't know" and loses signal.
+   Free text slips into "I don't know" and loses signal. **On a host that has no native
+   `AskUserQuestion`** (Codex CLI, Cursor) the same question is asked as **numbered plain text** —
+   the same options with the same descriptions, one question at a time, then stop and wait for the
+   answer. That is the documented host adapter, not the open-ended free text this rule forbids →
+   [`../_shared/tool-adapters.md`](../_shared/tool-adapters.md).
 2. **One question at a time.** The user answers with full context on the previous answer, and
    you adapt the next question to it. Batching two or three questions per call is the SDLC
    toolkit's behaviour, not this one — it costs exactly the adaptation that makes the interview
@@ -141,9 +145,13 @@ strongest bet, with reasoning in `description`. → §7 Recommendation, §8 Open
    neutral interviewer surfaces less than one with a take the user can argue against.
 4. **Don't skip phases.** No alternatives before intent is clear; no grilling tradeoffs before
    the idea is understood.
-5. **Fabricating an answer voids the run.** If a question can't actually be asked (the tool is
-   denied, the session is headless), STOP and say so — a brief filled from the model's own guesses
-   is a reconstruction, not an interview, and every downstream stage inherits the fiction.
+5. **Fabricating an answer voids the run.** Fabricating means answering *for* the user, from the
+   model's own guesses — a brief filled that way is a reconstruction, not an interview, and every
+   downstream stage inherits the fiction. A **missing native `AskUserQuestion` is not that case**:
+   it's a host difference the adapter in rule 1 already covers, so ask in numbered plain text and
+   carry on — never stop over it. STOP only when **nobody can answer**: a headless / `-p` run, a
+   non-interactive session, or a denied tool call with no human left in the loop. Then say so
+   plainly and write nothing.
 
 ## Final summary (plain text, not AskUserQuestion)
 
@@ -228,6 +236,7 @@ Once they answer, resume AskUserQuestion with a new angle.
 - [`references/annotated-pass.md`](references/annotated-pass.md) — a full annotated medium-depth interview.
 - [`../_shared/interview-depth.md`](../_shared/interview-depth.md) — the SDD-wide easy/medium/hard dial.
 - [`../_shared/ask-style.md`](../_shared/ask-style.md) — the AskUserQuestion option-writing contract.
+- [`../_shared/tool-adapters.md`](../_shared/tool-adapters.md) — how each Claude Code mechanism maps to Codex CLI / Cursor (asking included).
 - [`../_shared/artifact-language.md`](../_shared/artifact-language.md) — prose switches language, structure stays English.
 - [`../_shared/self-check.md`](../_shared/self-check.md) — the structural self-check contract.
 - [`../_shared/handoff.md`](../_shared/handoff.md) — the stage-handoff block format.

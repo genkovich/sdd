@@ -232,6 +232,57 @@ fi
 
 # --- summary -------------------------------------------------------------------------------
 INSTALL_DONE=1
+
+# --- project settings file -----------------------------------------------------------------
+# Codex CLI and Cursor install into the PROJECT directory, so the installer is standing in the
+# repo the pipeline will run against — it can put .claude/sdd.local.md there and be done, which
+# is what makes the settings deterministic without a host hook (Claude Code has no
+# "plugin installed" event, SessionStart would fire in every repo, and Codex has no hooks at all;
+# the six creating skills cover the Claude path in pure markdown).
+# Skipped for --global: $HOME is not a project, and a settings file there configures nothing.
+# Never overwrites an existing file, and --uninstall never removes it (it is the user's config).
+SETTINGS_NOTE=""
+if [ "$PREFIX" != "$HOME" ]; then
+  settings_file="$PREFIX/.claude/sdd.local.md"
+  canon="$SRC/skills/_shared/settings-file.md"
+  if [ -f "$settings_file" ]; then
+    SETTINGS_NOTE="kept (already present)"
+  elif [ -f "$canon" ]; then
+    # Extract the two canonical pieces from _shared/settings-file.md — never a second copy of
+    # the template in this script, which would drift the moment a key is added.
+    fm="$(awk '/^## The documented frontmatter/{f=1} f&&/^```yaml$/{y=1;next} y&&/^```$/{exit} y' "$canon")"
+    body="$(awk '/^## What each key does$/{f=1;print;next} f&&/^## /{exit} f' "$canon")"
+    # The installer knows the host with certainty ($TOOL) — a stronger signal than anything
+    # config's detection can infer — so it writes the host-correct values straight away instead
+    # of leaving Claude defaults for config to clamp on the first run. TeamCreate and Workflow
+    # are Claude Code-only (skills/_shared/tool-adapters.md).
+    fm="$(printf '%s\n' "$fm" | sed \
+      -e "s|^team_mode: .*|team_mode: false           # set by install.sh ($TOOL): TeamCreate is Claude Code-only|" \
+      -e "s|^workflow_mode: .*|workflow_mode: off         # set by install.sh ($TOOL): Workflow is Claude Code-only|" \
+      -e "s|^max_parallel_agents: .*|max_parallel_agents: 1     # set by install.sh ($TOOL): no parallel host mechanism|")"
+    if [ -n "$fm" ] && [ -n "$body" ] && mkdir -p "$PREFIX/.claude" 2>/dev/null; then
+      {
+        printf -- '---\n%s\n---\n\n' "$fm"
+        # shellcheck disable=SC2016  # `$sdd-config` is literal prose, not an expansion
+        printf '# SDD settings\n\nPer-project, per-developer, gitignored. Run `sdd-config` (Cursor) / `$sdd-config` (Codex)\nto change a value — it patches keys in place and keeps your comments.\n\n'
+        printf '%s\n' "$body"
+      } > "$settings_file" && SETTINGS_NOTE="created with documented defaults, ${TOOL}-clamped parallelism"
+    fi
+  fi
+  if [ -z "$SETTINGS_NOTE" ]; then
+    warn "could not write $settings_file (template missing or unwritable) — the skills create it on their first run instead"
+  fi
+  # .gitignore: both entries are per-developer and must never be committed.
+  if [ -n "$SETTINGS_NOTE" ]; then
+    gitignore="$PREFIX/.gitignore"
+    touch "$gitignore" 2>/dev/null || true
+    if [ -w "$gitignore" ]; then
+      grep -qxF '.claude/*.local.md' "$gitignore" || printf '%s\n' '.claude/*.local.md' >> "$gitignore"
+      grep -qxF '.worktrees/'        "$gitignore" || printf '%s\n' '.worktrees/'        >> "$gitignore"
+    fi
+  fi
+fi
+
 log ""
 log "installed sdd ($TOOL):"
 log "  skills  → $SKILLS_ROOT/sdd  (${n_skills} skills)"
@@ -242,5 +293,8 @@ case "$TOOL" in
   codex)  log "  invoke  → type \$sdd-… in codex, e.g. \$sdd-specify <slug>" ;;
   cursor) log "  invoke  → type / in the chat and pick sdd-…, e.g. sdd-specify" ;;
 esac
+if [ -n "$SETTINGS_NOTE" ]; then
+  log "  config  → $PREFIX/.claude/sdd.local.md  (${SETTINGS_NOTE})"
+fi
 log "  mapping → $SKILLS_ROOT/sdd/skills/_shared/tool-adapters.md"
 log "  remove  → re-run with --uninstall (re-running install is also safe: it cleans first)"

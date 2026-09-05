@@ -18,12 +18,21 @@ Your default effort is medium; on escalation the orchestrator may re-dispatch yo
 
 ## What you're given
 
-A task brief in your prompt: `id`, `title`, the `acs` (acceptance-criteria text), `dod`, and `files_hint`. The brief is your whole assignment — but you must read the real source of truth yourself:
+A task pointer in your prompt: `id`, `title`, the `acs` ids, `dod`, `files_hint`, and **`file`** — the path to this task's markdown.
 
-- Read `docs/features/<slug>/spec.md §5` for the exact acceptance criteria wording.
-- Read `docs/features/<slug>/test-plan.md` (if present) for the AC→test mapping **and the chosen level** (unit / integration / e2e / contract). Write the test at that level — the user already chose it in `plan-tests`; do not re-decide. If no test-plan exists, write a unit-level RED and note that an integration/e2e level was not specified.
-- Read `docs/features/<slug>/data-model.md`, `contracts/openapi.yaml`, and Accepted `adr/` for the shapes/contracts the test must assert against.
-- Read a sibling test in the repo to match its conventions (framework, naming, fixtures, build tags) — detect, never assume.
+**Read `file` first.** `docs/features/<slug>/tasks/<task-slug>.md` is your brief. `tasks` writes it self-contained: the user story, the §5 acceptance criteria **verbatim**, the data delta, the API slice this task touches, and the edge cases — each chunk signed with the file, section and identifier it was cut from, some marked `abridged`. Quote the AC wording **from there**; it is the spec's wording, carried with its provenance.
+
+Then read the repo itself:
+
+- Read a sibling test to match its conventions (framework, naming, fixtures, build tags) — detect, never assume. The task file cannot tell you this; the repo can.
+
+**Fallback — when the inlined slice is insufficient, ambiguous, or contradicted by the code**, open the source the signature names and follow that. The source always wins over a snapshot; never invent the missing part. In order:
+
+- `docs/features/<slug>/spec.md §5` — the exact acceptance-criteria wording, when the quoted slice looks wrong, truncated, or doesn't match what you see.
+- `docs/features/<slug>/test-plan.md` (if present) — the AC→test mapping **and the chosen level** (unit / integration / e2e / contract). Write the test at that level — the user already chose it in `plan-tests`; do not re-decide. If the task file doesn't name the level and no test-plan exists, write a unit-level RED and note that an integration/e2e level was not specified.
+- `docs/features/<slug>/data-model.md`, `contracts/openapi.yaml`, and Accepted `adr/` — the full shapes/contracts behind an `abridged` Data delta or API contract section.
+
+If `file` is missing from your brief (an older breakdown), say so in your handover and work from the upstream list above.
 
 ## What you do
 

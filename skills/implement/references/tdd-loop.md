@@ -4,7 +4,7 @@ Every task runs `SELECT → RED → GREEN → REFACTOR → GATE → COMMIT`. Thi
 
 ## SELECT
 
-Pick the next task whose `deps` are all `done`. In sequential mode that's the topo order; in parallel modes the orchestrator hands it out. Read the task body + its `acs` from `spec.md §5` + the relevant `test-plan.md` rows. Know, before writing anything, what observable outcome the test will assert.
+Pick the next task whose `deps` are all `done`. In sequential mode that's the topo order; in parallel modes the orchestrator hands it out. **Read the task file first** — `tasks.json`'s `file` field, `docs/features/<slug>/tasks/<task-slug>.md`: it carries the §5 acceptance criteria verbatim, the data delta, the API slice and the edge cases, each signed with its source. `spec.md §5` and the relevant `test-plan.md` rows are the **fallback**, opened when a slice is insufficient, ambiguous, or contradicted by the code ([`./inputs.md`](./inputs.md)); a task with no `file` falls back to them outright. Know, before writing anything, what observable outcome the test will assert.
 
 ## RED — write the failing test first
 

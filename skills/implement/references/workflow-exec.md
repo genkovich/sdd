@@ -16,7 +16,9 @@ export const meta = {
 }
 
 // tasks + deps are inlined from tasks.json by the engine
-const TASKS = /* [{id, title, acs, dod, files_hint, deps, layer}, ...] */;
+const TASKS = /* [{id, title, acs, dod, files_hint, deps, layer, file}, ...] */;
+// `file` = docs/features/<slug>/tasks/<task-slug>.md — every prompt below points the agent at it
+// as its brief (redPrompt/greenPrompt/verifyPrompt/reviewPrompt all carry t.file).
 
 // Kahn layers → phases; within a layer, fan out up to the parallel cap.
 // Each task is one independent pipeline: write-test → implement → verify → [review] → commit.
@@ -33,6 +35,7 @@ for (const layer of kahnLayers(TASKS)) {              // computed from deps
 }
 ```
 
+- **The brief is a path, not a paste.** Each generated prompt hands the agent `t.file` and tells it to read that first; the engine never inlines the task body into the prompt string. Upstream artifacts stay the fallback when a slice is insufficient — same order as everywhere else ([`./inputs.md`](./inputs.md)). A task with no `file` (an older breakdown) falls back to the JSON fields + spec §5, and the engine says so in the banner.
 - **Schema-validated verdicts.** Each stage returns a structured verdict (`RED_VERDICT { class: GOOD|BAD|false_pass|NON, failing_line }`, `GATE_VERDICT { unit, integration, lint, vet, gate_green }`, `REVIEW_VERDICT { ac_satisfied, issues[] }`) so the orchestrator branches on data, not prose.
 - **Fail drops the subtree.** A stage that throws (or returns `gate_green: false` past retries) drops that task to `null`; the engine removes it from `done`, so every transitively-dependent task is skipped (its deps never complete). Independent branches finish unaffected — this is the workflow's advantage over a team halt.
 - **Parallel cap.** `parallel(...)` respects `max_parallel_agents` (the workflow runtime also caps concurrency); a wide layer queues the overflow.

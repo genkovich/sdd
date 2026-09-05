@@ -51,7 +51,13 @@ Architect / Tech Lead — the same person who fixed the foundation in `survey`.
    emits the scaffold plan». A map without the greenfield marker means the repo is already real —
    refuse too and point at `/sdd:specify <slug>`. If the skeleton already exists (every S-task's
    output present and the smoke test green), say so and STOP — nothing to materialize.
-2. **Read the foundation.** From the map: stack, folder/module structure, conventions catalog, the
+2. **Ensure the settings file (first thing, after this skill's own gate).** If `.claude/sdd.local.md` is
+   absent, create it now from the canonical template — documented defaults + the self-documenting
+   body — and patch `.gitignore`; if it exists, read it and never overwrite. The one procedure
+   lives in [`../_shared/settings-file.md`](../_shared/settings-file.md). Creating is
+   unconditional; **changing values is only ever offered by [`config`](../config/SKILL.md)**. Say
+   one line: «`.claude/sdd.local.md` created with documented defaults — `/sdd:config` to tune it».
+   **Then read the foundation.** From the map: stack, folder/module structure, conventions catalog, the
    machine keys. From `tasks.json`: the S-tasks in dependency order. The map is the **only** source
    of decisions — scaffold never re-litigates stack/style choices (that was `survey`'s session).
 3. **Materialize sequentially inline.** Execute the S-tasks one by one in dependency order, in this

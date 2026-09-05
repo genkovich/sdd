@@ -452,6 +452,100 @@ def main() -> int:
               f"{rel} mentions the .route artifact",
               f"{rel} never mentions '.route' — it writes or resolves the route and must name the artifact")
 
+    # --- the settings file: one canon, one create-anchor, one editor ---
+    # Three invariants that only prose holds up, so the validator holds them mechanically:
+    # (1) the README's copy of the template agrees with the canon key-for-key — README trims the
+    #     inline comments for width, so only key+value are compared, but a drifted DEFAULT there
+    #     is a lie in the most-read file; (2) exactly the six pipeline skills + config carry the
+    #     create step, identified by its bold anchor + a link to the canon — a seventh skill
+    #     growing its own create step, or one of the six losing it, is the regression that made
+    #     the file non-deterministic in the first place; (3) no file outside config/ offers to
+    #     SAVE a value into the settings file — creating is many skills' job, changing values is
+    #     config's alone, and that rule previously leaked (command-detection.md offered to save
+    #     the cmd_* keys).
+    print("== settings file invariants ==")
+    canon_text = (ROOT / "skills" / "_shared" / "settings-file.md").read_text()
+
+    def yaml_pairs(text: str) -> dict[str, str]:
+        block = re.search(r"```yaml\n(.*?)```", text, re.S)
+        if not block:
+            return {}
+        out = {}
+        for line in block.group(1).splitlines():
+            m = re.match(r"^([a-z_]+):\s*(.*?)\s*(?:#.*)?$", line)
+            if m:
+                out[m.group(1)] = m.group(2)
+        return out
+
+    canon_keys = yaml_pairs(canon_text[canon_text.index("## The documented frontmatter"):])
+    readme_text = (ROOT / "README.md").read_text()
+    readme_keys = yaml_pairs(readme_text[readme_text.index("### The settings file"):])
+    drift = sorted(k for k in set(canon_keys) | set(readme_keys)
+                   if canon_keys.get(k) != readme_keys.get(k))
+    check(bool(canon_keys) and not drift,
+          f"README's settings block matches the canon ({len(canon_keys)} keys, same defaults)",
+          f"README.md's settings YAML has drifted from skills/_shared/settings-file.md on: "
+          f"{', '.join(drift) if drift else '(no canon block found)'} — the README block must "
+          f"carry the same keys and the same default values (comments may be trimmed for width)")
+
+    CREATORS = ("interview", "survey", "roadmap", "scaffold", "specify", "implement", "config")
+    CREATE_ANCHOR = "**ensure the settings file"
+    for base in CREATORS:
+        body = flat(ROOT / "skills" / base / "SKILL.md")
+        check(CREATE_ANCHOR in body and "settings-file.md" in body,
+              f"skill '{base}' carries the settings create step (anchor + canon link)",
+              f"skill '{base}' lost the «**Ensure the settings file …**» step or its link to "
+              f"_shared/settings-file.md — the file must be created deterministically by all "
+              f"{len(CREATORS)} of {', '.join(CREATORS)}")
+    strays = [s.parent.name for s in skill_specs
+              if s.parent.name not in CREATORS and CREATE_ANCHOR in flat(s)]
+    check(not strays,
+          f"no skill outside the {len(CREATORS)} creators carries the create step",
+          f"skill(s) {', '.join(strays)} grew their own settings create step — the step belongs to "
+          f"{', '.join(CREATORS)} only; every other skill reads the file")
+
+    SAVE_OFFER = re.compile(
+        r"(offer to (save|write|persist|set)|save (them|it|these|the commands) to)[^\n]{0,60}sdd\.local\.md",
+        re.I)
+    editors = {ROOT / "skills" / "_shared" / "settings-file.md"}
+    leaks = [str(f.relative_to(ROOT)) for f in doc_pool
+             if f not in editors and "skills/config/" not in str(f) and SAVE_OFFER.search(f.read_text())]
+    check(not leaks,
+          "only config/ offers to save a value into .claude/sdd.local.md",
+          f"{', '.join(leaks)} offers to save a value into .claude/sdd.local.md — changing values "
+          f"belongs to the `config` skill alone; point the user at /sdd:config instead")
+
+    # --- install.sh can still extract the settings template from the canon ---
+    # install.sh writes .claude/sdd.local.md at install time (Codex/Cursor) by awk-extracting the
+    # yaml block + the «What each key does» section OUT of _shared/settings-file.md, deliberately
+    # keeping one copy of the template. That coupling is invisible: renaming a heading or adding a
+    # second ```yaml block there would silently produce an empty/wrong settings file. So run the
+    # installer's OWN awk programs here and assert they still yield both pieces.
+    print("== install.sh settings extraction ==")
+    import subprocess
+    canon = ROOT / "skills" / "_shared" / "settings-file.md"
+    installer_text = (ROOT / "install.sh").read_text()
+    progs = re.findall(r"\$\(awk '([^']+)' \"\$canon\"\)", installer_text)
+    if check(len(progs) == 2,
+             "install.sh carries the two awk extraction programs",
+             f"install.sh must extract the settings template from _shared/settings-file.md with two "
+             f"awk programs (found {len(progs)}) — did the extraction change shape?"):
+        try:
+            fm = subprocess.run(["awk", progs[0], str(canon)], capture_output=True, text=True, check=True).stdout
+            body = subprocess.run(["awk", progs[1], str(canon)], capture_output=True, text=True, check=True).stdout
+        except (OSError, subprocess.CalledProcessError) as exc:
+            fm = body = ""
+            check(False, "", f"running install.sh's awk extraction failed: {exc}")
+        check("interview_depth:" in fm and "judgment_model:" in fm and fm.count(":") >= 25,
+              f"install.sh extracts the full settings frontmatter ({len(fm.splitlines())} lines)",
+              "install.sh's awk no longer extracts the documented frontmatter from "
+              "_shared/settings-file.md — check the `## The documented frontmatter` heading and "
+              "that it is still followed by exactly one ```yaml block")
+        check(body.startswith("## What each key does") and "**`interview_depth`**" in body,
+              f"install.sh extracts the «What each key does» body ({len(body.splitlines())} lines)",
+              "install.sh's awk no longer extracts the «What each key does» section from "
+              "_shared/settings-file.md — was the heading renamed or moved?")
+
     # --- no orphan in _shared/: every shared reference is pointed to by >=1 file ---
     print("== _shared no-orphan ==")
     for sf in sorted((ROOT / "skills" / "_shared").glob("*.md")):

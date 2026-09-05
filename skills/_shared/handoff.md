@@ -90,7 +90,7 @@ Rules for filling it:
   to iterate; *Run next* = `/sdd:implement <slug>` (fix), then re-review the changed surface.
 - **Terminal** (`ship`): there is no `/sdd` successor. *Run next* becomes **Done** — the PR command/URL
   + «merging to main is your call»; still print *What I did* + *Review* (the changelog + PR).
-- **Utility** (`interview`, `classify-size`, `glossary`, `decide-adr`, `roadmap`, `design-system`, `fix`): called ad-hoc, not a
+- **Utility** (`interview`, `config`, `classify-size`, `glossary`, `decide-adr`, `roadmap`, `design-system`, `fix`): called ad-hoc, not a
   gate. `/clear` is **optional** (recommend it only if the context is large); *Run next* = «resume
   your backbone stage», naming the likely one (e.g. `/sdd:design <slug>`). Print *What I did* +
   *Review* (the one file it wrote). One exception: `fix` alone adds a **conditional** recommendation —
@@ -117,6 +117,7 @@ Rules for filling it:
 | `implement` | the committed diff (code + tests) + `tasks/tracker.md` | `/sdd:review <slug>` |
 | `review` | `_review/review-<date>.md` | `/sdd:ship <slug>` (PASS) · `/sdd:implement <slug>` (CHANGES, no `/clear`) |
 | `ship` | `CHANGELOG` + the PR | **Done** — PR command/URL; merge is your call |
+| `config` | `.claude/sdd.local.md` (the settings file itself is gitignored — the `.gitignore` patch is the only thing to commit) | resume your backbone stage — e.g. `/sdd:specify <slug>` |
 | `classify-size` | `.size` + `.route` | resume — e.g. `/sdd:specify <slug>` |
 | `design-system` | `docs/design-system.md` | resume — e.g. `/sdd:ux-flows <slug>` |
 | `glossary` | `CONTEXT.md` | resume — e.g. `/sdd:design <slug>` |

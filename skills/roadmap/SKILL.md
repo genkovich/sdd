@@ -67,7 +67,13 @@ Whoever owns product direction (PM / lead / the solo maintainer).
 
 ## Protocol
 
-1. **Locate sources.** Find the idea source (`docs/idea-brief.md` first, then PRD candidates).
+1. **Ensure the settings file (first thing, after this skill's own gate).** If `.claude/sdd.local.md` is
+   absent, create it now from the canonical template — documented defaults + the self-documenting
+   body — and patch `.gitignore`; if it exists, read it and never overwrite. The one procedure
+   lives in [`../_shared/settings-file.md`](../_shared/settings-file.md). Creating is
+   unconditional; **changing values is only ever offered by [`config`](../config/SKILL.md)**. Say
+   one line: «`.claude/sdd.local.md` created with documented defaults — `/sdd:config` to tune it».
+   **Then locate sources.** Find the idea source (`docs/idea-brief.md` first, then PRD candidates).
    None found → say so and STOP: a roadmap without a source is fiction, and the fix is one
    command — `/sdd:interview` writes that brief. **That is the only hard stop.**
 

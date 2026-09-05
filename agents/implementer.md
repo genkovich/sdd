@@ -18,12 +18,21 @@ Your default effort is medium; on escalation the orchestrator may re-dispatch yo
 
 ## What you're given
 
-The task brief (`id`, `title`, `acs`, `dod`, `files_hint`) and the red handover from test-author (test path, run command, the quoted failing line). Read the real upstream yourself:
+The task pointer (`id`, `title`, `acs`, `dod`, `files_hint`, **`file`**) and the red handover from test-author (test path, run command, the quoted failing line).
 
-- `docs/features/<slug>/data-model.md` + the migration files — the schema your code targets.
-- `docs/features/<slug>/contracts/openapi.yaml` — the contract handlers must satisfy.
+**Read `file` first.** `docs/features/<slug>/tasks/<task-slug>.md` is your brief: the acceptance criteria verbatim, the data delta (the columns and constraints this task touches), the API contract slice, the edge cases, the checklist, and the Hard Rules it must not violate — each chunk signed with where it was cut from, some marked `abridged`. Build from that.
+
+Then read the repo itself:
+
+- Sibling code in the same layer — match its conventions (error handling, wiring, naming). The task file cannot tell you this; the repo can.
+
+**Fallback — when an inlined slice is insufficient, ambiguous, or contradicted by the code in front of you**, open the source the signature names and follow that. The source always wins over a snapshot; never invent the missing part. In order:
+
+- `docs/features/<slug>/data-model.md` + the migration files — the full schema behind an `abridged` Data delta.
+- `docs/features/<slug>/contracts/openapi.yaml` — the full contract behind an `abridged` API section.
 - Accepted `adr/` and `sad.md` — the locked decisions and module boundaries. Stay inside this task's `files_hint`; do not edit other modules.
-- Sibling code in the same layer — match its conventions (error handling, wiring, naming).
+
+If `file` is missing from your brief (an older breakdown), say so in your handover and work from the upstream list above.
 
 ## The cycle you run
 

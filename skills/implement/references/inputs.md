@@ -2,14 +2,15 @@
 
 ## Hard gate
 
-`docs/features/<slug>/tasks.json` must exist and parse as JSON. Missing or malformed → refuse: «run `tasks <slug>` first (it emits tasks.json)». Do not try to reconstruct tasks from the markdown — `tasks.json` is the contract.
+`docs/features/<slug>/tasks.json` must exist and parse as JSON. Missing or malformed → refuse: «run `tasks <slug>` first (it emits tasks.json)». `tasks.json` is the **contract**: the task set, the ids and the `deps` DAG come from it and are never reconstructed by parsing the markdown. The markdown is the opposite thing — the **body** of each task, reached through the `file` pointer in that same JSON (see «The task file is the agent's brief»).
 
 ## Validate the contract
 
 The loaded `tasks.json` must satisfy the shape from the `tasks` skill:
 
 - top-level `{ slug, tasks: [...] }`.
-- each task: `id` (unique), `title`, `layer`, `deps` (array of existing ids), `acs` (array), `dod` (string), `files_hint` (array).
+- each task: `id` (unique), `title`, `layer`, `deps` (array of existing ids), `acs` (array), `dod` (string), `files_hint` (array), `file` (repo-relative path to the task's markdown, `docs/features/<slug>/tasks/<task-slug>.md`).
+- `file` must resolve to a file on disk. Missing key, or a path that doesn't exist → the breakdown predates the self-contained task format (or was hand-edited): say so, fall back to the JSON fields + the upstream artifacts below for that task, and note in the run banner that the agents are working without an inlined brief. (The `_scaffold` set below is exempt — it has no task markdown, and it is redirected out of this engine anyway.)
 - `deps` forms a DAG (no cycles) — verified in step 4. A cycle is a hard error: report the cycle and stop (it is a `tasks` bug, not an `implement` one).
 
 ## Scaffold task sets (from `survey` greenfield) → run `scaffold`, not `implement`
@@ -20,11 +21,18 @@ scaffold set — run `/sdd:scaffold` (the materialization protocol + the skeleto
 are canonical there); `implement` is the feature engine.» After the skeleton is green, the normal
 per-feature flow (`specify → … → implement`) builds into it with real feature TDD.
 
+## The task file is the agent's brief
+
+`tasks/<task-slug>.md` (the `file` field) is **the first thing every agent reads** and its primary brief. `tasks` writes it self-contained: the user story, the acceptance criteria verbatim, the data delta, the API slice, the edge cases — each chunk carrying a provenance signature naming the file, section and identifier it was cut from, and some marked `abridged`.
+
+**The order is fixed:** the task file is the brief, upstream is the **fallback**. An agent opens the named upstream file when a slice is insufficient, ambiguous, or contradicted by the code in front of it — the source always wins over a snapshot, and an `abridged` chunk is by construction a snapshot. It never invents the missing part, and it never skips the task file to «go read the real thing» when the slice is sufficient: that rediscovery is exactly the cost the inlining removes.
+
 ## Context the agents read directly
 
-The engine does **not** paste these into prompts — each agent (or the sequential runner) reads them itself, so there's no paraphrase drift:
+The engine does **not** paste these into prompts — each agent (or the sequential runner) reads the task file and then, when it needs more, these, so there's no paraphrase drift:
 
-- `docs/features/<slug>/spec.md` — §5 acceptance criteria (the source of truth for what each test asserts).
+- `docs/features/<slug>/tasks/<task-slug>.md` — **the brief** (the `file` field of the task). Read first, always.
+- `docs/features/<slug>/spec.md` — §5 acceptance criteria (the source of truth for what each test asserts; the task file quotes the ones it needs verbatim, so open the spec when the quoted slice looks wrong or incomplete).
 - `docs/features/<slug>/test-plan.md` — the AC→test map, if `plan-tests` ran. **For XS/S the plan is usually inline instead** — a `## Test plan` section in `spec.md` (per the size matrix); check both locations and read whichever exists.
 - `docs/features/<slug>/data-model.md` + the **staged** migration files under `docs/features/<slug>/migrations/` — the schema the code targets (a `layer: migration` task promotes them into the live `migrations/` tree; see «Staged migrations → promote» below).
 - `docs/features/<slug>/contracts/openapi.yaml` — the API contract handlers must match.

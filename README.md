@@ -1,7 +1,7 @@
 # SDD — Spec-Driven Development for Claude Code
 
 A self-contained Claude Code plugin that carries a feature from a one-line idea to
-**reviewed, verified, shipped** code through **22 atomic, stack-agnostic skills** and a
+**reviewed, verified, shipped** code through **23 atomic, stack-agnostic skills** and a
 **TDD implementation engine** — with a living decomposition roadmap above the per-feature flow and a
 **design pipeline** (design-system · ux-flows · screens) for UI features.
 
@@ -34,6 +34,7 @@ flowchart LR
     end
     IM --> RV[review] --> SH[ship]
     subgraph util["UTILITIES — call anytime"]
+        CFG[config]
         CS[classify-size]
         GL[glossary]
         ADR[decide-adr]
@@ -166,6 +167,10 @@ whole-change check a human reviewer would do; `ship` runs the feature for real.
 - **interview** *(before roadmap / specify)* — gets the idea out of your head and onto disk: a
   Socratic pass that writes the 8-section `docs/idea-brief.md`. Outside a git repo it stays
   talk-only and writes nothing.
+- **config** — the per-project settings file `.claude/sdd.local.md`: creates it with documented
+  defaults, then walks six grouped questions and patches only the keys you confirm (your comments,
+  key order and unknown keys survive untouched). The **only** skill that changes a setting — the six
+  creating skills create and read, they never offer to tune.
 - **classify-size** — size the feature XS/S/M/L/XL (writes `.size`); later skills read it. Run it
   at the start, or any time scope changes.
 - **glossary** — capture a domain term in `CONTEXT.md`. Run it whenever a new term shows up;
@@ -204,23 +209,65 @@ never a change to *what* gets covered:
 
 | Lever | What it decides | Set via | Canonical |
 |---|---|---|---|
-| **Interview depth** (easy / medium / hard) | how many questions `specify` / `clarify` / `design` ask | `interview_depth` in `.claude/sdd.local.md`, or `--depth=` inline | [`interview-depth.md`](./skills/_shared/interview-depth.md) |
+| **Interview depth** (easy / medium / hard) | how many questions `specify` / `clarify` / `design` ask | `/sdd:config`, or `--depth=` inline for one run | [`interview-depth.md`](./skills/_shared/interview-depth.md) |
 | **Target surface** (backend-service / web-frontend / mobile-app / desktop-app / cli / worker / library-sdk) | which C4 container the feature targets; gates the `ui` task layer, UI-driven sequences, and the frontend test tiers | declared by `design` §4, from the spec's "for whom" | [`surfaces.md`](./skills/_shared/surfaces.md) |
-| **Judgment model & effort** | which model tier the judgment agents (reviewer/critic/devils-advocate/strategist/analyst) run at; L/XL escalates critical verifications to `effort: xhigh` | `judgment_model`, `model_<role>`, `effort_<role>` in `.claude/sdd.local.md` | [`agent-roster.md`](./skills/_shared/agent-roster.md) |
+| **Judgment model & effort** | which model tier the judgment agents (reviewer/critic/devils-advocate/strategist/analyst) run at; L/XL escalates critical verifications to `effort: xhigh` | `/sdd:config` (writes `judgment_model`, `model_<role>`, `effort_<role>`) | [`agent-roster.md`](./skills/_shared/agent-roster.md) |
 | **Route** (quick / standard / full) | how aggressively optional stages (clarify/sequences/data-model/api/plan-tests) auto-skip when their N/A condition holds | `.route`, defaulted by size (XS/S → quick, M → standard, L/XL → full) and confirmed at `classify-size` | [`size-matrix.md`](./skills/_shared/size-matrix.md) |
 
 No dial weakens diagram presentation (always confirmed **in prose**, written to file, never
 dumped raw — [`diagram-presentation.md`](./skills/_shared/diagram-presentation.md)) or acceptance-criteria
 coverage (every spec §4 story + §5 AC traced end-to-end, `easy`/XS just asks fewer questions).
 
-The pipeline **auto-creates** `.claude/sdd.local.md` on first use — a per-project, gitignored,
-self-documenting settings file (every key carries its default inline). Three representative keys:
+### The settings file
+
+Six skills — `interview`, `survey`, `roadmap`, `scaffold`, `specify`, `implement` — **create**
+`.claude/sdd.local.md` as their first protocol step, so the file exists before anything needs it
+instead of surfacing three stages later. It's per-project, gitignored (the `.gitignore` patch is
+the only committed part), and self-documenting: every key carries its default and allowed values
+inline. **`/sdd:config` is the only thing that changes a value** — it creates the file first, so
+you have a working config before answering anything, then asks six grouped questions and patches
+only the keys you confirm.
+
+This is exactly what lands on disk, defaults and all:
 
 ```yaml
-interview_depth: medium   # easy | medium | hard
-judgment_model: opus      # tier alias (haiku|sonnet|opus|fable), inherit, or a full model id
-artifact_language: en     # en | uk — prose language; headings + machine tokens stay English
+interview_depth: medium    # easy | medium | hard — plugin-wide default for specify/clarify/design
+artifact_language: en      # en | uk (any language tag) — language pipeline DOCUMENTS are written in
+tdd: true                  # enforce red→green→refactor
+team_mode: false           # true → agent team via TeamCreate
+workflow_mode: auto        # auto → dynamic Workflow; off → never
+max_parallel_agents: 3     # integer ≥1 — fan-out cap for team/workflow modes (1 = sequential)
+isolation: worktree        # worktree | inplace (parallel>1 ⇒ forces worktree)
+stop_on_red: true          # halt on a red that survives escalation, vs drop-and-continue
+max_red_retries: 3         # integer ≥1 — RED→GREEN attempts before escalation
+gate_lint: true            # true | false — include lint in the per-task gate
+gate_vet: true             # true | false — include vet / static-analysis in the per-task gate
+require_integration: auto  # auto | always | never (Docker-probed)
+auto_commit: per_task      # per_task | per_phase | off
+branch_strategy: feature   # feature | current
+cmd_test_unit: ""          # empty = autodetect (escape hatch)
+cmd_test_integration: ""
+cmd_lint: ""
+cmd_vet: ""
+model_test_author: sonnet  # per-role model; inherit = session model
+model_implementer: sonnet
+model_reviewer: opus
+judgment_model: opus       # tier alias (haiku|sonnet|opus|fable), inherit, or a full model id
+effort_test_author: medium # per-role effort; raised to high on escalation
+effort_implementer: medium
+effort_reviewer: high
 ```
+
+Grouped the way `/sdd:config` asks about them — one answer per group, several keys per answer:
+
+| Group | Keys | Default | What it decides |
+|---|---|---|---|
+| **Interview depth** | `interview_depth` | `medium` | how many questions `specify` / `clarify` / `design` ask before deciding for you; never changes *what* is covered |
+| **Document language** | `artifact_language` | `en` | the prose language of every pipeline document; headings, frontmatter and machine tokens stay English |
+| **Model tier** | `judgment_model`, `model_test_author`, `model_implementer`, `model_reviewer`, `effort_test_author`, `effort_implementer`, `effort_reviewer` | judgment `opus`, execution `sonnet` | which tier the judgment agents and the execution agents run at. `judgment_model` is one switch for all five judges; `opus` is a floor, not a pin |
+| **Strictness & gates** | `tdd`, `stop_on_red`, `max_red_retries`, `gate_lint`, `gate_vet`, `require_integration` | `true` / `true` / `3` / `true` / `true` / `auto` | whether the failing test comes first, what a surviving red does to the run, and which tiers the per-task gate runs |
+| **Execution & commits** | `team_mode`, `workflow_mode`, `max_parallel_agents`, `isolation`, `auto_commit`, `branch_strategy` | `false` / `auto` / `3` / `worktree` / `per_task` / `feature` | sequential vs. agent team vs. dynamic workflow, how wide it fans out, and how finely the work commits. `team_mode` / `workflow_mode` need Claude Code — on Codex CLI and Cursor they clamp to sequential |
+| **Commands** *(never asked)* | `cmd_test_unit`, `cmd_test_integration`, `cmd_lint`, `cmd_vet` | `""` | empty means autodetect, which beats a pinned command that goes stale. Fill one only for a repo the cascade can't read |
 
 Command detection (for `implement`'s gate) is a stack-agnostic cascade: settings override →
 Makefile → `package.json` scripts → language manifests → Docker probe for integration.
@@ -278,7 +325,7 @@ skipped.
 install.sh        Codex CLI / Cursor installer — copies the subtree, prefixes skill names, generates functional agents
 agents/           explorer, test-author, implementer, reviewer, critic, devils-advocate, researcher, strategist, analyst, pen-keeper
 scripts/          validate_plugin.py (CI gate: manifests + skill/agent frontmatter + the consistency invariants — links resolve, /sdd: form, handoff block, single-source taxonomy, no _shared orphans)
-skills/_shared/   canonical agent-roster / artifact-language / ask-style / critic / diagram-presentation / handoff / interview-depth / mermaid-check / self-check / size-matrix / socratic-loop / surfaces / tool-adapters (referenced, not duplicated)
+skills/_shared/   canonical agent-roster / artifact-language / ask-style / critic / diagram-presentation / handoff / interview-depth / mermaid-check / self-check / settings-file / size-matrix / socratic-loop / surfaces / tool-adapters (referenced, not duplicated)
 skills/<name>/    SKILL.md spine + references/ (heavy detail) + templates/ (output scaffolds)
 ```
 

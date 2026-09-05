@@ -65,13 +65,20 @@ the handoff which sections changed.
 
 ## Protocol
 
-1. **Set the depth dial.** One `AskUserQuestion`, then commit (**default medium**). The dial is
+1. **Resolve the write gate above first** (silently — one `git rev-parse`, no question about it).
+   **Ensure the settings file (first thing, after this skill's own gate).** If `.claude/sdd.local.md` is absent,
+   create it now from the canonical template — documented defaults + the self-documenting body —
+   and patch `.gitignore`; if it exists, read it and never overwrite. The one procedure lives in
+   [`../_shared/settings-file.md`](../_shared/settings-file.md). Creating is unconditional;
+   **changing values is only ever offered by [`config`](../config/SKILL.md)**. Say one line:
+   «`.claude/sdd.local.md` created with documented defaults — `/sdd:config` to tune it».
+   (Subordinate to the write gate: outside a git repo this skill writes nothing, settings included.)
+   **Then set the depth dial.** One `AskUserQuestion`, then commit (**default medium**). The dial is
    SDD-wide; interview's delta — the **3–4 / 6–10 / 10–15** question budget per level and each
    level's posture — is the canonical `interview` row in
    [`../_shared/interview-depth.md`](../_shared/interview-depth.md) (no table duplicated here).
    The adversarial triggers (grill / rip apart / розʼєби / погрилити) imply **hard** unless the
-   user says otherwise. State the depth in one line, then start. Resolve the write gate above in
-   the same breath (silently — one `git rev-parse`, no question about it).
+   user says otherwise. State the depth in one line, then start.
 2. **Phase 1 — understand the idea** (see [Phases](#phases)).
 3. **Phase 2 — stress-test tradeoffs and imprecisions.** The core of the run.
 4. **Phase 3 — propose new angles.**

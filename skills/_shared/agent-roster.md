@@ -53,7 +53,8 @@ full model id — the same value-set as `CLAUDE_CODE_SUBAGENT_MODEL` below. Defa
 Fable access. One key sets all five without touching `agents/*.md` (their frontmatter stays the
 tier-alias default); a per-role `model_<role>` key still wins for its role. It never applies to
 execution (`test-author` / `implementer`) or gathering (`explorer` / `researcher`) roles. See the
-settings doc: [`../implement/references/settings.md`](../implement/references/settings.md).
+settings doc: [`settings-file.md`](./settings-file.md) (the key's semantics) and
+[`../implement/references/settings.md`](../implement/references/settings.md) (how it resolves at dispatch).
 
 **The default is a floor, not a pin:** when `.claude/sdd.local.md` sets no `judgment_model` and
 the session model is a stronger tier than `opus` (tier order `haiku < sonnet < opus < fable`),

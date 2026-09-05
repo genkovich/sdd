@@ -2,7 +2,7 @@
 
 > **Reference-only.** Not a skill. Every artifact-writing skill reads this for the one rule of
 > the `artifact_language` key in `.claude/sdd.local.md` (defined in
-> [`../implement/references/settings.md`](../implement/references/settings.md), default `en`):
+> [`settings-file.md`](./settings-file.md), default `en`):
 > **prose switches language, structure stays English.** Conversation language (questions +
 > option text) is a separate concern → [`ask-style.md`](./ask-style.md).
 

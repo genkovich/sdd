@@ -12,6 +12,7 @@
 #   install.sh <codex|cursor|claude> [--global] [--prefix DIR] [--ref REF] [--src DIR] [--uninstall]
 #
 #   codex | cursor   target tool (claude just prints the native /plugin commands)
+#   --tool TOOL      the same target tool, named form — `--tool codex` == `codex`
 #   --global         install under $HOME instead of the current directory
 #   --prefix DIR     install under DIR (overrides --global and $PWD; mainly for testing)
 #   --ref REF        git ref of genkovich/sdd to download (default: main)
@@ -30,7 +31,7 @@ warn() { printf 'warning: %s\n' "$*" >&2; }
 die()  { printf 'error: %s\n' "$*" >&2; exit 1; }
 
 usage() {
-  sed -n '2,22p' "$0" | sed 's/^# \{0,1\}//'
+  sed -n '2,23p' "$0" | sed 's/^# \{0,1\}//'
 }
 
 TOOL=""
@@ -43,6 +44,13 @@ UNINSTALL=0
 while [ $# -gt 0 ]; do
   case "$1" in
     codex|cursor|claude) TOOL="$1" ;;
+    --tool)
+      shift
+      case "${1:?--tool needs codex|cursor|claude}" in
+        codex|cursor|claude) TOOL="$1" ;;
+        *) usage; die "--tool must be codex, cursor or claude (got: $1)" ;;
+      esac
+      ;;
     --global)    GLOBAL=1 ;;
     --prefix)    shift; PREFIX="${1:?--prefix needs a directory}" ;;
     --ref)       shift; REF="${1:?--ref needs a git ref}" ;;
